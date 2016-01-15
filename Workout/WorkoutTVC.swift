@@ -193,5 +193,55 @@ class WorkoutTableViewController: UITableViewController {
 			return cell
 		}
     }
+	
+	// MARK: - Export
+	
+	@IBAction func doExport(sender: UIBarButtonItem) {
+		export(sender)
+	}
+	
+	private var documentController: UIActivityViewController!
+	
+	private func export(sender: UIBarButtonItem) {
+		var filePath = NSString(string: NSTemporaryDirectory()).stringByAppendingPathComponent("generalData.csv")
+		let generalDataPath = NSURL(fileURLWithPath: filePath)
+		filePath = NSString(string: NSTemporaryDirectory()).stringByAppendingPathComponent("details.csv")
+		let detailsPath = NSURL(fileURLWithPath: filePath)
+		
+		var gen = "Field\(CSVSeparator)Value\n"
+		gen += "Start\(CSVSeparator)" + workout.startDate.getUNIXDateTime() + "\n"
+		gen += "End\(CSVSeparator)" + workout.endDate.getUNIXDateTime() + "\n"
+		gen += "Duration\(CSVSeparator)" + workout.duration.getDuration() + "\n"
+		gen += "Distance\(CSVSeparator)" + (workout.totalDistance!.doubleValueForUnit(HKUnit.meterUnit()) / 1000).toCSV()
+		
+		var det = "Time\(CSVSeparator)\"Heart Rate\"\(CSVSeparator)Distance\(CSVSeparator)Pace\n"
+		let start = floor(workout.startDate.timeIntervalSince1970 / 60) * 60
+		for d in data {
+			det += (d.date.timeIntervalSince1970 - start).getDuration() + CSVSeparator
+			det += (d.bpm?.toCSV() ?? "") + CSVSeparator
+			det += (d.distance?.toCSV() ?? "") + CSVSeparator
+			det += d.distance != nil ? (60 / d.distance!).getDuration() : ""
+			det += "\n"
+		}
+		
+		do {
+			try gen.writeToURL(generalDataPath, atomically: true, encoding: NSUTF8StringEncoding)
+			try det.writeToURL(detailsPath, atomically: true, encoding: NSUTF8StringEncoding)
+		} catch _ {
+			let alert = UIAlertController(title: "Cannot export workout data", message: nil, preferredStyle: .Alert)
+			alert.addAction(UIAlertAction(title: "Ok", style: .Cancel, handler: nil))
+			
+			self.presentViewController(alert, animated: true, completion: nil)
+			
+			return
+		}
+		
+		documentController = UIActivityViewController(activityItems: [generalDataPath, detailsPath], applicationActivities: nil)
+		
+		dispatchMainQueue {
+			self.presentViewController(self.documentController, animated: true, completion: nil)
+			self.documentController.popoverPresentationController?.barButtonItem = sender
+		}
+	}
 
 }

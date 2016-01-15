@@ -189,7 +189,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Workout detail" id="QUK-cG-kWu">
-                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="3xR-ye-8lX"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="3xR-ye-8lX">
+                            <connections>
+                                <action selector="doExport:" destination="uRu-e5-1Xw" id="gc5-FN-x52"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="132-WL-h3v" userLabel="First Responder" sceneMemberID="firstResponder"/>

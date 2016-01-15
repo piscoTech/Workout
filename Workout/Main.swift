@@ -68,6 +68,21 @@ func dispatchInBackground(block: () -> Void) {
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block)
 }
 
+var decimalPoint: String {
+	get {
+		let nFormat=NSNumberFormatter()
+		nFormat.numberStyle=NSNumberFormatterStyle.DecimalStyle
+		let n = nFormat.stringFromNumber(0.1)!
+		
+		return String(Array(n.characters)[1])
+	}
+}
+var CSVSeparator: String {
+	get {
+		return decimalPoint == "," ? ";" : ","
+	}
+}
+
 extension NSTimeInterval {
 	
 	func getDuration() -> String {
@@ -148,6 +163,16 @@ extension Double {
 	
 	func getFormattedHeartRate() -> String {
 		return heartRateF.stringFromNumber(self)! + " bpm"
+	}
+	
+	func toCSV() -> String {
+		var n = "\(self)"
+		
+		if let point = n.rangeOfString(".") {
+			n = n.stringByReplacingCharactersInRange(point, withString: decimalPoint)
+		}
+		
+		return n
 	}
 	
 }
