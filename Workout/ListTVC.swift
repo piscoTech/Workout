@@ -28,16 +28,16 @@ class ListTableViewController: UITableViewController {
 		refresh()
 	}
 	
-	func refresh() {
+	private func refresh() {
 		let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 		let type = HKObjectType.workoutType()
-		let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, err) in
+		let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, _) in
 			self.workouts = nil
 			if let res = r as? [HKWorkout] {
 				self.workouts = res
 			}
 			
-			self.tableView.reloadData()
+			dispatchMainQueue { self.tableView.reloadData() }
 		}
 		
 		healthStore.executeQuery(workoutQuery)

@@ -15,6 +15,7 @@
 		7AA9F4951C48F5A1005FFCB3 /* ListTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4941C48F5A1005FFCB3 /* ListTVC.swift */; };
 		7AA9F4971C48F64E005FFCB3 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4961C48F64E005FFCB3 /* Main.swift */; };
 		7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */; };
+		7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		7AA9F4941C48F5A1005FFCB3 /* ListTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListTVC.swift; sourceTree = "<group>"; };
 		7AA9F4961C48F64E005FFCB3 /* Main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutTVC.swift; sourceTree = "<group>"; };
+		7AA9F49A1C491ECD005FFCB3 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutDetailTVCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +49,7 @@
 		7AA9F4701C48EFFE005FFCB3 = {
 			isa = PBXGroup;
 			children = (
+				7AA9F49A1C491ECD005FFCB3 /* MyPlayground.playground */,
 				7AA9F48E1C48F026005FFCB3 /* HealthKit.framework */,
 				7AA9F47B1C48EFFF005FFCB3 /* Workout */,
 				7AA9F47A1C48EFFE005FFCB3 /* Products */,
@@ -65,6 +69,7 @@
 			children = (
 				7AA9F4941C48F5A1005FFCB3 /* ListTVC.swift */,
 				7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */,
+				7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */,
 				7AA9F47C1C48EFFF005FFCB3 /* AppDelegate.swift */,
 				7AA9F4961C48F64E005FFCB3 /* Main.swift */,
 				7AA9F4831C48EFFF005FFCB3 /* Assets.xcassets */,
@@ -165,6 +170,7 @@
 				7AA9F4951C48F5A1005FFCB3 /* ListTVC.swift in Sources */,
 				7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */,
 				7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */,
+				7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

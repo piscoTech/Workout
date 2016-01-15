@@ -11,14 +11,14 @@ import HealthKit
 
 let healthStore = HKHealthStore()
 
-let unixDateTime = { Void -> NSDateFormatter in
+let unixDateTimeF = { Void -> NSDateFormatter in
 	let formatter = NSDateFormatter()
 	formatter.dateFormat = "yyyy-MM-dd HH:mm"
 	
 	return formatter
 }()
 
-let localDate = { Void -> NSDateFormatter in
+let localDateF = { Void -> NSDateFormatter in
 	let formatter = NSDateFormatter()
 	formatter.dateStyle = .MediumStyle
 	formatter.timeStyle = .NoStyle
@@ -26,7 +26,7 @@ let localDate = { Void -> NSDateFormatter in
 	return formatter
 }()
 
-let localTime = { Void -> NSDateFormatter in
+let localTimeF = { Void -> NSDateFormatter in
 	let formatter = NSDateFormatter()
 	formatter.dateStyle = .NoStyle
 	formatter.timeStyle = .ShortStyle
@@ -34,14 +34,39 @@ let localTime = { Void -> NSDateFormatter in
 	return formatter
 }()
 
-let distance = { Void -> NSLengthFormatter in
+let distanceF = { Void -> NSLengthFormatter in
 	let formatter = NSLengthFormatter()
-	formatter.numberFormatter.usesSignificantDigits = true
-	formatter.numberFormatter.maximumSignificantDigits = 2
-	formatter.numberFormatter.minimumSignificantDigits = 0
+	formatter.numberFormatter.usesSignificantDigits = false
+	formatter.numberFormatter.maximumFractionDigits = 3
 	
 	return formatter
 }()
+
+let heartRateF = { Void -> NSNumberFormatter in
+	let formatter = NSNumberFormatter()
+	formatter.numberStyle = .DecimalStyle
+	formatter.usesSignificantDigits = false
+	formatter.maximumFractionDigits = 0
+	
+	return formatter
+}()
+
+func delay(delay: Double, closure:() -> Void) {
+	dispatch_after(
+		dispatch_time(
+			DISPATCH_TIME_NOW,
+			Int64(delay * Double(NSEC_PER_SEC))
+		),
+		dispatch_get_main_queue(), closure)
+}
+
+func dispatchMainQueue(block: () -> Void) {
+	dispatch_async(dispatch_get_main_queue(), block)
+}
+
+func dispatchInBackground(block: () -> Void) {
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block)
+}
 
 extension NSTimeInterval {
 	
@@ -90,10 +115,14 @@ extension NSTimeInterval {
 	
 }
 
-extension NSDate {
+public func < (lhs: NSDate, rhs: NSDate) -> Bool {
+	return lhs.timeIntervalSince1970 < rhs.timeIntervalSince1970
+}
+
+extension NSDate: Comparable {
 	
 	func getUNIXDateTime() -> String {
-		return unixDateTime.stringFromDate(self)
+		return unixDateTimeF.stringFromDate(self)
 	}
 	
 	func getFormattedDateTime() -> String {
@@ -101,11 +130,11 @@ extension NSDate {
 	}
 	
 	func getFormattedDate() -> String {
-		return localDate.stringFromDate(self)
+		return localDateF.stringFromDate(self)
 	}
 	
 	func getFormattedTime() -> String {
-		return localTime.stringFromDate(self)
+		return localTimeF.stringFromDate(self)
 	}
 	
 }
@@ -114,7 +143,19 @@ extension Double {
 	
 	///- returns: The formatted values, considered in kilometers.
 	func getFormattedDistance() -> String {
-		return distance.stringFromValue(self, unit: .Kilometer)
+		return distanceF.stringFromValue(self, unit: .Kilometer)
+	}
+	
+	func getFormattedHeartRate() -> String {
+		return heartRateF.stringFromNumber(self)! + " bpm"
+	}
+	
+}
+
+extension HKUnit {
+	
+	class func heartRateUnit() -> HKUnit {
+		return HKUnit.countUnit().unitDividedByUnit(HKUnit.minuteUnit())
 	}
 	
 }
