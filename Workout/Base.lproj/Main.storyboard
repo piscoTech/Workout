@@ -39,8 +39,28 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="uRu-e5-1Xw" kind="show" id="i3l-3A-qHr"/>
+                                    <segue destination="uRu-e5-1Xw" kind="show" identifier="showWorkout" id="i3l-3A-qHr"/>
                                 </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="error" id="yh7-Fi-feX">
+                                <rect key="frame" x="0.0" y="136" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yh7-Fi-feX" id="SWJ-X5-Gvr">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unable to load workout data" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="95R-1n-lMr">
+                                            <rect key="frame" x="193" y="11" width="215" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="95R-1n-lMr" firstAttribute="centerX" secondItem="SWJ-X5-Gvr" secondAttribute="centerX" id="CLY-PJ-m1j"/>
+                                        <constraint firstItem="95R-1n-lMr" firstAttribute="centerY" secondItem="SWJ-X5-Gvr" secondAttribute="centerY" id="a8J-qw-Sib"/>
+                                    </constraints>
+                                </tableViewCellContentView>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -54,7 +74,11 @@
                                 <action selector="authorize:" destination="5g0-8u-NPu" id="mpg-hs-rUd"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="yIy-Wt-wpU"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="yIy-Wt-wpU">
+                            <connections>
+                                <action selector="doRefresh:" destination="5g0-8u-NPu" id="hZh-CZ-sYC"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1Nd-NI-tqZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -64,7 +88,7 @@
         <!--Workout detail-->
         <scene sceneID="dlc-JQ-5p9">
             <objects>
-                <tableViewController id="uRu-e5-1Xw" sceneMemberID="viewController">
+                <tableViewController id="uRu-e5-1Xw" customClass="WorkoutTableViewController" customModule="Workout" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="yaT-eu-fXa">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
