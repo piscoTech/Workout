@@ -8,20 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F47C1C48EFFF005FFCB3 /* AppDelegate.swift */; };
-		7AA9F47F1C48EFFF005FFCB3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F47E1C48EFFF005FFCB3 /* ViewController.swift */; };
 		7AA9F4821C48EFFF005FFCB3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7AA9F4801C48EFFF005FFCB3 /* Main.storyboard */; };
 		7AA9F4841C48EFFF005FFCB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7AA9F4831C48EFFF005FFCB3 /* Assets.xcassets */; };
 		7AA9F4871C48EFFF005FFCB3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7AA9F4851C48EFFF005FFCB3 /* LaunchScreen.storyboard */; };
+		7AA9F48F1C48F026005FFCB3 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AA9F48E1C48F026005FFCB3 /* HealthKit.framework */; };
+		7AA9F4951C48F5A1005FFCB3 /* ListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4941C48F5A1005FFCB3 /* ListTableViewController.swift */; };
+		7AA9F4971C48F64E005FFCB3 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4961C48F64E005FFCB3 /* Main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		7AA9F4791C48EFFE005FFCB3 /* Workout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Workout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AA9F47C1C48EFFF005FFCB3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7AA9F47E1C48EFFF005FFCB3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		7AA9F4811C48EFFF005FFCB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7AA9F4831C48EFFF005FFCB3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7AA9F4861C48EFFF005FFCB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7AA9F4881C48EFFF005FFCB3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7AA9F48E1C48F026005FFCB3 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		7AA9F4901C48F027005FFCB3 /* Workout.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Workout.entitlements; sourceTree = "<group>"; };
+		7AA9F4941C48F5A1005FFCB3 /* ListTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListTableViewController.swift; sourceTree = "<group>"; };
+		7AA9F4961C48F64E005FFCB3 /* Main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7AA9F48F1C48F026005FFCB3 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +44,7 @@
 		7AA9F4701C48EFFE005FFCB3 = {
 			isa = PBXGroup;
 			children = (
+				7AA9F48E1C48F026005FFCB3 /* HealthKit.framework */,
 				7AA9F47B1C48EFFF005FFCB3 /* Workout */,
 				7AA9F47A1C48EFFE005FFCB3 /* Products */,
 			);
@@ -54,14 +61,24 @@
 		7AA9F47B1C48EFFF005FFCB3 /* Workout */ = {
 			isa = PBXGroup;
 			children = (
+				7AA9F4941C48F5A1005FFCB3 /* ListTableViewController.swift */,
 				7AA9F47C1C48EFFF005FFCB3 /* AppDelegate.swift */,
-				7AA9F47E1C48EFFF005FFCB3 /* ViewController.swift */,
-				7AA9F4801C48EFFF005FFCB3 /* Main.storyboard */,
+				7AA9F4961C48F64E005FFCB3 /* Main.swift */,
 				7AA9F4831C48EFFF005FFCB3 /* Assets.xcassets */,
+				7AA9F4801C48EFFF005FFCB3 /* Main.storyboard */,
 				7AA9F4851C48EFFF005FFCB3 /* LaunchScreen.storyboard */,
-				7AA9F4881C48EFFF005FFCB3 /* Info.plist */,
+				7AA9F4911C48F06D005FFCB3 /* Supporting Files */,
 			);
 			path = Workout;
+			sourceTree = "<group>";
+		};
+		7AA9F4911C48F06D005FFCB3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				7AA9F4901C48F027005FFCB3 /* Workout.entitlements */,
+				7AA9F4881C48EFFF005FFCB3 /* Info.plist */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -96,6 +113,12 @@
 				TargetAttributes = {
 					7AA9F4781C48EFFE005FFCB3 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = C8D57YLUAC;
+						SystemCapabilities = {
+							com.apple.HealthKit = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -135,7 +158,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7AA9F47F1C48EFFF005FFCB3 /* ViewController.swift in Sources */,
+				7AA9F4971C48F64E005FFCB3 /* Main.swift in Sources */,
+				7AA9F4951C48F5A1005FFCB3 /* ListTableViewController.swift in Sources */,
 				7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -247,10 +271,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Workout/Workout.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Workout/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Marco-Boschi.ios.Workout";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -258,10 +287,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Workout/Workout.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Workout/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Marco-Boschi.ios.Workout";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
