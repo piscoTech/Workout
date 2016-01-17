@@ -1,6 +1,7 @@
 # Created by https://www.gitignore.io
 
 # Images & Data
+Image\ Files
 .DS_Store
 
 ### Xcode ###
