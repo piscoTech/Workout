@@ -11,12 +11,7 @@ import HealthKit
 
 struct DataPoint: CustomStringConvertible {
 	
-	var time: NSTimeInterval {
-		get {
-			return date.timeIntervalSince1970
-		}
-	}
-	let date: NSDate
+	var time: NSTimeInterval
 	
 	private var heartData: [Double] = []
 	var bpm: Double? {
@@ -27,8 +22,8 @@ struct DataPoint: CustomStringConvertible {
 	
 	private(set) var distance: Double?
 	
-	init(date: NSDate) {
-		self.date = date
+	init(time: NSTimeInterval) {
+		self.time = time
 	}
 	
 	mutating func addHeartData(bpm: Double) {
@@ -41,7 +36,7 @@ struct DataPoint: CustomStringConvertible {
 	
 	var description: String {
 		get {
-			return "'" + date.getUNIXDateTime() + ": " + (distance?.getFormattedDistance() ?? "(nil)") + " - " + (bpm?.getFormattedHeartRate() ?? "(nil)") + "'"
+			return "'" + time.getDuration() + ": " + (distance?.getFormattedDistance() ?? "(nil)") + " - " + (bpm?.getFormattedHeartRate() ?? "(nil)") + "'"
 		}
 	}
 }
@@ -60,6 +55,7 @@ class WorkoutTableViewController: UITableViewController {
 	}
 	
 	private var data: [DataPoint]!
+	private var maxHeart: Double!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,15 +105,16 @@ class WorkoutTableViewController: UITableViewController {
 		
 		if !error {
 			data = []
+			maxHeart = 0
 			
-			let start = Int(floor(workout.startDate.timeIntervalSince1970 / 60))
-			let end = Int(floor(workout.endDate.timeIntervalSince1970 / 60))
+			let start = workout.startDate.timeIntervalSince1970
+			let end = Int(floor( (workout.endDate.timeIntervalSince1970 - start) / 60 ))
 			
-			var sDate = NSDate(timeIntervalSince1970: Double(start) * 60.0)
-			for _ in start ... end {
+			var sDate = workout.startDate
+			for time in 0 ... end {
 				let eDate = NSDate(timeIntervalSince1970: sDate.timeIntervalSince1970 + 60)
 				
-				var p = DataPoint(date: sDate)
+				var p = DataPoint(time: Double(time) * 60)
 				
 				while let d = rawDistanceData.first where d.startDate >= sDate && d.startDate <= eDate {
 					let l = d.quantity.doubleValueForUnit(HKUnit.meterUnit())
@@ -128,6 +125,7 @@ class WorkoutTableViewController: UITableViewController {
 				
 				while let h = rawHeartData.first where h.startDate >= sDate && h.startDate <= eDate {
 					let bpm = h.quantity.doubleValueForUnit(HKUnit.heartRateUnit())
+					maxHeart = max(maxHeart, bpm)
 					p.addHeartData(bpm)
 					
 					rawHeartData.removeAtIndex(0)
@@ -165,7 +163,7 @@ class WorkoutTableViewController: UITableViewController {
 			let cell = tableView.dequeueReusableCellWithIdentifier("detail", forIndexPath: indexPath) as! WorkoutDetailTableViewCell
 			let d = data[indexPath.row]
 			
-			cell.time.text = d.date.getFormattedTime()
+			cell.time.text = d.time.getDuration()
 			cell.bpm.text = d.bpm?.getFormattedHeartRate() ?? "-"
 			cell.distance.text = d.distance?.getFormattedDistance() ?? "-"
 			
@@ -212,15 +210,24 @@ class WorkoutTableViewController: UITableViewController {
 		gen += "Start\(CSVSeparator)" + workout.startDate.getUNIXDateTime() + "\n"
 		gen += "End\(CSVSeparator)" + workout.endDate.getUNIXDateTime() + "\n"
 		gen += "Duration\(CSVSeparator)" + workout.duration.getDuration() + "\n"
-		gen += "Distance\(CSVSeparator)" + (workout.totalDistance!.doubleValueForUnit(HKUnit.meterUnit()) / 1000).toCSV()
+		gen += "Distance\(CSVSeparator)" + (workout.totalDistance!.doubleValueForUnit(HKUnit.meterUnit()) / 1000).toCSV() + "\n"
+		gen += "\"Max Heart Rate\"\(CSVSeparator)" + maxHeart.toCSV()
 		
 		var det = "Time\(CSVSeparator)\"Heart Rate\"\(CSVSeparator)Distance\(CSVSeparator)Pace\n"
-		let start = floor(workout.startDate.timeIntervalSince1970 / 60) * 60
 		for d in data {
-			det += (d.date.timeIntervalSince1970 - start).getDuration() + CSVSeparator
+			det += d.time.getDuration() + CSVSeparator
 			det += (d.bpm?.toCSV() ?? "") + CSVSeparator
 			det += (d.distance?.toCSV() ?? "") + CSVSeparator
-			det += d.distance != nil ? (60 / d.distance!).getDuration() : ""
+			let pace: NSTimeInterval?
+			do {
+				if let d = d.distance {
+					let p  = 60 / d
+					pace = p < 20 * 60 ? p : nil
+				} else {
+					pace = nil
+				}
+			}
+			det += pace?.getDuration() ?? ""
 			det += "\n"
 		}
 		
