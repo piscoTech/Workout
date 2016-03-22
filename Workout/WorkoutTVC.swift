@@ -79,7 +79,7 @@ class WorkoutTableViewController: UITableViewController {
 		
 		let hearthQuery = HKSampleQuery(sampleType: heartType, predicate: heartPredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, _) -> Void in
 			self.rawHeartData = r as? [HKQuantitySample]
-			self.requestDone++
+			self.requestDone += 1
 			
 			self.displayData()
 		}
@@ -89,7 +89,7 @@ class WorkoutTableViewController: UITableViewController {
 		
 		let distanceQuery = HKSampleQuery(sampleType: distanceType, predicate: distancePredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, _) in
 			self.rawDistanceData = r as? [HKQuantitySample]
-			self.requestDone++
+			self.requestDone += 1
 			
 			self.displayData()
 		}
