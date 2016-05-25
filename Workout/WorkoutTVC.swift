@@ -207,15 +207,15 @@ class WorkoutTableViewController: UITableViewController {
 		let detailsPath = NSURL(fileURLWithPath: filePath)
 		
 		var gen = "Field\(CSVSeparator)Value\n"
-		gen += "Start\(CSVSeparator)" + workout.startDate.getUNIXDateTime() + "\n"
-		gen += "End\(CSVSeparator)" + workout.endDate.getUNIXDateTime() + "\n"
-		gen += "Duration\(CSVSeparator)" + workout.duration.getDuration() + "\n"
+		gen += "Start\(CSVSeparator)" + workout.startDate.getUNIXDateTime().toCSV() + "\n"
+		gen += "End\(CSVSeparator)" + workout.endDate.getUNIXDateTime().toCSV() + "\n"
+		gen += "Duration\(CSVSeparator)" + workout.duration.getDuration().toCSV() + "\n"
 		gen += "Distance\(CSVSeparator)" + (workout.totalDistance!.doubleValueForUnit(HKUnit.meterUnit()) / 1000).toCSV() + "\n"
-		gen += "\"Max Heart Rate\"\(CSVSeparator)" + maxHeart.toCSV()
+		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + maxHeart.toCSV()
 		
-		var det = "Time\(CSVSeparator)\"Heart Rate\"\(CSVSeparator)Distance\(CSVSeparator)Pace\n"
+		var det = "Time\(CSVSeparator)\("Heart Rate".toCSV())\(CSVSeparator)Distance\(CSVSeparator)Pace\n"
 		for d in data {
-			det += d.time.getDuration() + CSVSeparator
+			det += d.time.getDuration().toCSV() + CSVSeparator
 			det += (d.bpm?.toCSV() ?? "") + CSVSeparator
 			det += (d.distance?.toCSV() ?? "") + CSVSeparator
 			let pace: NSTimeInterval?
@@ -227,7 +227,7 @@ class WorkoutTableViewController: UITableViewController {
 					pace = nil
 				}
 			}
-			det += pace?.getDuration() ?? ""
+			det += pace?.getDuration().toCSV() ?? ""
 			det += "\n"
 		}
 		

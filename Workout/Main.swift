@@ -78,9 +78,7 @@ var decimalPoint: String {
 	}
 }
 var CSVSeparator: String {
-	get {
-		return decimalPoint == "," ? ";" : ","
-	}
+	return ","
 }
 
 extension NSTimeInterval {
@@ -172,7 +170,15 @@ extension Double {
 			n = n.stringByReplacingCharactersInRange(point, withString: decimalPoint)
 		}
 		
-		return n
+		return n.toCSV()
+	}
+	
+}
+
+extension String {
+	
+	func toCSV() -> String {
+		return "\"\(self.stringByReplacingOccurrencesOfString("\"", withString: "\"\""))\""
 	}
 	
 }
