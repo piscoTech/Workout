@@ -8,6 +8,7 @@
 
 import UIKit
 import HealthKit
+import MBLibrary
 
 class ListTableViewController: UITableViewController {
 	
@@ -24,12 +25,12 @@ class ListTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 	
-	@IBAction func doRefresh(sender: AnyObject) {
+	@IBAction func doRefresh(_ sender: AnyObject) {
 		refresh()
 	}
 	
 	private func refresh() {
-		let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+		let sortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 		let type = HKObjectType.workoutType()
 		let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, _) in
 			self.workouts = nil
@@ -37,46 +38,46 @@ class ListTableViewController: UITableViewController {
 				self.workouts = res
 			}
 			
-			dispatchMainQueue { self.tableView.reloadData() }
+			DispatchQueue.main.async { self.tableView.reloadData() }
 		}
 		
-		healthStore.executeQuery(workoutQuery)
+		healthStore.execute(workoutQuery)
 	}
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return workouts?.count ?? 1
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if workouts == nil {
-			return tableView.dequeueReusableCellWithIdentifier("error", forIndexPath: indexPath)
+			return tableView.dequeueReusableCell(withIdentifier: "error", for: indexPath)
 		}
 
-		let cell = tableView.dequeueReusableCellWithIdentifier("workout", forIndexPath: indexPath)
+		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
 		let w = workouts[indexPath.row]
 		
 		cell.textLabel?.text = w.startDate.getFormattedDateTime()
 		
 		var detail = w.duration.getDuration()
 		if let dist = w.totalDistance {
-			detail += " - " + (dist.doubleValueForUnit(HKUnit.meterUnit()) / 1000).getFormattedDistance()
+			detail += " - " + (dist.doubleValue(for: HKUnit.meter()) / 1000).getFormattedDistance()
 		}
 		cell.detailTextLabel?.text = detail
 
         return cell
     }
 	
-	@IBAction func authorize(sender: AnyObject) {
-		healthStore.requestAuthorizationToShareTypes(nil, readTypes: [
+	@IBAction func authorize(_ sender: AnyObject) {
+		healthStore.requestAuthorization(toShare: nil, read: [
 			HKObjectType.workoutType(),
-			HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-			HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!
+			HKObjectType.quantityType(forIdentifier: .heartRate)!,
+			HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
 		]) { (success, err) in
 			self.refresh()
 		}
@@ -84,7 +85,7 @@ class ListTableViewController: UITableViewController {
 
     // MARK: - Navigation
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
 		guard let id = segue.identifier else {
 			return
 		}

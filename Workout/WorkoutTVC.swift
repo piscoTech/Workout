@@ -8,10 +8,11 @@
 
 import UIKit
 import HealthKit
+import MBLibrary
 
 struct DataPoint: CustomStringConvertible {
 	
-	var time: NSTimeInterval
+	var time: TimeInterval
 	
 	private var heartData: [Double] = []
 	var bpm: Double? {
@@ -22,15 +23,15 @@ struct DataPoint: CustomStringConvertible {
 	
 	private(set) var distance: Double?
 	
-	init(time: NSTimeInterval) {
+	init(time: TimeInterval) {
 		self.time = time
 	}
 	
-	mutating func addHeartData(bpm: Double) {
+	mutating func addHeartData(_ bpm: Double) {
 		heartData.append(bpm)
 	}
 	
-	mutating func addDistanceData(d: Double) {
+	mutating func addDistanceData(_ d: Double) {
 		distance = (distance ?? 0) + d
 	}
 	
@@ -69,13 +70,13 @@ class WorkoutTableViewController: UITableViewController {
     }
 	
 	private func loadData() {
-		let distancePredicate = HKQuery.predicateForObjectsFromWorkout(workout)
-		let heartPredicate = HKQuery.predicateForSamplesWithStartDate(workout.startDate, endDate: workout.endDate, options: .None)
-		let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+		let distancePredicate = HKQuery.predicateForObjects(from: workout)
+		let heartPredicate = HKQuery.predicateForSamples(withStart: workout.startDate, end: workout.endDate, options: [])
+		let startDateSort = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 		let noLimit = Int(HKObjectQueryNoLimit)
 
 		//Heart data
-		let heartType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
+		let heartType = HKObjectType.quantityType(forIdentifier: .heartRate)!
 		
 		let hearthQuery = HKSampleQuery(sampleType: heartType, predicate: heartPredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, _) -> Void in
 			self.rawHeartData = r as? [HKQuantitySample]
@@ -85,7 +86,7 @@ class WorkoutTableViewController: UITableViewController {
 		}
 		
 		//Distance data
-		let distanceType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!
+		let distanceType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
 		
 		let distanceQuery = HKSampleQuery(sampleType: distanceType, predicate: distancePredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, _) in
 			self.rawDistanceData = r as? [HKQuantitySample]
@@ -94,8 +95,8 @@ class WorkoutTableViewController: UITableViewController {
 			self.displayData()
 		}
 		
-		healthStore.executeQuery(hearthQuery)
-		healthStore.executeQuery(distanceQuery)
+		healthStore.execute(hearthQuery)
+		healthStore.execute(distanceQuery)
 	}
 	
 	private func displayData() {
@@ -112,23 +113,23 @@ class WorkoutTableViewController: UITableViewController {
 			
 			var sDate = workout.startDate
 			for time in 0 ... end {
-				let eDate = NSDate(timeIntervalSince1970: sDate.timeIntervalSince1970 + 60)
+				let eDate = Date(timeIntervalSince1970: sDate.timeIntervalSince1970 + 60)
 				
 				var p = DataPoint(time: Double(time) * 60)
 				
 				while let d = rawDistanceData.first where d.startDate >= sDate && d.startDate <= eDate {
-					let l = d.quantity.doubleValueForUnit(HKUnit.meterUnit())
+					let l = d.quantity.doubleValue(for: HKUnit.meter())
 					p.addDistanceData(l / 1000)
 					
-					rawDistanceData.removeAtIndex(0)
+					rawDistanceData.remove(at: 0)
 				}
 				
 				while let h = rawHeartData.first where h.startDate >= sDate && h.startDate <= eDate {
-					let bpm = h.quantity.doubleValueForUnit(HKUnit.heartRateUnit())
+					let bpm = h.quantity.doubleValue(for: HKUnit.heartRateUnit())
 					maxHeart = max(maxHeart, bpm)
 					p.addHeartData(bpm)
 					
-					rawHeartData.removeAtIndex(0)
+					rawHeartData.remove(at: 0)
 				}
 				
 				data.append(p)
@@ -136,16 +137,16 @@ class WorkoutTableViewController: UITableViewController {
 			}
 		}
 		
-		dispatchMainQueue { self.tableView.reloadData() }
+		DispatchQueue.main.async { self.tableView.reloadData() }
 	}
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+	override func numberOfSections(in tableView: UITableView) -> Int {
 		return error ? 1 : 2
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if error {
 			return 1
 		}
@@ -154,13 +155,13 @@ class WorkoutTableViewController: UITableViewController {
     }
 
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if error {
-			return tableView.dequeueReusableCellWithIdentifier("error", forIndexPath: indexPath)
+			return tableView.dequeueReusableCell(withIdentifier: "error", for: indexPath)
 		}
 		
 		if indexPath.section == 1 {
-			let cell = tableView.dequeueReusableCellWithIdentifier("detail", forIndexPath: indexPath) as! WorkoutDetailTableViewCell
+			let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
 			let d = data[indexPath.row]
 			
 			cell.time.text = d.time.getDuration()
@@ -169,7 +170,7 @@ class WorkoutTableViewController: UITableViewController {
 			
 			return cell
 		} else {
-			let cell = tableView.dequeueReusableCellWithIdentifier("basic", forIndexPath: indexPath)
+			let cell = tableView.dequeueReusableCell(withIdentifier: "basic", for: indexPath)
 			
 			switch indexPath.row {
 			case 0:
@@ -183,7 +184,7 @@ class WorkoutTableViewController: UITableViewController {
 				cell.detailTextLabel?.text = workout.duration.getDuration()
 			case 3:
 				cell.textLabel?.text = "Distance"
-				cell.detailTextLabel?.text = (workout.totalDistance!.doubleValueForUnit(HKUnit.meterUnit()) / 1000).getFormattedDistance()
+				cell.detailTextLabel?.text = (workout.totalDistance!.doubleValue(for: HKUnit.meter()) / 1000).getFormattedDistance()
 			default:
 				break
 			}
@@ -194,23 +195,23 @@ class WorkoutTableViewController: UITableViewController {
 	
 	// MARK: - Export
 	
-	@IBAction func doExport(sender: UIBarButtonItem) {
+	@IBAction func doExport(_ sender: UIBarButtonItem) {
 		export(sender)
 	}
 	
 	private var documentController: UIActivityViewController!
 	
-	private func export(sender: UIBarButtonItem) {
-		var filePath = NSString(string: NSTemporaryDirectory()).stringByAppendingPathComponent("generalData.csv")
-		let generalDataPath = NSURL(fileURLWithPath: filePath)
-		filePath = NSString(string: NSTemporaryDirectory()).stringByAppendingPathComponent("details.csv")
-		let detailsPath = NSURL(fileURLWithPath: filePath)
+	private func export(_ sender: UIBarButtonItem) {
+		var filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
+		let generalDataPath = URL(fileURLWithPath: filePath)
+		filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("details.csv")
+		let detailsPath = URL(fileURLWithPath: filePath)
 		
 		var gen = "Field\(CSVSeparator)Value\n"
 		gen += "Start\(CSVSeparator)" + workout.startDate.getUNIXDateTime().toCSV() + "\n"
 		gen += "End\(CSVSeparator)" + workout.endDate.getUNIXDateTime().toCSV() + "\n"
 		gen += "Duration\(CSVSeparator)" + workout.duration.getDuration().toCSV() + "\n"
-		gen += "Distance\(CSVSeparator)" + (workout.totalDistance!.doubleValueForUnit(HKUnit.meterUnit()) / 1000).toCSV() + "\n"
+		gen += "Distance\(CSVSeparator)" + (workout.totalDistance!.doubleValue(for: HKUnit.meter()) / 1000).toCSV() + "\n"
 		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + maxHeart.toCSV()
 		
 		var det = "Time\(CSVSeparator)\("Heart Rate".toCSV())\(CSVSeparator)Distance\(CSVSeparator)Pace\n"
@@ -218,7 +219,7 @@ class WorkoutTableViewController: UITableViewController {
 			det += d.time.getDuration().toCSV() + CSVSeparator
 			det += (d.bpm?.toCSV() ?? "") + CSVSeparator
 			det += (d.distance?.toCSV() ?? "") + CSVSeparator
-			let pace: NSTimeInterval?
+			let pace: TimeInterval?
 			do {
 				if let d = d.distance {
 					let p  = 60 / d
@@ -232,21 +233,21 @@ class WorkoutTableViewController: UITableViewController {
 		}
 		
 		do {
-			try gen.writeToURL(generalDataPath, atomically: true, encoding: NSUTF8StringEncoding)
-			try det.writeToURL(detailsPath, atomically: true, encoding: NSUTF8StringEncoding)
+			try gen.write(to: generalDataPath, atomically: true, encoding: String.Encoding.utf8)
+			try det.write(to: detailsPath, atomically: true, encoding: String.Encoding.utf8)
 		} catch _ {
-			let alert = UIAlertController(title: "Cannot export workout data", message: nil, preferredStyle: .Alert)
-			alert.addAction(UIAlertAction(title: "Ok", style: .Cancel, handler: nil))
+			let alert = UIAlertController(title: "Cannot export workout data", message: nil, preferredStyle: .alert)
+			alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
 			
-			self.presentViewController(alert, animated: true, completion: nil)
+			self.present(alert, animated: true, completion: nil)
 			
 			return
 		}
 		
 		documentController = UIActivityViewController(activityItems: [generalDataPath, detailsPath], applicationActivities: nil)
 		
-		dispatchMainQueue {
-			self.presentViewController(self.documentController, animated: true, completion: nil)
+		DispatchQueue.main.async {
+			self.present(self.documentController, animated: true, completion: nil)
 			self.documentController.popoverPresentationController?.barButtonItem = sender
 		}
 	}
