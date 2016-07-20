@@ -92,7 +92,7 @@ class ListTableViewController: UITableViewController {
 		
 		if id == "showWorkout" {
 			if let dest = segue.destinationViewController as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
-				dest.workout = workouts[indexPath.row]
+				dest.rawWorkout = workouts[indexPath.row]
 			}
 		}
     }

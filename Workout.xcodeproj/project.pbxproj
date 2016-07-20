@@ -10,6 +10,9 @@
 		7A75FB521D3E52A000F66CF9 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */; };
 		7A75FB531D3E52A000F66CF9 /* MBLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A8413E61CA1526500B86C48 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8413E51CA1526500B86C48 /* HealthKit.framework */; };
+		7A9E3A951D4009AB00CF73ED /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9E3A941D4009AB00CF73ED /* Workout.swift */; };
+		7A9E3A971D400A0000CF73ED /* WorkoutMinute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9E3A961D400A0000CF73ED /* WorkoutMinute.swift */; };
+		7A9E3A991D400EB900CF73ED /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9E3A981D400EB900CF73ED /* DataPoint.swift */; };
 		7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F47C1C48EFFF005FFCB3 /* AppDelegate.swift */; };
 		7AA9F4821C48EFFF005FFCB3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7AA9F4801C48EFFF005FFCB3 /* Main.storyboard */; };
 		7AA9F4841C48EFFF005FFCB3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7AA9F4831C48EFFF005FFCB3 /* Assets.xcassets */; };
@@ -28,19 +31,33 @@
 			remoteGlobalIDString = 7A584FA51D3E241C000C739B;
 			remoteInfo = "MBLibrary iOS";
 		};
-		7A584FD01D3E2A5A000C739B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7A584FAE1D3E241C000C739B;
-			remoteInfo = "MBLibrary iOSTests";
-		};
 		7A75FB541D3E52A000F66CF9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7A584FA41D3E241C000C739B;
 			remoteInfo = "MBLibrary iOS";
+		};
+		7A9E3A8C1D40099200CF73ED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A0064CA1D3E9AF00089297D;
+			remoteInfo = "MBLibrary macOS";
+		};
+		7A9E3A8E1D40099200CF73ED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A0064FE1D3EB02B0089297D;
+			remoteInfo = "MBLibrary watchOS";
+		};
+		7A9E3A901D40099200CF73ED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A0064DF1D3E9BFA0089297D;
+			remoteInfo = MBLibraryTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -61,6 +78,9 @@
 /* Begin PBXFileReference section */
 		7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = ../MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
 		7A8413E51CA1526500B86C48 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		7A9E3A941D4009AB00CF73ED /* Workout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
+		7A9E3A961D400A0000CF73ED /* WorkoutMinute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutMinute.swift; sourceTree = "<group>"; };
+		7A9E3A981D400EB900CF73ED /* DataPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
 		7AA9F4791C48EFFE005FFCB3 /* Workout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Workout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AA9F47C1C48EFFF005FFCB3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AA9F4811C48EFFF005FFCB3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -92,9 +112,38 @@
 			isa = PBXGroup;
 			children = (
 				7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */,
-				7A584FD11D3E2A5A000C739B /* MBLibrary iOSTests.xctest */,
+				7A9E3A8D1D40099200CF73ED /* MBLibrary.framework */,
+				7A9E3A8F1D40099200CF73ED /* MBLibrary.framework */,
+				7A9E3A911D40099200CF73ED /* MBLibraryTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7A9E3A881D40099200CF73ED /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				7AA9F4941C48F5A1005FFCB3 /* ListTVC.swift */,
+				7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		7A9E3A921D40099800CF73ED /* View */ = {
+			isa = PBXGroup;
+			children = (
+				7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		7A9E3A931D40099D00CF73ED /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				7A9E3A981D400EB900CF73ED /* DataPoint.swift */,
+				7A9E3A961D400A0000CF73ED /* WorkoutMinute.swift */,
+				7A9E3A941D4009AB00CF73ED /* Workout.swift */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 		7AA9F4701C48EFFE005FFCB3 = {
@@ -119,9 +168,9 @@
 		7AA9F47B1C48EFFF005FFCB3 /* Workout */ = {
 			isa = PBXGroup;
 			children = (
-				7AA9F4941C48F5A1005FFCB3 /* ListTVC.swift */,
-				7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */,
-				7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */,
+				7A9E3A931D40099D00CF73ED /* Model */,
+				7A9E3A881D40099200CF73ED /* Controller */,
+				7A9E3A921D40099800CF73ED /* View */,
 				7AA9F47C1C48EFFF005FFCB3 /* AppDelegate.swift */,
 				7AA9F4961C48F64E005FFCB3 /* Main.swift */,
 				7AA9F4831C48EFFF005FFCB3 /* Assets.xcassets */,
@@ -217,11 +266,25 @@
 			remoteRef = 7A584FCE1D3E2A5A000C739B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		7A584FD11D3E2A5A000C739B /* MBLibrary iOSTests.xctest */ = {
+		7A9E3A8D1D40099200CF73ED /* MBLibrary.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBLibrary.framework;
+			remoteRef = 7A9E3A8C1D40099200CF73ED /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A9E3A8F1D40099200CF73ED /* MBLibrary.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBLibrary.framework;
+			remoteRef = 7A9E3A8E1D40099200CF73ED /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A9E3A911D40099200CF73ED /* MBLibraryTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = "MBLibrary iOSTests.xctest";
-			remoteRef = 7A584FD01D3E2A5A000C739B /* PBXContainerItemProxy */;
+			path = MBLibraryTests.xctest;
+			remoteRef = 7A9E3A901D40099200CF73ED /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -249,6 +312,9 @@
 				7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */,
 				7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */,
 				7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */,
+				7A9E3A971D400A0000CF73ED /* WorkoutMinute.swift in Sources */,
+				7A9E3A991D400EB900CF73ED /* DataPoint.swift in Sources */,
+				7A9E3A951D4009AB00CF73ED /* Workout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

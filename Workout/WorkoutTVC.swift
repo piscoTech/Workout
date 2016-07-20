@@ -10,58 +10,22 @@ import UIKit
 import HealthKit
 import MBLibrary
 
-struct DataPoint: CustomStringConvertible {
+class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	
-	var time: TimeInterval
+	var rawWorkout: HKWorkout!
+	private var workout: Workout!
 	
-	private var heartData: [Double] = []
-	var bpm: Double? {
-		get {
-			return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
-		}
-	}
-	
-	private(set) var distance: Double?
-	
-	init(time: TimeInterval) {
-		self.time = time
-	}
-	
-	mutating func addHeartData(_ bpm: Double) {
-		heartData.append(bpm)
-	}
-	
-	mutating func addDistanceData(_ d: Double) {
-		distance = (distance ?? 0) + d
-	}
-	
-	var description: String {
-		get {
-			return "'" + time.getDuration() + ": " + (distance?.getFormattedDistance() ?? "(nil)") + " - " + (bpm?.getFormattedHeartRate() ?? "(nil)") + "'"
-		}
-	}
-}
-
-class WorkoutTableViewController: UITableViewController {
-	
-	var workout: HKWorkout!
-	
-	private var requestDone = 0
-	private var rawHeartData: [HKQuantitySample]!
-	private var rawDistanceData: [HKQuantitySample]!
+	private var ready = false
 	private var error: Bool {
 		get {
-			return rawDistanceData == nil || rawHeartData == nil
+			return !ready || workout.hasError
 		}
 	}
 	
-	private var data: [DataPoint]!
-	private var maxHeart: Double!
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        loadData()
+        workout = Workout(rawWorkout, delegate: self)
     }
 
     override func didReceiveMemoryWarning() {
@@ -69,75 +33,11 @@ class WorkoutTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 	
-	private func loadData() {
-		let distancePredicate = HKQuery.predicateForObjects(from: workout)
-		let heartPredicate = HKQuery.predicateForSamples(withStart: workout.startDate, end: workout.endDate, options: [])
-		let startDateSort = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
-		let noLimit = Int(HKObjectQueryNoLimit)
-
-		//Heart data
-		let heartType = HKObjectType.quantityType(forIdentifier: .heartRate)!
-		
-		let hearthQuery = HKSampleQuery(sampleType: heartType, predicate: heartPredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, _) -> Void in
-			self.rawHeartData = r as? [HKQuantitySample]
-			self.requestDone += 1
-			
-			self.displayData()
+	func dataIsReady() {
+		ready = true
+		DispatchQueue.main.async {
+			self.tableView.reloadData()
 		}
-		
-		//Distance data
-		let distanceType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
-		
-		let distanceQuery = HKSampleQuery(sampleType: distanceType, predicate: distancePredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, _) in
-			self.rawDistanceData = r as? [HKQuantitySample]
-			self.requestDone += 1
-			
-			self.displayData()
-		}
-		
-		healthStore.execute(hearthQuery)
-		healthStore.execute(distanceQuery)
-	}
-	
-	private func displayData() {
-		if requestDone < 2 {
-			return
-		}
-		
-		if !error {
-			data = []
-			maxHeart = 0
-			
-			let start = workout.startDate.timeIntervalSince1970
-			let end = Int(floor( (workout.endDate.timeIntervalSince1970 - start) / 60 ))
-			
-			var sDate = workout.startDate
-			for time in 0 ... end {
-				let eDate = Date(timeIntervalSince1970: sDate.timeIntervalSince1970 + 60)
-				
-				var p = DataPoint(time: Double(time) * 60)
-				
-				while let d = rawDistanceData.first where d.startDate >= sDate && d.startDate <= eDate {
-					let l = d.quantity.doubleValue(for: HKUnit.meter())
-					p.addDistanceData(l / 1000)
-					
-					rawDistanceData.remove(at: 0)
-				}
-				
-				while let h = rawHeartData.first where h.startDate >= sDate && h.startDate <= eDate {
-					let bpm = h.quantity.doubleValue(for: HKUnit.heartRateUnit())
-					maxHeart = max(maxHeart, bpm)
-					p.addHeartData(bpm)
-					
-					rawHeartData.remove(at: 0)
-				}
-				
-				data.append(p)
-				sDate = eDate
-			}
-		}
-		
-		DispatchQueue.main.async { self.tableView.reloadData() }
 	}
 
     // MARK: - Table view data source
@@ -151,7 +51,7 @@ class WorkoutTableViewController: UITableViewController {
 			return 1
 		}
 		
-		return section == 0 ? 4 : data.count
+		return section == 0 ? 5 : workout.details.count
     }
 
 
@@ -162,9 +62,9 @@ class WorkoutTableViewController: UITableViewController {
 		
 		if indexPath.section == 1 {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
-			let d = data[indexPath.row]
+			let d = workout.details[indexPath.row]
 			
-			cell.time.text = d.time.getDuration()
+			cell.time.text = d.startTime.getDuration()
 			cell.bpm.text = d.bpm?.getFormattedHeartRate() ?? "-"
 			cell.distance.text = d.distance?.getFormattedDistance() ?? "-"
 			
@@ -184,7 +84,10 @@ class WorkoutTableViewController: UITableViewController {
 				cell.detailTextLabel?.text = workout.duration.getDuration()
 			case 3:
 				cell.textLabel?.text = "Distance"
-				cell.detailTextLabel?.text = (workout.totalDistance!.doubleValue(for: HKUnit.meter()) / 1000).getFormattedDistance()
+				cell.detailTextLabel?.text = workout.totalDistance.getFormattedDistance()
+			case 4:
+				cell.textLabel?.text = "Max Heart Rate"
+				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? "-"
 			default:
 				break
 			}
@@ -211,24 +114,15 @@ class WorkoutTableViewController: UITableViewController {
 		gen += "Start\(CSVSeparator)" + workout.startDate.getUNIXDateTime().toCSV() + "\n"
 		gen += "End\(CSVSeparator)" + workout.endDate.getUNIXDateTime().toCSV() + "\n"
 		gen += "Duration\(CSVSeparator)" + workout.duration.getDuration().toCSV() + "\n"
-		gen += "Distance\(CSVSeparator)" + (workout.totalDistance!.doubleValue(for: HKUnit.meter()) / 1000).toCSV() + "\n"
-		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + maxHeart.toCSV()
+		gen += "Distance\(CSVSeparator)" + workout.totalDistance.toCSV() + "\n"
+		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + (workout.maxHeart?.toCSV() ?? "")
 		
 		var det = "Time\(CSVSeparator)\("Heart Rate".toCSV())\(CSVSeparator)Distance\(CSVSeparator)Pace\n"
-		for d in data {
-			det += d.time.getDuration().toCSV() + CSVSeparator
+		for d in workout.details {
+			det += d.startTime.getDuration().toCSV() + CSVSeparator
 			det += (d.bpm?.toCSV() ?? "") + CSVSeparator
 			det += (d.distance?.toCSV() ?? "") + CSVSeparator
-			let pace: TimeInterval?
-			do {
-				if let d = d.distance {
-					let p  = 60 / d
-					pace = p < 20 * 60 ? p : nil
-				} else {
-					pace = nil
-				}
-			}
-			det += pace?.getDuration().toCSV() ?? ""
+			det += d.pace?.getDuration().toCSV() ?? ""
 			det += "\n"
 		}
 		
