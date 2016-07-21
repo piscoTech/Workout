@@ -51,7 +51,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return 1
 		}
 		
-		return section == 0 ? 5 : workout.details.count
+		return section == 0 ? 7 : workout.details.count
     }
 
 
@@ -64,9 +64,10 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
 			let d = workout.details[indexPath.row]
 			
-			cell.time.text = d.startTime.getDuration()
+			cell.time.text = "\(d.minute)m"
+			cell.pace.text = d.pace?.getFormattedPace() ?? "-"
 			cell.bpm.text = d.bpm?.getFormattedHeartRate() ?? "-"
-			cell.distance.text = d.distance?.getFormattedDistance() ?? "-"
+			cell.steps.text = d.steps?.getFormattedSteps() ?? "-"
 			
 			return cell
 		} else {
@@ -86,8 +87,14 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 				cell.textLabel?.text = "Distance"
 				cell.detailTextLabel?.text = workout.totalDistance.getFormattedDistance()
 			case 4:
+				cell.textLabel?.text = "Average Heart Rate"
+				cell.detailTextLabel?.text = workout.avgHeart?.getFormattedHeartRate() ?? "-"
+			case 5:
 				cell.textLabel?.text = "Max Heart Rate"
 				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? "-"
+			case 6:
+				cell.textLabel?.text = "Average Pace"
+				cell.detailTextLabel?.text = workout.pace.getFormattedPace() ?? "-"
 			default:
 				break
 			}
@@ -105,31 +112,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	private var documentController: UIActivityViewController!
 	
 	private func export(_ sender: UIBarButtonItem) {
-		var filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-		let generalDataPath = URL(fileURLWithPath: filePath)
-		filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("details.csv")
-		let detailsPath = URL(fileURLWithPath: filePath)
-		
-		var gen = "Field\(CSVSeparator)Value\n"
-		gen += "Start\(CSVSeparator)" + workout.startDate.getUNIXDateTime().toCSV() + "\n"
-		gen += "End\(CSVSeparator)" + workout.endDate.getUNIXDateTime().toCSV() + "\n"
-		gen += "Duration\(CSVSeparator)" + workout.duration.getDuration().toCSV() + "\n"
-		gen += "Distance\(CSVSeparator)" + workout.totalDistance.toCSV() + "\n"
-		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + (workout.maxHeart?.toCSV() ?? "")
-		
-		var det = "Time\(CSVSeparator)\("Heart Rate".toCSV())\(CSVSeparator)Distance\(CSVSeparator)Pace\n"
-		for d in workout.details {
-			det += d.startTime.getDuration().toCSV() + CSVSeparator
-			det += (d.bpm?.toCSV() ?? "") + CSVSeparator
-			det += (d.distance?.toCSV() ?? "") + CSVSeparator
-			det += d.pace?.getDuration().toCSV() ?? ""
-			det += "\n"
-		}
-		
-		do {
-			try gen.write(to: generalDataPath, atomically: true, encoding: String.Encoding.utf8)
-			try det.write(to: detailsPath, atomically: true, encoding: String.Encoding.utf8)
-		} catch _ {
+		guard let files = workout.export() else {
 			let alert = UIAlertController(title: "Cannot export workout data", message: nil, preferredStyle: .alert)
 			alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
 			
@@ -138,7 +121,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return
 		}
 		
-		documentController = UIActivityViewController(activityItems: [generalDataPath, detailsPath], applicationActivities: nil)
+		documentController = UIActivityViewController(activityItems: files, applicationActivities: nil)
 		
 		DispatchQueue.main.async {
 			self.present(self.documentController, animated: true, completion: nil)

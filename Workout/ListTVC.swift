@@ -66,7 +66,7 @@ class ListTableViewController: UITableViewController {
 		
 		var detail = w.duration.getDuration()
 		if let dist = w.totalDistance {
-			detail += " - " + (dist.doubleValue(for: HKUnit.meter()) / 1000).getFormattedDistance()
+			detail += " - " + (dist.doubleValue(for: .meter()) / 1000).getFormattedDistance()
 		}
 		cell.detailTextLabel?.text = detail
 
@@ -77,7 +77,8 @@ class ListTableViewController: UITableViewController {
 		healthStore.requestAuthorization(toShare: nil, read: [
 			HKObjectType.workoutType(),
 			HKObjectType.quantityType(forIdentifier: .heartRate)!,
-			HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
+			HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+			HKObjectType.quantityType(forIdentifier: .stepCount)!
 		]) { (success, err) in
 			self.refresh()
 		}

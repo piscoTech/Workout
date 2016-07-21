@@ -11,7 +11,8 @@ import UIKit
 class WorkoutDetailTableViewCell: UITableViewCell {
 
 	@IBOutlet weak var time: UILabel!
+	@IBOutlet weak var pace: UILabel!
 	@IBOutlet weak var bpm: UILabel!
-	@IBOutlet weak var distance: UILabel!
+	@IBOutlet weak var steps: UILabel!
 
 }

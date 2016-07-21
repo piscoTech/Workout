@@ -36,6 +36,7 @@ class WorkoutMinute: CustomStringConvertible {
 	var bpm: Double? {
 		return rawBpm.count > 0 ? rawBpm.reduce(0) { $0 + $1 } / Double(rawBpm.count) : nil
 	}
+	private(set) var steps: Double?
 	
 	init(minute: UInt) {
 		self.minute = minute
@@ -77,6 +78,15 @@ class WorkoutMinute: CustomStringConvertible {
 		}
 		
 		return bpm.time >= endTime
+	}
+	
+	///Add the relevant part of step count to the minute.
+	///- returns: `true` if some of the steps belongs to following minutes, `false` otherwise.
+	@discardableResult func add(steps: RangedDataPoint) -> Bool {
+		let (val, res) = processRangedData(data: steps)
+		self.steps = (self.steps ?? 0) + val
+		
+		return res
 	}
 
 }

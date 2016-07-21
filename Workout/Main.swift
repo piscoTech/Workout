@@ -20,7 +20,7 @@ let distanceF = { Void -> LengthFormatter in
 	return formatter
 }()
 
-let heartRateF = { Void -> NumberFormatter in
+let integerF = { Void -> NumberFormatter in
 	let formatter = NumberFormatter()
 	formatter.numberStyle = .decimal
 	formatter.usesSignificantDigits = false
@@ -28,6 +28,14 @@ let heartRateF = { Void -> NumberFormatter in
 	
 	return formatter
 }()
+
+extension TimeInterval {
+	
+	func getFormattedPace() -> String {
+		return getDuration() + "/km"
+	}
+	
+}
 
 extension Double {
 	
@@ -37,15 +45,23 @@ extension Double {
 	}
 	
 	func getFormattedHeartRate() -> String {
-		return heartRateF.string(from: self)! + " bpm"
+		return integerF.string(from: self)! + " bpm"
+	}
+	
+	func getFormattedSteps() -> String {
+		return integerF.string(from: self)! + " steps"
 	}
 	
 }
 
 extension HKUnit {
 	
-	class func heartRateUnit() -> HKUnit {
+	class func heartRate() -> HKUnit {
 		return HKUnit.count().unitDivided(by: HKUnit.minute())
+	}
+	
+	class func steps() -> HKUnit {
+		return HKUnit.count()
 	}
 	
 }
