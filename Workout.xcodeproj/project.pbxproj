@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A6D1F4B1D51E4C8002A4890 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */; };
+		7A6D1F501D51EB40002A4890 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */; };
 		7A75FB521D3E52A000F66CF9 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */; };
 		7A75FB531D3E52A000F66CF9 /* MBLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A8413E61CA1526500B86C48 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A8413E51CA1526500B86C48 /* HealthKit.framework */; };
@@ -77,6 +79,8 @@
 
 /* Begin PBXFileReference section */
 		7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = ../MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
+		7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
 		7A8413E51CA1526500B86C48 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		7A9E3A941D4009AB00CF73ED /* Workout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
 		7A9E3A961D400A0000CF73ED /* WorkoutMinute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutMinute.swift; sourceTree = "<group>"; };
@@ -91,7 +95,6 @@
 		7AA9F4941C48F5A1005FFCB3 /* ListTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListTVC.swift; sourceTree = "<group>"; };
 		7AA9F4961C48F64E005FFCB3 /* Main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutTVC.swift; sourceTree = "<group>"; };
-		7AA9F49A1C491ECD005FFCB3 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutDetailTVCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,6 +127,7 @@
 			children = (
 				7AA9F4941C48F5A1005FFCB3 /* ListTVC.swift */,
 				7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */,
+				7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -151,7 +155,6 @@
 			children = (
 				7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */,
 				7A8413E51CA1526500B86C48 /* HealthKit.framework */,
-				7AA9F49A1C491ECD005FFCB3 /* MyPlayground.playground */,
 				7AA9F47B1C48EFFF005FFCB3 /* Workout */,
 				7AA9F47A1C48EFFE005FFCB3 /* Products */,
 			);
@@ -173,6 +176,7 @@
 				7A9E3A921D40099800CF73ED /* View */,
 				7AA9F47C1C48EFFF005FFCB3 /* AppDelegate.swift */,
 				7AA9F4961C48F64E005FFCB3 /* Main.swift */,
+				7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */,
 				7AA9F4831C48EFFF005FFCB3 /* Assets.xcassets */,
 				7AA9F4801C48EFFF005FFCB3 /* Main.storyboard */,
 				7AA9F4851C48EFFF005FFCB3 /* LaunchScreen.storyboard */,
@@ -313,8 +317,10 @@
 				7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */,
 				7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */,
 				7A9E3A971D400A0000CF73ED /* WorkoutMinute.swift in Sources */,
+				7A6D1F501D51EB40002A4890 /* AboutVC.swift in Sources */,
 				7A9E3A991D400EB900CF73ED /* DataPoint.swift in Sources */,
 				7A9E3A951D4009AB00CF73ED /* Workout.swift in Sources */,
+				7A6D1F4B1D51E4C8002A4890 /* Preferences.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

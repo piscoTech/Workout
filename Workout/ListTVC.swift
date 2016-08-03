@@ -19,6 +19,14 @@ class ListTableViewController: UITableViewController {
 
         refresh()
     }
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		if !preferences.bool(forKey: PreferenceKey.authorized) || preferences.integer(forKey: PreferenceKey.authVersion) < authRequired {
+			authorize(self)
+		}
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -32,7 +40,8 @@ class ListTableViewController: UITableViewController {
 	private func refresh() {
 		let sortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 		let type = HKObjectType.workoutType()
-		let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, _) in
+		let predicate =  HKQuery.predicateForWorkouts(with: .running)
+		let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, _) in
 			self.workouts = nil
 			if let res = r as? [HKWorkout] {
 				self.workouts = res
@@ -73,13 +82,18 @@ class ListTableViewController: UITableViewController {
         return cell
     }
 	
-	@IBAction func authorize(_ sender: AnyObject) {
+	func authorize(_ sender: AnyObject) {
 		healthStore.requestAuthorization(toShare: nil, read: [
 			HKObjectType.workoutType(),
 			HKObjectType.quantityType(forIdentifier: .heartRate)!,
 			HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
 			HKObjectType.quantityType(forIdentifier: .stepCount)!
-		]) { (success, err) in
+		]) { (success, _) in
+			if success {
+				preferences.set(true, forKey: PreferenceKey.authorized)
+				preferences.set(authRequired, forKey: PreferenceKey.authVersion)
+			}
+			
 			self.refresh()
 		}
 	}
@@ -91,10 +105,17 @@ class ListTableViewController: UITableViewController {
 			return
 		}
 		
-		if id == "showWorkout" {
+		switch id {
+		case "showWorkout":
 			if let dest = segue.destinationViewController as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
 				dest.rawWorkout = workouts[indexPath.row]
 			}
+		case "info":
+			if let dest = segue.destinationViewController as? UINavigationController, let root = dest.topViewController as? AboutViewController {
+				root.delegate = self
+			}
+		default:
+			return
 		}
     }
 

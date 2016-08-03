@@ -35,5 +35,7 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Access to data is used to package it in CSV files for exporting purposes.</string>
 </dict>
 </plist>
