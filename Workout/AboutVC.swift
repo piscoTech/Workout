@@ -19,7 +19,7 @@ class AboutViewController: UITableViewController {
 		let appVers = Bundle.main.objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
 		let build = Bundle.main.objectForInfoDictionaryKey("CFBundleVersion") as! String
 
-		appInfo = "Workout v\(appVers) (\(build))\n© 2016 Marco Boschi"
+		appInfo = "Report any problem on Twitter @piscoTech or at GitHub tapping Source Code.\nWorkout v\(appVers) (\(build))\n© 2016 Marco Boschi"
 	}
 	
 	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
@@ -40,7 +40,7 @@ class AboutViewController: UITableViewController {
 		case (0, 0):
 			delegate.authorize(self)
 		case (1, 0):
-			UIApplication.shared().openURL(URL(string: "https://github.com/Pisco95/Workout")!)
+			UIApplication.shared().openURL(URL(string: "https://github.com/piscoTech/Workout")!)
 		default:
 			break
 		}
