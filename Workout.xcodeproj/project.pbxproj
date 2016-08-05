@@ -23,6 +23,7 @@
 		7AA9F4971C48F64E005FFCB3 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4961C48F64E005FFCB3 /* Main.swift */; };
 		7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */; };
 		7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */; };
+		7AD2D5651D547CFC00CF755F /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AD2D5641D547CFC00CF755F /* GoogleMobileAds.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,7 @@
 		7AA9F4961C48F64E005FFCB3 /* Main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutTVC.swift; sourceTree = "<group>"; };
 		7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutDetailTVCell.swift; sourceTree = "<group>"; };
+		7AD2D5641D547CFC00CF755F /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7AD2D5651D547CFC00CF755F /* GoogleMobileAds.framework in Frameworks */,
 				7A8413E61CA1526500B86C48 /* HealthKit.framework in Frameworks */,
 				7A75FB521D3E52A000F66CF9 /* MBLibrary.framework in Frameworks */,
 			);
@@ -154,7 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */,
-				7A8413E51CA1526500B86C48 /* HealthKit.framework */,
+				7AD2D5631D547CFC00CF755F /* Frameworks */,
 				7AA9F47B1C48EFFF005FFCB3 /* Workout */,
 				7AA9F47A1C48EFFE005FFCB3 /* Products */,
 			);
@@ -192,6 +195,15 @@
 				7AA9F4881C48EFFF005FFCB3 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7AD2D5631D547CFC00CF755F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7A8413E51CA1526500B86C48 /* HealthKit.framework */,
+				7AD2D5641D547CFC00CF755F /* GoogleMobileAds.framework */,
+			);
+			path = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -443,6 +455,10 @@
 				CODE_SIGN_ENTITLEMENTS = Workout/Workout.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = Workout/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -461,6 +477,10 @@
 				CODE_SIGN_ENTITLEMENTS = Workout/Workout.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = Workout/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

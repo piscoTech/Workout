@@ -9,8 +9,9 @@
 import UIKit
 import HealthKit
 import MBLibrary
+import GoogleMobileAds
 
-class ListTableViewController: UITableViewController {
+class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 	
 	var workouts: [HKWorkout]!
 
@@ -18,6 +19,7 @@ class ListTableViewController: UITableViewController {
         super.viewDidLoad()
 
         refresh()
+		initializeAds()
     }
 	
 	override func viewDidAppear(_ animated: Bool) {
@@ -96,6 +98,64 @@ class ListTableViewController: UITableViewController {
 			
 			self.refresh()
 		}
+	}
+	
+	// MARK: - Ads stuff
+	
+	private var adView: GADBannerView!
+	private var adRetryDelay = 1.0
+	
+	private func initializeAds() {
+		navigationController?.isToolbarHidden = true
+		
+		guard areAdsEnabled else {
+			return
+		}
+		
+		adView = GADBannerView(adSize: kGADAdSizeBanner)
+		adView.translatesAutoresizingMaskIntoConstraints = false
+		adView.rootViewController = self
+		adView.delegate = self
+		adView.adUnitID = adsID
+		
+		adView.load(getAdRequest())
+		navigationController?.toolbar.addSubview(adView)
+		var constraint = NSLayoutConstraint(item: adView, attribute: .centerX, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .centerX, multiplier: 1, constant: 0)
+		constraint.isActive = true
+		constraint = NSLayoutConstraint(item: adView, attribute: .top, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .top, multiplier: 1, constant: 0)
+		constraint.isActive = true
+	}
+	
+	func adViewDidReceiveAd(_ bannerView: GADBannerView!) {
+		//Display ad
+		navigationController?.setToolbarHidden(false, animated: true)
+	}
+	
+	func adView(_ bannerView: GADBannerView!, didFailToReceiveAdWithError error: GADRequestError!) {
+		//Remove ad view
+		DispatchQueue.main.after(delay: adRetryDelay) {
+			self.adView.load(self.getAdRequest())
+			self.adRetryDelay *= 2
+		}
+	}
+	
+	func terminateAds() {
+		guard adView != nil else {
+			//Ads already removed
+			return
+		}
+
+		navigationController?.setToolbarHidden(true, animated: true)
+		DispatchQueue.main.after(delay: 2) {
+			self.adView.removeFromSuperview()
+			self.adView = nil
+		}
+	}
+	
+	private func getAdRequest() -> GADRequest {
+		let req = GADRequest()
+		req.testDevices = [kGADSimulatorID]
+		return req
 	}
 
     // MARK: - Navigation
