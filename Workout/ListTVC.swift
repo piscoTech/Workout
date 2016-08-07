@@ -94,6 +94,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 			if success {
 				preferences.set(true, forKey: PreferenceKey.authorized)
 				preferences.set(authRequired, forKey: PreferenceKey.authVersion)
+				preferences.synchronize()
 			}
 			
 			self.refresh()

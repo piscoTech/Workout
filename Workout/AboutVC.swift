@@ -42,7 +42,7 @@ class AboutViewController: UITableViewController {
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		switch section {
 		case 0:
-			return areAdsEnabled ? 2 : 1
+			return areAdsEnabled && iapManager.canMakePayments ? 2 : 1
 		case 1:
 			return 1
 		default:
@@ -67,8 +67,6 @@ class AboutViewController: UITableViewController {
 		switch (indexPath.section, indexPath.row) {
 		case (0, 0):
 			delegate.authorize(self)
-		case (0, 1):
-			removeAds()
 		case (1, 0):
 			UIApplication.shared().openURL(URL(string: "https://github.com/piscoTech/Workout")!)
 		default:
@@ -78,15 +76,61 @@ class AboutViewController: UITableViewController {
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
 	
-	private func removeAds() {
-		//Use inApp purchase to remove ads
-		delegate.terminateAds()
+	// MARK: - Ads management
+	
+	@IBAction func removeAds() {
+		guard areAdsEnabled else {
+			return
+		}
 		
-		//Check if "Remove Ads" row can be removed
-		alterTable()
+		let loading = UIAlertController.getModalLoading()
+		present(loading, animated: true, completion: nil)
+		
+		let buy: () -> () = {
+			iapManager.buyProduct(pId: removeAdsId) { (success, error) in
+				print("Ads removed: \(success)")
+				
+				DispatchQueue.main.async {
+					loading.dismiss(animated: true, completion: nil)
+					self.deleteRemoveAdsRow()
+					if(success) {
+						self.delegate.terminateAds()
+					}
+				}
+			}
+		}
+		
+		if !iapManager.areProductsLoaded {
+			iapManager.loadProducts(completion: { (success, _) in
+				if !success {
+					DispatchQueue.main.async {
+						loading.dismiss(animated: true, completion: nil)
+						//TODO: Display error on view
+						print("Unable to load products")
+					}
+				} else {
+					buy()
+				}
+			})
+		} else {
+			buy()
+		}
 	}
 	
-	private func alterTable() {
+	@IBAction func restorePurchase() {
+		iapManager.restorePurchases(productCompletion: [removeAdsId: { (success, error) in
+			print("Ads removed: \(success)")
+			
+			DispatchQueue.main.async {
+				self.deleteRemoveAdsRow()
+				if(success) {
+					self.delegate.terminateAds()
+				}
+			}
+		}])
+	}
+	
+	private func deleteRemoveAdsRow() {
 		let adsIndex = IndexPath(row: 1, section: 0)
 		
 		guard !areAdsEnabled, let _ = tableView.cellForRow(at: adsIndex) else {

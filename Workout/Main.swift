@@ -21,11 +21,15 @@ let adsEnable = true
 ///
 ///For test purposes use the test ID provided by Google: `ca-app-pub-3940256099942544/2934735716`.
 let adsID = "ca-app-pub-7085161342725707/5192351673"
+///Filter for step count source name.
+let stepSourceFilter = "Watch"
 
 var areAdsEnabled: Bool {
-	//TODO: Consider inApp purchaase beside override
-	return adsEnable
+	return adsEnable && !iapManager.isProductPurchased(pId: removeAdsId)
 }
+
+let removeAdsId = "ios.Workout.removeAds"
+let iapManager = InAppPurchaseManager(productIds: [removeAdsId], inUserDefaults: preferences)
 
 let distanceF = { Void -> LengthFormatter in
 	let formatter = LengthFormatter()

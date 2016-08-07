@@ -128,7 +128,7 @@ class Workout {
 				var searchDetail = self.details
 				
 				for step in r as! [HKQuantitySample] {
-					if step.sourceRevision.source.name.range(of: "Watch") == nil {
+					if step.sourceRevision.source.name.range(of: stepSourceFilter) == nil {
 						continue
 					}
 					

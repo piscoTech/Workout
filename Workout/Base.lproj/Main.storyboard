@@ -258,21 +258,38 @@
                                     </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="removeAds" textLabel="vQB-GP-GRV" style="IBUITableViewCellStyleDefault" id="OQs-Sr-yIq">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="removeAds" id="OQs-Sr-yIq">
                                 <frame key="frameInset" minY="164" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="OQs-Sr-yIq" id="3zo-bT-ZYF">
-                                    <frame key="frameInset" width="375" height="44"/>
+                                    <frame key="frameInset" width="375" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Remove Ads" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="vQB-GP-GRV">
-                                            <frame key="frameInset" minX="15" width="345" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" red="1" green="0.17254901959999999" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
+                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="LLd-HP-btd">
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qam-ee-Z2S">
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <state key="normal" title="Remove Ads"/>
+                                                    <connections>
+                                                        <action selector="removeAds" destination="65v-AK-q5e" eventType="touchUpInside" id="dkS-oM-ZzZ"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aur-kd-U1r">
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <state key="normal" title="Restore"/>
+                                                    <connections>
+                                                        <action selector="restorePurchase" destination="65v-AK-q5e" eventType="touchUpInside" id="RJC-UO-4dG"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                        </stackView>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="LLd-HP-btd" firstAttribute="leading" secondItem="3zo-bT-ZYF" secondAttribute="leading" constant="15" id="0hy-BE-iM7"/>
+                                        <constraint firstAttribute="bottom" secondItem="LLd-HP-btd" secondAttribute="bottom" id="1MK-VK-Ekg"/>
+                                        <constraint firstAttribute="trailing" secondItem="LLd-HP-btd" secondAttribute="trailing" constant="15" id="LLo-Si-Y2h"/>
+                                        <constraint firstItem="LLd-HP-btd" firstAttribute="top" secondItem="3zo-bT-ZYF" secondAttribute="top" id="NLZ-c4-AMF"/>
+                                    </constraints>
                                 </tableViewCellContentView>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="sourceCode" textLabel="RXY-ea-kL0" style="IBUITableViewCellStyleDefault" id="bNM-nF-8YC">

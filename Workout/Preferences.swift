@@ -15,7 +15,7 @@ enum PreferenceKey: String, KeyValueStoreKey {
 	case authorized = "authorized"
 	case authVersion = "authVersion"
 	
-	func get() -> String {
+	var description: String {
 		return rawValue
 	}
 	
