@@ -148,7 +148,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 
 		navigationController?.setToolbarHidden(true, animated: true)
 		DispatchQueue.main.after(delay: 2) {
-			self.adView.removeFromSuperview()
+			self.adView?.removeFromSuperview()
 			self.adView = nil
 		}
 	}

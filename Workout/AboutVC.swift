@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MBLibrary
 
 class AboutViewController: UITableViewController {
 	
@@ -88,10 +89,12 @@ class AboutViewController: UITableViewController {
 		
 		let buy: () -> () = {
 			iapManager.buyProduct(pId: removeAdsId) { (success, error) in
-				print("Ads removed: \(success)")
-				
 				DispatchQueue.main.async {
-					loading.dismiss(animated: true, completion: nil)
+					loading.dismiss(animated: true) {
+						if let err = error, let alert = InAppPurchaseManager.getAlert(forError: err) {
+							self.present(alert, animated: true, completion: nil)
+						}
+					}
 					self.deleteRemoveAdsRow()
 					if(success) {
 						self.delegate.terminateAds()
@@ -104,9 +107,9 @@ class AboutViewController: UITableViewController {
 			iapManager.loadProducts(completion: { (success, _) in
 				if !success {
 					DispatchQueue.main.async {
-						loading.dismiss(animated: true, completion: nil)
-						//TODO: Display error on view
-						print("Unable to load products")
+						loading.dismiss(animated: true) {
+							self.present(InAppPurchaseManager.getProductListError(), animated: true, completion: nil)
+						}
 					}
 				} else {
 					buy()
@@ -119,12 +122,15 @@ class AboutViewController: UITableViewController {
 	
 	@IBAction func restorePurchase() {
 		iapManager.restorePurchases(productCompletion: [removeAdsId: { (success, error) in
-			print("Ads removed: \(success)")
-			
 			DispatchQueue.main.async {
+				if let err = error, let alert = InAppPurchaseManager.getAlert(forError: err) {
+					self.present(alert, animated: true, completion: nil)
+				}
 				self.deleteRemoveAdsRow()
 				if(success) {
 					self.delegate.terminateAds()
+					let alert = UIAlertController(simpleAlert: "Remove Ads", message: "Purchase restored")
+					self.present(alert, animated: true, completion: nil)
 				}
 			}
 		}])

@@ -28,7 +28,7 @@ var areAdsEnabled: Bool {
 	return adsEnable && !iapManager.isProductPurchased(pId: removeAdsId)
 }
 
-let removeAdsId = "ios.Workout.removeAds"
+let removeAdsId = "MarcoBoschi.ios.Workout.removeAds"
 let iapManager = InAppPurchaseManager(productIds: [removeAdsId], inUserDefaults: preferences)
 
 let distanceF = { Void -> LengthFormatter in
