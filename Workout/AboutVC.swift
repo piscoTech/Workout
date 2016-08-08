@@ -20,7 +20,7 @@ class AboutViewController: UITableViewController {
 		let appVers = Bundle.main.objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
 		let build = Bundle.main.objectForInfoDictionaryKey("CFBundleVersion") as! String
 
-		appInfo = "Report any problem on Twitter @piscoTech or at GitHub tapping Source Code.\nWorkout v\(appVers) (\(build))\n© 2016 Marco Boschi"
+		appInfo = "Report any problem on Twitter @piscoTech or at GitHub tapping Source Code.\n\nWorkout v\(appVers) (\(build))\n© 2016 Marco Boschi"
 	}
 	
 	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
@@ -88,7 +88,7 @@ class AboutViewController: UITableViewController {
 		present(loading, animated: true, completion: nil)
 		
 		let buy: () -> () = {
-			iapManager.buyProduct(pId: removeAdsId) { (success, error) in
+			if !iapManager.buyProduct(pId: removeAdsId, completion: { (success, error) in
 				DispatchQueue.main.async {
 					loading.dismiss(animated: true) {
 						if let err = error, let alert = InAppPurchaseManager.getAlert(forError: err) {
@@ -99,6 +99,10 @@ class AboutViewController: UITableViewController {
 					if(success) {
 						self.delegate.terminateAds()
 					}
+				}
+			}) {
+				loading.dismiss(animated: true) {
+					self.present(InAppPurchaseManager.getProductListError(), animated: true)
 				}
 			}
 		}
@@ -121,16 +125,41 @@ class AboutViewController: UITableViewController {
 	}
 	
 	@IBAction func restorePurchase() {
-		iapManager.restorePurchases(productCompletion: [removeAdsId: { (success, error) in
-			DispatchQueue.main.async {
-				if let err = error, let alert = InAppPurchaseManager.getAlert(forError: err) {
-					self.present(alert, animated: true, completion: nil)
+		let loading = UIAlertController.getModalLoading()
+		present(loading, animated: true, completion: nil)
+		
+		iapManager.restorePurchases(requestCompletion: { (success, restored, error) in
+			if let err = error {
+				DispatchQueue.main.async {
+					loading.dismiss(animated: true) {
+						if let alert = InAppPurchaseManager.getAlert(forError: err) {
+							self.present(alert, animated: true)
+						}
+					}
 				}
+			} else if restored! == 0 {
+				// Nothing to restore
+				DispatchQueue.main.async {
+					loading.dismiss(animated: true)
+				}
+			}
+		}, productCompletion: [removeAdsId: { (success, error) in
+			DispatchQueue.main.async {
+				var alert: UIAlertController?
+				if let err = error {
+					alert = InAppPurchaseManager.getAlert(forError: err)
+				}
+				
 				self.deleteRemoveAdsRow()
 				if(success) {
 					self.delegate.terminateAds()
-					let alert = UIAlertController(simpleAlert: "Remove Ads", message: "Purchase restored")
-					self.present(alert, animated: true, completion: nil)
+					alert = UIAlertController(simpleAlert: "Remove Ads", message: "Purchase restored")
+				}
+				
+				loading.dismiss(animated: true) {
+					if let a = alert {
+						self.present(a, animated: true)
+					}
 				}
 			}
 		}])
