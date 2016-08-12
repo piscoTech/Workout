@@ -12,6 +12,8 @@ import MBLibrary
 
 class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	
+	@IBOutlet weak var exportBtn: UIBarButtonItem!
+	
 	var rawWorkout: HKWorkout!
 	private var workout: Workout!
 	
@@ -36,6 +38,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	func dataIsReady() {
 		ready = true
 		DispatchQueue.main.async {
+			self.exportBtn.isEnabled = !self.error
 			self.tableView.reloadData()
 		}
 	}

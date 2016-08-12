@@ -194,12 +194,15 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Workout detail" id="QUK-cG-kWu">
-                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="3xR-ye-8lX">
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="action" id="3xR-ye-8lX">
                             <connections>
                                 <action selector="doExport:" destination="uRu-e5-1Xw" id="gc5-FN-x52"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="exportBtn" destination="3xR-ye-8lX" id="sNy-0H-R82"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="132-WL-h3v" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -262,7 +265,7 @@
                                 <frame key="frameInset" minY="164" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="OQs-Sr-yIq" id="3zo-bT-ZYF">
-                                    <frame key="frameInset" width="375" height="43"/>
+                                    <frame key="frameInset" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="LLd-HP-btd">
