@@ -20,7 +20,7 @@ class AboutViewController: UITableViewController {
 		let appVers = Bundle.main.objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
 		let build = Bundle.main.objectForInfoDictionaryKey("CFBundleVersion") as! String
 
-		appInfo = "Report any problem on Twitter @piscoTech or at GitHub tapping Source Code.\n\nWorkout v\(appVers) (\(build))\n© 2016 Marco Boschi"
+		appInfo = NSLocalizedString("REPORT_TEXT", comment: "Report problem") + "\n\nWorkout v\(appVers) (\(build))\n© 2016 Marco Boschi"
 	}
 	
 	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
@@ -151,9 +151,9 @@ class AboutViewController: UITableViewController {
 				}
 				
 				self.deleteRemoveAdsRow()
-				if(success) {
+				if success {
 					self.delegate.terminateAds()
-					alert = UIAlertController(simpleAlert: "Remove Ads", message: "Purchase restored")
+					alert = UIAlertController(simpleAlert: NSLocalizedString("REMOVE_ADS", comment: "Ads"), message: MBLocalizedString("PURCHASE_RESTORED", comment: "Restored"))
 				}
 				
 				loading.dismiss(animated: true) {

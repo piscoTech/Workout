@@ -13,7 +13,8 @@ import GoogleMobileAds
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 	
-	var workouts: [HKWorkout]!
+	private var workouts: [HKWorkout]!
+	private var err: NSError?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,19 +41,28 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 	}
 	
 	private func refresh() {
-		let sortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-		let type = HKObjectType.workoutType()
-		let predicate =  HKQuery.predicateForWorkouts(with: .running)
-		let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, _) in
-			self.workouts = nil
-			if let res = r as? [HKWorkout] {
-				self.workouts = res
+		if HKHealthStore.isHealthDataAvailable() {
+			workouts = nil
+			err = nil
+			tableView.reloadData()
+			
+			let sortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+			let type = HKObjectType.workoutType()
+			let predicate =  HKQuery.predicateForWorkouts(with: .running)
+			let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, err) in
+				self.workouts = nil
+				self.err = err
+				if let res = r as? [HKWorkout] {
+					self.workouts = res
+				}
+				
+				DispatchQueue.main.async { self.tableView.reloadData() }
 			}
 			
-			DispatchQueue.main.async { self.tableView.reloadData() }
+			healthStore.execute(workoutQuery)
+		} else {
+			tableView.reloadData()
 		}
-		
-		healthStore.execute(workoutQuery)
 	}
 
     // MARK: - Table view data source
@@ -67,7 +77,16 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if workouts == nil {
-			return tableView.dequeueReusableCell(withIdentifier: "error", for: indexPath)
+			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
+			let msg: String
+			if HKHealthStore.isHealthDataAvailable() {
+				msg = err == nil ? "LOADING" : "ERR_LOADING"
+			} else {
+				msg = "ERR_NO_HEALTH"
+			}
+			res.textLabel?.text = NSLocalizedString(msg, comment: "Loading/Error")
+			
+			return res
 		}
 
 		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)

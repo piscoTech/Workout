@@ -60,7 +60,16 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if error {
-			return tableView.dequeueReusableCell(withIdentifier: "error", for: indexPath)
+			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
+			let msg: String
+			if HKHealthStore.isHealthDataAvailable() {
+				msg = !ready ? "LOADING" : "ERR_LOADING"
+			} else {
+				msg = "ERR_NO_HEALTH"
+			}
+			res.textLabel?.text = NSLocalizedString(msg, comment: "Loading/Error")
+			
+			return res
 		}
 		
 		if indexPath.section == 1 {
@@ -76,32 +85,34 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		} else {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "basic", for: indexPath)
 			
+			let title: String
 			switch indexPath.row {
 			case 0:
-				cell.textLabel?.text = "Start"
+				title = "START"
 				cell.detailTextLabel?.text = workout.startDate.getFormattedDateTime()
 			case 1:
-				cell.textLabel?.text = "End"
+				title = "END"
 				cell.detailTextLabel?.text = workout.endDate.getFormattedDateTime()
 			case 2:
-				cell.textLabel?.text = "Duration"
+				title = "DURATION"
 				cell.detailTextLabel?.text = workout.duration.getDuration()
 			case 3:
-				cell.textLabel?.text = "Distance"
+				title = "DISTANCE"
 				cell.detailTextLabel?.text = workout.totalDistance.getFormattedDistance()
 			case 4:
-				cell.textLabel?.text = "Average Heart Rate"
+				title = "AVG_HEART"
 				cell.detailTextLabel?.text = workout.avgHeart?.getFormattedHeartRate() ?? "-"
 			case 5:
-				cell.textLabel?.text = "Max Heart Rate"
+				title = "MAX_HEART"
 				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? "-"
 			case 6:
-				cell.textLabel?.text = "Average Pace"
+				title = "AVG_PACE";
 				cell.detailTextLabel?.text = workout.pace.getFormattedPace() ?? "-"
 			default:
-				break
+				return cell
 			}
 			
+			cell.textLabel?.text = NSLocalizedString(title, comment: "Cell title")
 			return cell
 		}
     }

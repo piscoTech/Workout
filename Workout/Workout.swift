@@ -58,11 +58,18 @@ class Workout {
 	init(_ raw: HKWorkout, delegate del: WorkoutDelegate? = nil) {
 		self.raw = raw
 		self.delegate = del
+		details = []
+		
+		guard HKHealthStore.isHealthDataAvailable() else {
+			hasError = true
+			delegate?.dataIsReady()
+			
+			return
+		}
 		
 		let start = raw.startDate.timeIntervalSince1970
 		let end = Int(floor( (raw.endDate.timeIntervalSince1970 - start) / 60 ))
 		
-		details = []
 		for m in 0 ... end {
 			details.append(WorkoutMinute(minute: UInt(m)))
 		}
