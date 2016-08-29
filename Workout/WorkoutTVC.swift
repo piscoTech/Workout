@@ -107,7 +107,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? "-"
 			case 6:
 				title = "AVG_PACE";
-				cell.detailTextLabel?.text = workout.pace.getFormattedPace() ?? "-"
+				cell.detailTextLabel?.text = workout.pace.getFormattedPace()
 			default:
 				return cell
 			}

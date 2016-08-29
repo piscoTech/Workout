@@ -14,7 +14,7 @@ import GoogleMobileAds
 class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 	
 	private var workouts: [HKWorkout]!
-	private var err: NSError?
+	private var err: Error?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,8 +45,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 			workouts = nil
 			err = nil
 			tableView.reloadData()
-			
-			let sortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+	
+			let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 			let type = HKObjectType.workoutType()
 			let predicate =  HKQuery.predicateForWorkouts(with: .running)
 			let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, err) in
@@ -153,7 +153,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 	
 	func adView(_ bannerView: GADBannerView!, didFailToReceiveAdWithError error: GADRequestError!) {
 		//Remove ad view
-		DispatchQueue.main.after(delay: adRetryDelay) {
+		DispatchQueue.main.asyncAfter(delay: adRetryDelay) {
 			self.adView.load(self.getAdRequest())
 			self.adRetryDelay *= 2
 		}
@@ -166,7 +166,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 		}
 
 		navigationController?.setToolbarHidden(true, animated: true)
-		DispatchQueue.main.after(delay: 2) {
+		DispatchQueue.main.asyncAfter(delay: 2) {
 			self.adView?.removeFromSuperview()
 			self.adView = nil
 		}
@@ -180,18 +180,18 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 
     // MARK: - Navigation
 
-    override func prepare(for segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		guard let id = segue.identifier else {
 			return
 		}
 		
 		switch id {
 		case "showWorkout":
-			if let dest = segue.destinationViewController as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
+			if let dest = segue.destination as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
 				dest.rawWorkout = workouts[indexPath.row]
 			}
 		case "info":
-			if let dest = segue.destinationViewController as? UINavigationController, let root = dest.topViewController as? AboutViewController {
+			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? AboutViewController {
 				root.delegate = self
 			}
 		default:

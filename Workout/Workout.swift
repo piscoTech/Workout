@@ -76,7 +76,7 @@ class Workout {
 		
 		let workoutPredicate = HKQuery.predicateForObjects(from: raw)
 		let timePredicate = HKQuery.predicateForSamples(withStart: raw.startDate, end: raw.endDate, options: [])
-		let startDateSort = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+		let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 		let noLimit = Int(HKObjectQueryNoLimit)
 		
 		//Heart data per minute
@@ -169,7 +169,7 @@ class Workout {
 		gen += "Distance\(CSVSeparator)" + totalDistance.toCSV() + "\n"
 		gen += "\("Average Heart Rate".toCSV())\(CSVSeparator)" + (avgHeart?.toCSV() ?? "") + "\n"
 		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + (maxHeart?.toCSV() ?? "") + "\n"
-		gen += "\("Average Pace".toCSV())\(CSVSeparator)" + (pace.getDuration().toCSV() ?? "") + "\n"
+		gen += "\("Average Pace".toCSV())\(CSVSeparator)" + pace.getDuration().toCSV() + "\n"
 		
 		var det = "Time\(CSVSeparator)Pace\(CSVSeparator)\("Heart Rate".toCSV())\(CSVSeparator)Steps\n"
 		for d in details {

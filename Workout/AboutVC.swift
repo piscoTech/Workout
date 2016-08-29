@@ -17,8 +17,8 @@ class AboutViewController: UITableViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		let appVers = Bundle.main.objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
-		let build = Bundle.main.objectForInfoDictionaryKey("CFBundleVersion") as! String
+		let appVers = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+		let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
 
 		appInfo = NSLocalizedString("REPORT_TEXT", comment: "Report problem") + "\n\nWorkout v\(appVers) (\(build))\n© 2016 Marco Boschi"
 	}
@@ -69,7 +69,7 @@ class AboutViewController: UITableViewController {
 		case (0, 0):
 			delegate.authorize(self)
 		case (1, 0):
-			UIApplication.shared().openURL(URL(string: "https://github.com/piscoTech/Workout")!)
+			UIApplication.shared.openURL(URL(string: "https://github.com/piscoTech/Workout")!)
 		default:
 			break
 		}

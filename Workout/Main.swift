@@ -64,11 +64,11 @@ extension Double {
 	}
 	
 	func getFormattedHeartRate() -> String {
-		return integerF.string(from: self)! + " bpm"
+		return integerF.string(from: NSNumber(value: self))! + " bpm"
 	}
 	
 	func getFormattedSteps() -> String {
-		return integerF.string(from: self)! + " steps"
+		return integerF.string(from: NSNumber(value: self))! + " steps"
 	}
 	
 }
