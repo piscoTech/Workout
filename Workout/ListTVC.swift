@@ -18,6 +18,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 
         refresh()
 		initializeAds()
@@ -29,6 +31,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 		if !preferences.bool(forKey: PreferenceKey.authorized) || preferences.integer(forKey: PreferenceKey.authVersion) < authRequired {
 			authorize(self)
 		}
+	}
+	
+	deinit {
+		NotificationCenter.default.removeObserver(self)
 	}
 
     override func didReceiveMemoryWarning() {
@@ -147,6 +153,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 	}
 	
 	func adViewDidReceiveAd(_ bannerView: GADBannerView!) {
+		guard areAdsEnabled else {
+			return
+		}
+		
 		//Display ad
 		navigationController?.setToolbarHidden(false, animated: true)
 	}
@@ -159,12 +169,25 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 		}
 	}
 	
+	func transactionUpdated(_ not: NSNotification) {
+		guard let transaction = not.object as? TransactionStatus, transaction.product == removeAdsId else {
+			return
+		}
+		
+		if transaction.status.isSuccess() {
+			DispatchQueue.main.async {
+				self.terminateAds()
+			}
+		}
+	}
+	
 	func terminateAds() {
 		guard adView != nil else {
 			//Ads already removed
 			return
 		}
 
+		navigationController?.setToolbarHidden(false, animated: false)
 		navigationController?.setToolbarHidden(true, animated: true)
 		DispatchQueue.main.asyncAfter(delay: 2) {
 			self.adView?.removeFromSuperview()
