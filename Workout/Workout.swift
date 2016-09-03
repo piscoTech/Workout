@@ -73,6 +73,7 @@ class Workout {
 		for m in 0 ... end {
 			details.append(WorkoutMinute(minute: UInt(m)))
 		}
+		details.last?.endTime = endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970
 		
 		let workoutPredicate = HKQuery.predicateForObjects(from: raw)
 		let timePredicate = HKQuery.predicateForSamples(withStart: raw.startDate, end: raw.endDate, options: [])

@@ -7,27 +7,34 @@
 //
 
 import Foundation
+import MBLibrary
 
 ///Describe workout data in time range `startTime ..< endTime`.
 class WorkoutMinute: CustomStringConvertible {
 	
 	var minute: UInt
 	var startTime: TimeInterval {
-		return Double(minute) * 60.0
+		return Double(minute) * 60
 	}
 	var endTime: TimeInterval {
-		return startTime + 60
+		didSet {
+			precondition(duration > 0 && duration <= 60, "Invalid endTime")
+		}
+	}
+	var duration: TimeInterval {
+		return endTime - startTime
 	}
 	var description: String {
 		get {
-			return "\(minute)m: " + (distance?.getFormattedDistance() ?? "- km") + ", " + (bpm?.getFormattedHeartRate() ?? "- bpm")
+			let dur = duration < 60 ? " \(duration.getDuration())" : ""
+			return "\(minute)m\(dur): " + (distance?.getFormattedDistance() ?? "- km") + ", " + (bpm?.getFormattedHeartRate() ?? "- bpm")
 		}
 	}
 	
 	private(set) var distance: Double?
 	var pace: TimeInterval? {
 		if let d = distance {
-			let p  = 60 / d
+			let p  = duration / d
 			return p < 20 * 60 ? p : nil
 		} else {
 			return nil
@@ -40,6 +47,7 @@ class WorkoutMinute: CustomStringConvertible {
 	
 	init(minute: UInt) {
 		self.minute = minute
+		self.endTime = Double(minute + 1) * 60
 	}
 	
 	private func processRangedData(data: RangedDataPoint) -> (valFrac: Double, res: Bool) {
