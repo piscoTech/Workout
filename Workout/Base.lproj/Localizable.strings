@@ -20,3 +20,5 @@
 "AVG_HEART" = "Average Heart Rate";
 "MAX_HEART" = "Max Heart Rate";
 "AVG_PACE" = "Average Pace";
+
+"CANNOT_EXPORT" = "Cannot export workout data";

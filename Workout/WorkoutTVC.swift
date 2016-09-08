@@ -126,20 +126,23 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	private var documentController: UIActivityViewController!
 	
 	private func export(_ sender: UIBarButtonItem) {
-		guard let files = workout.export() else {
-			let alert = UIAlertController(title: "Cannot export workout data", message: nil, preferredStyle: .alert)
-			alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+		DispatchQueue.userInitiated.async {
+			guard let files = self.workout.export() else {
+				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
+				
+				DispatchQueue.main.async {
+					self.present(alert, animated: true, completion: nil)
+				}
+				
+				return
+			}
 			
-			self.present(alert, animated: true, completion: nil)
+			self.documentController = UIActivityViewController(activityItems: files, applicationActivities: nil)
 			
-			return
-		}
-		
-		documentController = UIActivityViewController(activityItems: files, applicationActivities: nil)
-		
-		DispatchQueue.main.async {
-			self.present(self.documentController, animated: true, completion: nil)
-			self.documentController.popoverPresentationController?.barButtonItem = sender
+			DispatchQueue.main.async {
+				self.present(self.documentController, animated: true, completion: nil)
+				self.documentController.popoverPresentationController?.barButtonItem = sender
+			}
 		}
 	}
 

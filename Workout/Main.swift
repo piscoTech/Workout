@@ -11,9 +11,7 @@ import HealthKit
 import MBLibrary
 
 let healthStore = HKHealthStore()
-///Keep track of the version of authorization required, increase this number to automatically display an authorization request.
-///
-///Increase this number when new authorizations are required.
+///Keep track of the version of health authorization required, increase this number to automatically display an authorization request.
 let authRequired = 1
 ///Enable or disable ads override.
 let adsEnable = true
