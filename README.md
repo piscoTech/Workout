@@ -13,4 +13,4 @@ General behaviour of the app can be configured via global variables in `Main.swi
 * `adsID`: AdMob ads key.
 * `stepSourceFilter`: Since both iPhone and Apple Watch track steps during workout only those step data point whose source cointains this value will be considered.
 
-**Note:** the framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary).
+**Note:** the framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently used is [1.0](https://github.com/piscoTech/MBLibrary/releases/tag/v1.0(1)).
