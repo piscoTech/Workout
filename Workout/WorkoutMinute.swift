@@ -18,7 +18,7 @@ class WorkoutMinute: CustomStringConvertible {
 	}
 	var endTime: TimeInterval {
 		didSet {
-			precondition(duration > 0 && duration <= 60, "Invalid endTime")
+			precondition(duration >= 0 && duration <= 60, "Invalid endTime")
 		}
 	}
 	var duration: TimeInterval {

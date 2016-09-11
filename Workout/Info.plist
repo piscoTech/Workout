@@ -19,10 +19,16 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>5</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth can be used while interacting with ads.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Calendar data my be used while interacting with ads.</string>
 	<key>NSHealthShareUsageDescription</key>
+	<string>Access to data is used to package it in CSV files for exporting purposes.</string>
+	<key>NSHealthUpdateUsageDescription</key>
 	<string>Access to data is used to package it in CSV files for exporting purposes.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
