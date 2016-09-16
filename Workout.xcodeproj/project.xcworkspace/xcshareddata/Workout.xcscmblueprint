@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "C49046A77874B0FE688504B3D8B45D8F5BA645CB",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "71AF2508C8470C0709193003FA6AD4FC24BB2B68" : 0,
+    "C49046A77874B0FE688504B3D8B45D8F5BA645CB" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "4C126106-B333-42DB-9E81-AC322DE2F076",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "71AF2508C8470C0709193003FA6AD4FC24BB2B68" : "MBLibrary\/",
+    "C49046A77874B0FE688504B3D8B45D8F5BA645CB" : "Workout\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Workout",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Workout.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/Pisco95\/swift-library.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "71AF2508C8470C0709193003FA6AD4FC24BB2B68"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/Pisco95\/workout.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C49046A77874B0FE688504B3D8B45D8F5BA645CB"
+    }
+  ]
+}

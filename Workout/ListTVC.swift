@@ -8,91 +8,217 @@
 
 import UIKit
 import HealthKit
+import MBLibrary
+import GoogleMobileAds
 
-class ListTableViewController: UITableViewController {
+class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 	
-	var workouts: [HKWorkout]!
+	private var workouts: [HKWorkout]!
+	private var err: Error?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 
         refresh()
+		initializeAds()
     }
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		if !preferences.bool(forKey: PreferenceKey.authorized) || preferences.integer(forKey: PreferenceKey.authVersion) < authRequired {
+			authorize(self)
+		}
+	}
+	
+	deinit {
+		NotificationCenter.default.removeObserver(self)
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 	
-	@IBAction func doRefresh(sender: AnyObject) {
+	@IBAction func doRefresh(_ sender: AnyObject) {
 		refresh()
 	}
 	
 	private func refresh() {
-		let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-		let type = HKObjectType.workoutType()
-		let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, _) in
-			self.workouts = nil
-			if let res = r as? [HKWorkout] {
-				self.workouts = res
+		if HKHealthStore.isHealthDataAvailable() {
+			workouts = nil
+			err = nil
+			tableView.reloadData()
+	
+			let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+			let type = HKObjectType.workoutType()
+			let predicate =  HKQuery.predicateForWorkouts(with: .running)
+			let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, err) in
+				self.workouts = nil
+				self.err = err
+				if let res = r as? [HKWorkout] {
+					self.workouts = res
+				}
+				
+				DispatchQueue.main.async { self.tableView.reloadData() }
 			}
 			
-			dispatchMainQueue { self.tableView.reloadData() }
+			healthStore.execute(workoutQuery)
+		} else {
+			tableView.reloadData()
 		}
-		
-		healthStore.executeQuery(workoutQuery)
 	}
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return workouts?.count ?? 1
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if workouts == nil {
-			return tableView.dequeueReusableCellWithIdentifier("error", forIndexPath: indexPath)
+			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
+			let msg: String
+			if HKHealthStore.isHealthDataAvailable() {
+				msg = err == nil ? "LOADING" : "ERR_LOADING"
+			} else {
+				msg = "ERR_NO_HEALTH"
+			}
+			res.textLabel?.text = NSLocalizedString(msg, comment: "Loading/Error")
+			
+			return res
 		}
 
-		let cell = tableView.dequeueReusableCellWithIdentifier("workout", forIndexPath: indexPath)
+		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
 		let w = workouts[indexPath.row]
 		
 		cell.textLabel?.text = w.startDate.getFormattedDateTime()
 		
 		var detail = w.duration.getDuration()
 		if let dist = w.totalDistance {
-			detail += " - " + (dist.doubleValueForUnit(HKUnit.meterUnit()) / 1000).getFormattedDistance()
+			detail += " - " + (dist.doubleValue(for: .meter()) / 1000).getFormattedDistance()
 		}
 		cell.detailTextLabel?.text = detail
 
         return cell
     }
 	
-	@IBAction func authorize(sender: AnyObject) {
-		healthStore.requestAuthorizationToShareTypes(nil, readTypes: [
+	func authorize(_ sender: AnyObject) {
+		healthStore.requestAuthorization(toShare: nil, read: [
 			HKObjectType.workoutType(),
-			HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!,
-			HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!
-		]) { (success, err) in
+			HKObjectType.quantityType(forIdentifier: .heartRate)!,
+			HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+			HKObjectType.quantityType(forIdentifier: .stepCount)!
+		]) { (success, _) in
+			if success {
+				preferences.set(true, forKey: PreferenceKey.authorized)
+				preferences.set(authRequired, forKey: PreferenceKey.authVersion)
+				preferences.synchronize()
+			}
+			
 			self.refresh()
 		}
+	}
+	
+	// MARK: - Ads stuff
+	
+	private var adView: GADBannerView!
+	private var adRetryDelay = 1.0
+	
+	private func initializeAds() {
+		navigationController?.isToolbarHidden = true
+		
+		guard areAdsEnabled else {
+			return
+		}
+		
+		adView = GADBannerView(adSize: kGADAdSizeBanner)
+		adView.translatesAutoresizingMaskIntoConstraints = false
+		adView.rootViewController = self
+		adView.delegate = self
+		adView.adUnitID = adsID
+		
+		adView.load(getAdRequest())
+		navigationController?.toolbar.addSubview(adView)
+		var constraint = NSLayoutConstraint(item: adView, attribute: .centerX, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .centerX, multiplier: 1, constant: 0)
+		constraint.isActive = true
+		constraint = NSLayoutConstraint(item: adView, attribute: .top, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .top, multiplier: 1, constant: 0)
+		constraint.isActive = true
+	}
+	
+	func adViewDidReceiveAd(_ bannerView: GADBannerView!) {
+		guard areAdsEnabled else {
+			return
+		}
+		
+		//Display ad
+		navigationController?.setToolbarHidden(false, animated: true)
+	}
+	
+	func adView(_ bannerView: GADBannerView!, didFailToReceiveAdWithError error: GADRequestError!) {
+		//Remove ad view
+		DispatchQueue.main.asyncAfter(delay: adRetryDelay) {
+			self.adView.load(self.getAdRequest())
+			self.adRetryDelay *= 2
+		}
+	}
+	
+	func transactionUpdated(_ not: NSNotification) {
+		guard let transaction = not.object as? TransactionStatus, transaction.product == removeAdsId else {
+			return
+		}
+		
+		if transaction.status.isSuccess() {
+			DispatchQueue.main.async {
+				self.terminateAds()
+			}
+		}
+	}
+	
+	func terminateAds() {
+		guard adView != nil else {
+			//Ads already removed
+			return
+		}
+
+		navigationController?.setToolbarHidden(false, animated: false)
+		navigationController?.setToolbarHidden(true, animated: true)
+		DispatchQueue.main.asyncAfter(delay: 2) {
+			self.adView?.removeFromSuperview()
+			self.adView = nil
+		}
+	}
+	
+	private func getAdRequest() -> GADRequest {
+		let req = GADRequest()
+		req.testDevices = [kGADSimulatorID]
+		return req
 	}
 
     // MARK: - Navigation
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		guard let id = segue.identifier else {
 			return
 		}
 		
-		if id == "showWorkout" {
-			if let dest = segue.destinationViewController as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
-				dest.workout = workouts[indexPath.row]
+		switch id {
+		case "showWorkout":
+			if let dest = segue.destination as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
+				dest.rawWorkout = workouts[indexPath.row]
 			}
+		case "info":
+			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? AboutViewController {
+				root.delegate = self
+			}
+		default:
+			return
 		}
     }
 

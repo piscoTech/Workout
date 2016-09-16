@@ -1,0 +1,24 @@
+/* 
+  Localizable.strings
+  Workout
+
+  Created by Marco Boschi on 12/08/16.
+  Copyright © 2016 Marco Boschi. All rights reserved.
+*/
+
+"REPORT_TEXT" = "Report any problem on Twitter @piscoTech or at GitHub tapping Source Code.";
+"REMOVE_ADS" = "Remove Ads";
+
+"ERR_LOADING" = "Unable to load workout data";
+"LOADING" = "Loading...";
+"ERR_NO_HEALTH" = "Health data is not available";
+
+"START" = "Start";
+"END" = "End";
+"DURATION" = "Duration";
+"DISTANCE" = "Distance";
+"AVG_HEART" = "Average Heart Rate";
+"MAX_HEART" = "Max Heart Rate";
+"AVG_PACE" = "Average Pace";
+
+"CANNOT_EXPORT" = "Cannot export workout data";

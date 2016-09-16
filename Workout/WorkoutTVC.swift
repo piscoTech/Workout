@@ -8,59 +8,26 @@
 
 import UIKit
 import HealthKit
+import MBLibrary
 
-struct DataPoint: CustomStringConvertible {
+class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	
-	var time: NSTimeInterval
+	@IBOutlet weak var exportBtn: UIBarButtonItem!
 	
-	private var heartData: [Double] = []
-	var bpm: Double? {
-		get {
-			return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
-		}
-	}
+	var rawWorkout: HKWorkout!
+	private var workout: Workout!
 	
-	private(set) var distance: Double?
-	
-	init(time: NSTimeInterval) {
-		self.time = time
-	}
-	
-	mutating func addHeartData(bpm: Double) {
-		heartData.append(bpm)
-	}
-	
-	mutating func addDistanceData(d: Double) {
-		distance = (distance ?? 0) + d
-	}
-	
-	var description: String {
-		get {
-			return "'" + time.getDuration() + ": " + (distance?.getFormattedDistance() ?? "(nil)") + " - " + (bpm?.getFormattedHeartRate() ?? "(nil)") + "'"
-		}
-	}
-}
-
-class WorkoutTableViewController: UITableViewController {
-	
-	var workout: HKWorkout!
-	
-	private var requestDone = 0
-	private var rawHeartData: [HKQuantitySample]!
-	private var rawDistanceData: [HKQuantitySample]!
+	private var ready = false
 	private var error: Bool {
 		get {
-			return rawDistanceData == nil || rawHeartData == nil
+			return !ready || workout.hasError
 		}
 	}
 	
-	private var data: [DataPoint]!
-	private var maxHeart: Double!
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        loadData()
+        workout = Workout(rawWorkout, delegate: self)
     }
 
     override func didReceiveMemoryWarning() {
@@ -68,186 +35,114 @@ class WorkoutTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 	
-	private func loadData() {
-		let distancePredicate = HKQuery.predicateForObjectsFromWorkout(workout)
-		let heartPredicate = HKQuery.predicateForSamplesWithStartDate(workout.startDate, endDate: workout.endDate, options: .None)
-		let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
-		let noLimit = Int(HKObjectQueryNoLimit)
-
-		//Heart data
-		let heartType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierHeartRate)!
-		
-		let hearthQuery = HKSampleQuery(sampleType: heartType, predicate: heartPredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, _) -> Void in
-			self.rawHeartData = r as? [HKQuantitySample]
-			self.requestDone += 1
-			
-			self.displayData()
+	func dataIsReady() {
+		ready = true
+		DispatchQueue.main.async {
+			self.exportBtn.isEnabled = !self.error
+			self.tableView.reloadData()
 		}
-		
-		//Distance data
-		let distanceType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierDistanceWalkingRunning)!
-		
-		let distanceQuery = HKSampleQuery(sampleType: distanceType, predicate: distancePredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, _) in
-			self.rawDistanceData = r as? [HKQuantitySample]
-			self.requestDone += 1
-			
-			self.displayData()
-		}
-		
-		healthStore.executeQuery(hearthQuery)
-		healthStore.executeQuery(distanceQuery)
-	}
-	
-	private func displayData() {
-		if requestDone < 2 {
-			return
-		}
-		
-		if !error {
-			data = []
-			maxHeart = 0
-			
-			let start = workout.startDate.timeIntervalSince1970
-			let end = Int(floor( (workout.endDate.timeIntervalSince1970 - start) / 60 ))
-			
-			var sDate = workout.startDate
-			for time in 0 ... end {
-				let eDate = NSDate(timeIntervalSince1970: sDate.timeIntervalSince1970 + 60)
-				
-				var p = DataPoint(time: Double(time) * 60)
-				
-				while let d = rawDistanceData.first where d.startDate >= sDate && d.startDate <= eDate {
-					let l = d.quantity.doubleValueForUnit(HKUnit.meterUnit())
-					p.addDistanceData(l / 1000)
-					
-					rawDistanceData.removeAtIndex(0)
-				}
-				
-				while let h = rawHeartData.first where h.startDate >= sDate && h.startDate <= eDate {
-					let bpm = h.quantity.doubleValueForUnit(HKUnit.heartRateUnit())
-					maxHeart = max(maxHeart, bpm)
-					p.addHeartData(bpm)
-					
-					rawHeartData.removeAtIndex(0)
-				}
-				
-				data.append(p)
-				sDate = eDate
-			}
-		}
-		
-		dispatchMainQueue { self.tableView.reloadData() }
 	}
 
     // MARK: - Table view data source
 
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+	override func numberOfSections(in tableView: UITableView) -> Int {
 		return error ? 1 : 2
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if error {
 			return 1
 		}
 		
-		return section == 0 ? 4 : data.count
+		return section == 0 ? 7 : workout.details.count
     }
 
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if error {
-			return tableView.dequeueReusableCellWithIdentifier("error", forIndexPath: indexPath)
+			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
+			let msg: String
+			if HKHealthStore.isHealthDataAvailable() {
+				msg = !ready ? "LOADING" : "ERR_LOADING"
+			} else {
+				msg = "ERR_NO_HEALTH"
+			}
+			res.textLabel?.text = NSLocalizedString(msg, comment: "Loading/Error")
+			
+			return res
 		}
 		
 		if indexPath.section == 1 {
-			let cell = tableView.dequeueReusableCellWithIdentifier("detail", forIndexPath: indexPath) as! WorkoutDetailTableViewCell
-			let d = data[indexPath.row]
+			let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
+			let d = workout.details[indexPath.row]
 			
-			cell.time.text = d.time.getDuration()
+			cell.time.text = "\(d.minute)m"
+			cell.pace.text = d.pace?.getFormattedPace() ?? "-"
 			cell.bpm.text = d.bpm?.getFormattedHeartRate() ?? "-"
-			cell.distance.text = d.distance?.getFormattedDistance() ?? "-"
+			cell.steps.text = d.steps?.getFormattedSteps() ?? "-"
 			
 			return cell
 		} else {
-			let cell = tableView.dequeueReusableCellWithIdentifier("basic", forIndexPath: indexPath)
+			let cell = tableView.dequeueReusableCell(withIdentifier: "basic", for: indexPath)
 			
+			let title: String
 			switch indexPath.row {
 			case 0:
-				cell.textLabel?.text = "Start"
+				title = "START"
 				cell.detailTextLabel?.text = workout.startDate.getFormattedDateTime()
 			case 1:
-				cell.textLabel?.text = "End"
+				title = "END"
 				cell.detailTextLabel?.text = workout.endDate.getFormattedDateTime()
 			case 2:
-				cell.textLabel?.text = "Duration"
+				title = "DURATION"
 				cell.detailTextLabel?.text = workout.duration.getDuration()
 			case 3:
-				cell.textLabel?.text = "Distance"
-				cell.detailTextLabel?.text = (workout.totalDistance!.doubleValueForUnit(HKUnit.meterUnit()) / 1000).getFormattedDistance()
+				title = "DISTANCE"
+				cell.detailTextLabel?.text = workout.totalDistance.getFormattedDistance()
+			case 4:
+				title = "AVG_HEART"
+				cell.detailTextLabel?.text = workout.avgHeart?.getFormattedHeartRate() ?? "-"
+			case 5:
+				title = "MAX_HEART"
+				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? "-"
+			case 6:
+				title = "AVG_PACE";
+				cell.detailTextLabel?.text = workout.pace.getFormattedPace()
 			default:
-				break
+				return cell
 			}
 			
+			cell.textLabel?.text = NSLocalizedString(title, comment: "Cell title")
 			return cell
 		}
     }
 	
 	// MARK: - Export
 	
-	@IBAction func doExport(sender: UIBarButtonItem) {
+	@IBAction func doExport(_ sender: UIBarButtonItem) {
 		export(sender)
 	}
 	
 	private var documentController: UIActivityViewController!
 	
-	private func export(sender: UIBarButtonItem) {
-		var filePath = NSString(string: NSTemporaryDirectory()).stringByAppendingPathComponent("generalData.csv")
-		let generalDataPath = NSURL(fileURLWithPath: filePath)
-		filePath = NSString(string: NSTemporaryDirectory()).stringByAppendingPathComponent("details.csv")
-		let detailsPath = NSURL(fileURLWithPath: filePath)
-		
-		var gen = "Field\(CSVSeparator)Value\n"
-		gen += "Start\(CSVSeparator)" + workout.startDate.getUNIXDateTime().toCSV() + "\n"
-		gen += "End\(CSVSeparator)" + workout.endDate.getUNIXDateTime().toCSV() + "\n"
-		gen += "Duration\(CSVSeparator)" + workout.duration.getDuration().toCSV() + "\n"
-		gen += "Distance\(CSVSeparator)" + (workout.totalDistance!.doubleValueForUnit(HKUnit.meterUnit()) / 1000).toCSV() + "\n"
-		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + maxHeart.toCSV()
-		
-		var det = "Time\(CSVSeparator)\("Heart Rate".toCSV())\(CSVSeparator)Distance\(CSVSeparator)Pace\n"
-		for d in data {
-			det += d.time.getDuration().toCSV() + CSVSeparator
-			det += (d.bpm?.toCSV() ?? "") + CSVSeparator
-			det += (d.distance?.toCSV() ?? "") + CSVSeparator
-			let pace: NSTimeInterval?
-			do {
-				if let d = d.distance {
-					let p  = 60 / d
-					pace = p < 20 * 60 ? p : nil
-				} else {
-					pace = nil
+	private func export(_ sender: UIBarButtonItem) {
+		DispatchQueue.userInitiated.async {
+			guard let files = self.workout.export() else {
+				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
+				
+				DispatchQueue.main.async {
+					self.present(alert, animated: true, completion: nil)
 				}
+				
+				return
 			}
-			det += pace?.getDuration().toCSV() ?? ""
-			det += "\n"
-		}
-		
-		do {
-			try gen.writeToURL(generalDataPath, atomically: true, encoding: NSUTF8StringEncoding)
-			try det.writeToURL(detailsPath, atomically: true, encoding: NSUTF8StringEncoding)
-		} catch _ {
-			let alert = UIAlertController(title: "Cannot export workout data", message: nil, preferredStyle: .Alert)
-			alert.addAction(UIAlertAction(title: "Ok", style: .Cancel, handler: nil))
 			
-			self.presentViewController(alert, animated: true, completion: nil)
+			self.documentController = UIActivityViewController(activityItems: files, applicationActivities: nil)
 			
-			return
-		}
-		
-		documentController = UIActivityViewController(activityItems: [generalDataPath, detailsPath], applicationActivities: nil)
-		
-		dispatchMainQueue {
-			self.presentViewController(self.documentController, animated: true, completion: nil)
-			self.documentController.popoverPresentationController?.barButtonItem = sender
+			DispatchQueue.main.async {
+				self.present(self.documentController, animated: true, completion: nil)
+				self.documentController.popoverPresentationController?.barButtonItem = sender
+			}
 		}
 	}
 
