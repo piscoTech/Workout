@@ -10,7 +10,7 @@ With Workout you can export all your jogging workout to a CSV file and import th
 ## Customization
 General behaviour of the app can be configured via global variables in `Main.swift`:
 
-* `authRequired`: When the user authorizes (or denies) Health data access the value of this variable is saved in UserDafult, upon launch the app check the stored values and if it's less than the declared value the authorization form will be displayed. New versions of the app that requires access to new data should increase this value to automatically display the authorization form.
+* `authRequired`: When the user authorizes (or denies) Health data access the value of this variable is saved in `UserDefaults`, upon launch the app check the stored values and if it's less than the declared value the authorization form will be displayed. New versions of the app that requires access to new data should increase this value to automatically display the authorization form.
 * `adsEnable`: Display ads override, set this variable to `false` to always hide ads. If this is set to `true` ads will be displayed and hidden accordingly to In-App purchase.
 * `adsID`: AdMob ads key.
 * `stepSourceFilter`: Since both iPhone and Apple Watch track steps during workout only those step data point whose source cointains this value will be considered.
