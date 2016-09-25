@@ -79,7 +79,7 @@ class Workout {
 		}
 		
 		let workoutPredicate = HKQuery.predicateForObjects(from: raw)
-		let timePredicate = HKQuery.predicateForSamples(withStart: raw.startDate, end: raw.endDate, options: [])
+		let timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
 		let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 		let noLimit = Int(HKObjectQueryNoLimit)
 		
