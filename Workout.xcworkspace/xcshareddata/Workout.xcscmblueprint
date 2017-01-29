@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "C49046A77874B0FE688504B3D8B45D8F5BA645CB",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "71AF2508C8470C0709193003FA6AD4FC24BB2B68" : 9223372036854775807,
+    "C49046A77874B0FE688504B3D8B45D8F5BA645CB" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "970EF09D-9EE9-475A-89C4-D08A600B2AD9",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "71AF2508C8470C0709193003FA6AD4FC24BB2B68" : "MBLibrary\/",
+    "C49046A77874B0FE688504B3D8B45D8F5BA645CB" : "Workout\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Workout",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Workout.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/piscoTech\/MBLibrary.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "71AF2508C8470C0709193003FA6AD4FC24BB2B68"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/piscoTech\/Workout.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C49046A77874B0FE688504B3D8B45D8F5BA645CB"
+    }
+  ]
+}

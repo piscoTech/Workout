@@ -152,7 +152,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 		constraint.isActive = true
 	}
 	
-	func adViewDidReceiveAd(_ bannerView: GADBannerView!) {
+	func adViewDidReceiveAd(_ bannerView: GADBannerView) {
 		guard areAdsEnabled else {
 			return
 		}
@@ -161,7 +161,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 		navigationController?.setToolbarHidden(false, animated: true)
 	}
 	
-	func adView(_ bannerView: GADBannerView!, didFailToReceiveAdWithError error: GADRequestError!) {
+	func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
 		//Remove ad view
 		DispatchQueue.main.asyncAfter(delay: adRetryDelay) {
 			self.adView.load(self.getAdRequest())

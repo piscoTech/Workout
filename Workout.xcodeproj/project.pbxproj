@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00755F3ACCDE2F7F8B9685C3 /* Pods_Workout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC76321FF7F86708B7687C1B /* Pods_Workout.framework */; };
 		7A6D1F4B1D51E4C8002A4890 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */; };
 		7A6D1F501D51EB40002A4890 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */; };
 		7A75FB521D3E52A000F66CF9 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */; };
@@ -25,7 +26,6 @@
 		7AA9F4971C48F64E005FFCB3 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4961C48F64E005FFCB3 /* Main.swift */; };
 		7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */; };
 		7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */; };
-		7AD2D5651D547CFC00CF755F /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AD2D5641D547CFC00CF755F /* GoogleMobileAds.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +81,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		33FCBA283095BB59F421FA9F /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
+		42588D93C213509410E5F0B6 /* Pods-Workout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.release.xcconfig"; sourceTree = "<group>"; };
 		7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = ../MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
 		7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
@@ -101,7 +103,7 @@
 		7AA9F4961C48F64E005FFCB3 /* Main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 		7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutTVC.swift; sourceTree = "<group>"; };
 		7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutDetailTVCell.swift; sourceTree = "<group>"; };
-		7AD2D5641D547CFC00CF755F /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
+		DC76321FF7F86708B7687C1B /* Pods_Workout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Workout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,16 +111,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7AD2D5651D547CFC00CF755F /* GoogleMobileAds.framework in Frameworks */,
 				7A8413E61CA1526500B86C48 /* HealthKit.framework in Frameworks */,
 				7A75FB521D3E52A000F66CF9 /* MBLibrary.framework in Frameworks */,
 				7A7858B61D5680EB0068B627 /* StoreKit.framework in Frameworks */,
+				00755F3ACCDE2F7F8B9685C3 /* Pods_Workout.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2FE812C19D41715F465F39BE /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				33FCBA283095BB59F421FA9F /* Pods-Workout.debug.xcconfig */,
+				42588D93C213509410E5F0B6 /* Pods-Workout.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		7A584FCA1D3E2A5A000C739B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -165,6 +176,7 @@
 				7AD2D5631D547CFC00CF755F /* Frameworks */,
 				7AA9F47B1C48EFFF005FFCB3 /* Workout */,
 				7AA9F47A1C48EFFE005FFCB3 /* Products */,
+				2FE812C19D41715F465F39BE /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -208,7 +220,7 @@
 			children = (
 				7A7858B51D5680EB0068B627 /* StoreKit.framework */,
 				7A8413E51CA1526500B86C48 /* HealthKit.framework */,
-				7AD2D5641D547CFC00CF755F /* GoogleMobileAds.framework */,
+				DC76321FF7F86708B7687C1B /* Pods_Workout.framework */,
 			);
 			path = Frameworks;
 			sourceTree = "<group>";
@@ -220,10 +232,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7AA9F48B1C48EFFF005FFCB3 /* Build configuration list for PBXNativeTarget "Workout" */;
 			buildPhases = (
+				04B84EA91904A22D19D96004 /* [CP] Check Pods Manifest.lock */,
 				7AA9F4751C48EFFE005FFCB3 /* Sources */,
 				7AA9F4761C48EFFE005FFCB3 /* Frameworks */,
 				7AA9F4771C48EFFE005FFCB3 /* Resources */,
 				7A75FB561D3E52A000F66CF9 /* Embed Frameworks */,
+				F8EC0DF424868709AA29D993 /* [CP] Embed Pods Frameworks */,
+				241565F878677CFEA31089ED /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -242,7 +257,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Marco Boschi";
 				TargetAttributes = {
 					7AA9F4781C48EFFE005FFCB3 = {
@@ -329,6 +344,54 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		04B84EA91904A22D19D96004 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		241565F878677CFEA31089ED /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Workout/Pods-Workout-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F8EC0DF424868709AA29D993 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Workout/Pods-Workout-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		7AA9F4751C48EFFE005FFCB3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -398,8 +461,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -442,8 +507,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -468,16 +535,14 @@
 		};
 		7AA9F48C1C48EFFF005FFCB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 33FCBA283095BB59F421FA9F /* Pods-Workout.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Workout/Workout.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Workout/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -491,16 +556,14 @@
 		};
 		7AA9F48D1C48EFFF005FFCB3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 42588D93C213509410E5F0B6 /* Pods-Workout.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Workout/Workout.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Workout/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
