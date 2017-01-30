@@ -22,3 +22,5 @@
 "AVG_PACE" = "Average Pace";
 
 "CANNOT_EXPORT" = "Cannot export workout data";
+"SEL_EXPORT_ALL" = "Select All";
+"SEL_EXPORT_NONE" = "Select None";

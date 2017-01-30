@@ -7,6 +7,15 @@ With Workout you can export all your jogging workout to a CSV file and import th
 
 [![Download on the AppStore](http://www.marcoboschi.altervista.org/img/app_store_en.svg)](https://itunes.apple.com/us/app/workout-csv-exporter/id1140433100?ls=1&mt=8)
 
+## Project Setup
+This project relies on CocoaPods not included the repository, after cloning run
+
+    pod install
+    
+in a terminal in the project directory to download linked frameworks and use `Workout.xcworkspace` to open the project.
+
+The framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.0.2](https://github.com/piscoTech/MBLibrary/releases/tag/v1.0.2(3)).
+
 ## Customization
 General behaviour of the app can be configured via global variables in `Main.swift`:
 
@@ -14,5 +23,3 @@ General behaviour of the app can be configured via global variables in `Main.swi
 * `adsEnable`: Display ads override, set this variable to `false` to always hide ads. If this is set to `true` ads will be displayed and hidden accordingly to In-App purchase.
 * `adsID`: AdMob ads key.
 * `stepSourceFilter`: Since both iPhone and Apple Watch track steps during workout only those step data point whose source cointains this value will be considered.
-
-**Note:** the framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.0](https://github.com/piscoTech/MBLibrary/releases/tag/v1.0(1)).

@@ -11,15 +11,33 @@ import HealthKit
 import MBLibrary
 import GoogleMobileAds
 
-class ListTableViewController: UITableViewController, GADBannerViewDelegate {
+class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate {
 	
 	private var workouts: [HKWorkout]!
 	private var err: Error?
+	
+	private var standardRightBtns: [UIBarButtonItem]!
+	@IBOutlet weak var enterExportModeBtn: UIBarButtonItem!
+	private var standardLeftBtn: UIBarButtonItem!
+	private var exportRightBtns: [UIBarButtonItem]!
+	private var exportLeftBtn: UIBarButtonItem!
+	private var exportToggleBtn: UIBarButtonItem!
+	private var exportCommitBtn: UIBarButtonItem!
+	private var exportSelection: [Bool]!
+	
+	private var inExportMode = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
+		standardRightBtns = navigationItem.rightBarButtonItems
+		standardLeftBtn = navigationItem.leftBarButtonItem
+		
+		exportToggleBtn = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(toggleExportAll(_:)))
+		exportCommitBtn = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(doExport(_:)))
+		exportRightBtns = [exportCommitBtn, exportToggleBtn]
+		exportLeftBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelExport(_:)))
 
         refresh()
 		initializeAds()
@@ -62,13 +80,18 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 					self.workouts = res
 				}
 				
-				DispatchQueue.main.async { self.tableView.reloadData() }
+				DispatchQueue.main.async {
+					self.updateExportModeEnabled()
+					self.tableView.reloadData()
+				}
 			}
 			
 			healthStore.execute(workoutQuery)
 		} else {
 			tableView.reloadData()
 		}
+		
+		updateExportModeEnabled()
 	}
 
     // MARK: - Table view data source
@@ -105,9 +128,32 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 			detail += " - " + (dist.doubleValue(for: .meter()) / 1000).getFormattedDistance()
 		}
 		cell.detailTextLabel?.text = detail
+		
+		if inExportMode {
+			cell.accessoryType = exportSelection[indexPath.row] ? .checkmark : .none
+		} else {
+			cell.accessoryType = .disclosureIndicator
+		}
 
         return cell
     }
+	
+	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		if inExportMode {
+			let newSel = !exportSelection[indexPath.row]
+			exportSelection[indexPath.row] = newSel
+			
+			if let cell = tableView.cellForRow(at: indexPath) {
+				cell.accessoryType = newSel ? .checkmark : .none
+			}
+			
+			updateToggleExportAllText()
+		} else {
+			performSegue(withIdentifier: "showWorkout", sender: self)
+		}
+		
+		tableView.deselectRow(at: indexPath, animated: true)
+	}
 	
 	func authorize(_ sender: AnyObject) {
 		healthStore.requestAuthorization(toShare: nil, read: [
@@ -123,6 +169,126 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate {
 			}
 			
 			self.refresh()
+		}
+	}
+	
+	// MARK: - Export all workouts
+	
+	private var documentController: UIActivityViewController!
+	private var exportWorkouts = [Workout]()
+	private var waitingForExport = 0
+	
+	@IBAction func chooseExport(_ sender: AnyObject) {
+		inExportMode = true
+		
+		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_NONE", comment: "Select None")
+		exportSelection = [Bool](repeating: true, count: workouts?.count ?? 0)
+		
+		navigationItem.leftBarButtonItem = exportLeftBtn
+		navigationItem.rightBarButtonItems = exportRightBtns
+		
+		for i in 0 ..< (workouts?.count ?? 0) {
+			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
+				cell.accessoryType = .checkmark
+			}
+		}
+	}
+	
+	func doExport(_ sender: UIBarButtonItem) {
+		DispatchQueue.userInitiated.async {
+			self.exportWorkouts = []
+			
+			self.waitingForExport = self.exportSelection.map { $0 ? 1 : 0 }.reduce(0) { $0 + $1 }
+			for (w, e) in zip(self.workouts, self.exportSelection) {
+				if e {
+					self.exportWorkouts.append(Workout(w, delegate: self))
+				}
+			}
+		}
+	}
+	
+	func cancelExport(_ sender: AnyObject) {
+		inExportMode = false
+		
+		navigationItem.leftBarButtonItem = standardLeftBtn
+		navigationItem.rightBarButtonItems = standardRightBtns
+		
+		for i in 0 ..< (workouts?.count ?? 0) {
+			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
+				cell.accessoryType = .disclosureIndicator
+			}
+		}
+	}
+	
+	func toggleExportAll(_ sender: AnyObject) {
+		let newVal: Bool
+		let newText: String
+		
+		if exportSelection?.index(of: false) == nil {
+			newVal = false
+			newText = "ALL"
+		} else {
+			newVal = true
+			newText = "NONE"
+		}
+		
+		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_" + newText, comment: "Select")
+		exportSelection = [Bool](repeating: newVal, count: exportSelection?.count ?? 0)
+		
+		for i in 0 ..< (workouts?.count ?? 0) {
+			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
+				cell.accessoryType = newVal ? .checkmark : .none
+			}
+		}
+	}
+	
+	private func updateToggleExportAllText() {
+		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_" + (exportSelection?.index(of: false) == nil ? "NONE" : "ALL"), comment: "Select")
+	}
+	
+	private func updateExportModeEnabled() {
+		enterExportModeBtn.isEnabled = (workouts?.count ?? 0) > 0
+	}
+	
+	func dataIsReady() {
+		waitingForExport -= 1;
+		
+		if waitingForExport == 0 {
+			let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
+			let displayError = {
+				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
+				
+				DispatchQueue.main.async {
+					self.present(alert, animated: true, completion: nil)
+				}
+			}
+			
+			var data = "Start\(CSVSeparator)End\(CSVSeparator)Duration\(CSVSeparator)Distance\(CSVSeparator)\("Average Heart Rate".toCSV())\(CSVSeparator)\("Max Heart Rate".toCSV())\(CSVSeparator)\("Average Pace".toCSV())\n"
+			for w in self.exportWorkouts {
+				if w.hasError {
+					displayError()
+					return
+				}
+				
+				data += w.exportGeneralData() + "\n"
+			}
+			
+			DispatchQueue.main.async {
+				self.cancelExport(self)
+			}
+			
+			do {
+				try data.write(to: filePath, atomically: true, encoding: .utf8)
+				
+				self.documentController = UIActivityViewController(activityItems: [filePath], applicationActivities: nil)
+				
+				DispatchQueue.main.async {
+					self.present(self.documentController, animated: true, completion: nil)
+					self.documentController.popoverPresentationController?.barButtonItem = self.exportCommitBtn
+				}
+			} catch _ {
+				displayError()
+			}
 		}
 	}
 	

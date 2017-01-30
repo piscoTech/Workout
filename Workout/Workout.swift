@@ -160,20 +160,29 @@ class Workout {
 		healthStore.execute(stepQuery)
 	}
 	
+	private var generalData: [String] {
+		return [startDate.getUNIXDateTime().toCSV(), endDate.getUNIXDateTime().toCSV(), duration.getDuration().toCSV(), totalDistance.toCSV(), avgHeart?.toCSV() ?? "", maxHeart?.toCSV() ?? "", pace.getDuration().toCSV()]
+	}
+	
+	func exportGeneralData() -> String {
+		return generalData.joined(separator: CSVSeparator)
+	}
+	
 	func export() -> [URL]? {
 		var filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
 		let generalDataPath = URL(fileURLWithPath: filePath)
 		filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("details.csv")
 		let detailsPath = URL(fileURLWithPath: filePath)
 		
+		let genData = generalData
 		var gen = "Field\(CSVSeparator)Value\n"
-		gen += "Start\(CSVSeparator)" + startDate.getUNIXDateTime().toCSV() + "\n"
-		gen += "End\(CSVSeparator)" + endDate.getUNIXDateTime().toCSV() + "\n"
-		gen += "Duration\(CSVSeparator)" + duration.getDuration().toCSV() + "\n"
-		gen += "Distance\(CSVSeparator)" + totalDistance.toCSV() + "\n"
-		gen += "\("Average Heart Rate".toCSV())\(CSVSeparator)" + (avgHeart?.toCSV() ?? "") + "\n"
-		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + (maxHeart?.toCSV() ?? "") + "\n"
-		gen += "\("Average Pace".toCSV())\(CSVSeparator)" + pace.getDuration().toCSV() + "\n"
+		gen += "Start\(CSVSeparator)" + genData[0] + "\n"
+		gen += "End\(CSVSeparator)" + genData[1] + "\n"
+		gen += "Duration\(CSVSeparator)" + genData[2] + "\n"
+		gen += "Distance\(CSVSeparator)" + genData[3] + "\n"
+		gen += "\("Average Heart Rate".toCSV())\(CSVSeparator)" + genData[4] + "\n"
+		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + genData[5] + "\n"
+		gen += "\("Average Pace".toCSV())\(CSVSeparator)" + genData[6] + "\n"
 		
 		var det = "Time\(CSVSeparator)Pace\(CSVSeparator)\("Heart Rate".toCSV())\(CSVSeparator)Steps\n"
 		for d in details {
