@@ -10,9 +10,32 @@ import Foundation
 import HealthKit
 import MBLibrary
 
-let healthStore = HKHealthStore()
 ///Keep track of the version of health authorization required, increase this number to automatically display an authorization request.
-let authRequired = 1
+let authRequired = 2
+///List of health data to require access to.
+let healthReadData: Set<HKObjectType> = {
+	var res: Set<HKObjectType> = [
+		HKObjectType.workoutType(),
+		HKObjectType.quantityType(forIdentifier: .heartRate)!,
+		HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+		HKObjectType.quantityType(forIdentifier: .stepCount)!
+	]
+	
+	if #available(iOS 10, *) {
+		res.formUnion([
+			HKObjectType.quantityType(forIdentifier: .distanceSwimming)!,
+			HKObjectType.quantityType(forIdentifier: .swimmingStrokeCount)!
+		])
+	}
+	
+	return res
+}()
+///List of supported workouts.
+let workoutTypes = [
+	HKWorkoutActivityType.running,
+	.functionalStrengthTraining,
+	.swimming
+]
 ///Enable or disable ads override.
 let adsEnable = true
 ///Ads ID.
@@ -21,6 +44,8 @@ let adsEnable = true
 let adsID = "ca-app-pub-7085161342725707/5192351673"
 ///Filter for step count source name.
 let stepSourceFilter = "Watch"
+
+let healthStore = HKHealthStore()
 
 var areAdsEnabled: Bool {
 	return adsEnable && !iapManager.isProductPurchased(pId: removeAdsId)
@@ -67,18 +92,6 @@ extension Double {
 	
 	func getFormattedSteps() -> String {
 		return integerF.string(from: NSNumber(value: self))! + " steps"
-	}
-	
-}
-
-extension HKUnit {
-	
-	class func heartRate() -> HKUnit {
-		return HKUnit.count().unitDivided(by: HKUnit.minute())
-	}
-	
-	class func steps() -> HKUnit {
-		return HKUnit.count()
 	}
 	
 }

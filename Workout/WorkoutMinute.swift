@@ -8,6 +8,7 @@
 
 import Foundation
 import MBLibrary
+import HealthKit
 
 ///Describe workout data in time range `startTime ..< endTime`.
 class WorkoutMinute: CustomStringConvertible {
@@ -31,7 +32,18 @@ class WorkoutMinute: CustomStringConvertible {
 		}
 	}
 	
-	private(set) var distance: Double?
+	private var data = [HKQuantityType: [Double]]()
+	
+	var distance: Double? {
+		var res = getTotal(for: HKQuantityTypeIdentifier.distanceWalkingRunning.getType()!)
+		
+		if #available(iOS 10, *) {
+			res = res ?? getTotal(for: HKQuantityTypeIdentifier.distanceSwimming.getType()!)
+		}
+		
+		return res
+	}
+	///Avarage pace of the minute in seconds per kilometer.
 	var pace: TimeInterval? {
 		if let d = distance {
 			let p  = duration / d
@@ -40,10 +52,18 @@ class WorkoutMinute: CustomStringConvertible {
 			return nil
 		}
 	}
-	var bpm: Double? {
-		return rawBpm.count > 0 ? rawBpm.reduce(0) { $0 + $1 } / Double(rawBpm.count) : nil
+	///Avarage speed of the minute in kilometer per hour.
+	var speed: Double? {
+		guard let dist = distance else {
+			return nil
+		}
+		
+		return dist / (duration / 3600)
 	}
-	private(set) var steps: Double?
+	
+	var bpm: Double? {
+		return getAverage(for: HKQuantityTypeIdentifier.heartRate.getType()!)
+	}
 	
 	init(minute: UInt) {
 		self.minute = minute
@@ -67,34 +87,60 @@ class WorkoutMinute: CustomStringConvertible {
 		return (val, data.end > endTime)
 	}
 	
-	///Add the relevant part of distance to the minute.
-	///- returns: `true` if some of the distance belongs to following minutes, `false` otherwise.
-	@discardableResult func add(distance: RangedDataPoint) -> Bool {
-		let (val, res) = processRangedData(data: distance)
-		self.distance = (self.distance ?? 0) + val
-		
-		return res
-	}
-	
-	private var rawBpm = [Double]()
-	
-	///Add the heart rate to the minute if it belongs to it.
-	///- returns: `true` if the heart rate belongs to following minutes, `false` otherwise.
-	@discardableResult func add(heartRate bpm: DataPoint) -> Bool {
-		if bpm.time >= startTime && bpm.time < endTime {
-			rawBpm.append(bpm.value)
+	private func add(_ v: Double, to: HKQuantityType) {
+		if data[to] == nil {
+			data[to] = []
 		}
 		
-		return bpm.time >= endTime
+		data[to]!.append(v)
 	}
 	
-	///Add the relevant part of step count to the minute.
-	///- returns: `true` if some of the steps belongs to following minutes, `false` otherwise.
-	@discardableResult func add(steps: RangedDataPoint) -> Bool {
-		let (val, res) = processRangedData(data: steps)
-		self.steps = (self.steps ?? 0) + val
-		
+	///Add the relevant part of the data to the minute.
+	///- returns: `true` if some of the data belongs to following minutes, `false` otherwise.
+	@discardableResult func add(_ data: RangedDataPoint, ofType type: HKQuantityType) -> Bool {
+		let (val, res) = processRangedData(data: data)
+		add(val, to: type)
+
 		return res
+	}
+	
+	///Add the data to the minute if it belongs to it.
+	///- returns: `true` if the data belongs to following minutes, `false` otherwise.
+	@discardableResult func add(_ data: InstantDataPoint, ofType type: HKQuantityType) -> Bool {
+		if data.time >= startTime && data.time < endTime {
+			add(data.value, to: type)
+		}
+		
+		return data.time >= endTime
+	}
+	
+	///Add the data or its relevant part to the minute if it belongs to it.
+	///- returns: `true` if the data belongs to following minutes, `false` otherwise.
+	@discardableResult func add(_ data: DataPoint, ofType type: HKQuantityType) -> Bool {
+		switch data {
+		case let i as InstantDataPoint:
+			return add(i, ofType: type)
+		case let r as RangedDataPoint:
+			return add(r, ofType: type)
+		default:
+			fatalError("Unknown data point type")
+		}
+	}
+	
+	func getAverage(for type: HKQuantityType) -> Double? {
+		guard let raw = data[type] else {
+			return nil
+		}
+		
+		return raw.count > 0 ? raw.reduce(0) { $0 + $1 } / Double(raw.count) : nil
+	}
+	
+	func getTotal(for type: HKQuantityType) -> Double? {
+		guard let raw = data[type] else {
+			return nil
+		}
+		
+		return raw.reduce(0) { $0 + $1 }
 	}
 
 }

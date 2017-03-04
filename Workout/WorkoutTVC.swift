@@ -27,7 +27,8 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        workout = Workout(rawWorkout, delegate: self)
+        workout = Workout.workoutFor(raw: rawWorkout, delegate: self)
+		workout.load()
     }
 
     override func didReceiveMemoryWarning() {

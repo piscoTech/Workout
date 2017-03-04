@@ -72,7 +72,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 			let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 			let type = HKObjectType.workoutType()
-			let predicate =  HKQuery.predicateForWorkouts(with: .running)
+			let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: workoutTypes.map { HKQuery.predicateForWorkouts(with: $0) })
 			let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, err) in
 				self.workouts = nil
 				self.err = err
@@ -121,13 +121,13 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
 		let w = workouts[indexPath.row]
 		
-		cell.textLabel?.text = w.startDate.getFormattedDateTime()
+		cell.textLabel?.text = w.workoutActivityType.name
 		
-		var detail = w.duration.getDuration()
+		var detail = [w.startDate.getFormattedDateTime(), w.duration.getDuration() ]
 		if let dist = w.totalDistance {
-			detail += " - " + (dist.doubleValue(for: .meter()) / 1000).getFormattedDistance()
+			detail.append(dist.doubleValue(for: .kilometer()).getFormattedDistance())
 		}
-		cell.detailTextLabel?.text = detail
+		cell.detailTextLabel?.text = detail.joined(separator: " – ")
 		
 		if inExportMode {
 			cell.accessoryType = exportSelection[indexPath.row] ? .checkmark : .none
@@ -156,12 +156,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	func authorize(_ sender: AnyObject) {
-		healthStore.requestAuthorization(toShare: nil, read: [
-			HKObjectType.workoutType(),
-			HKObjectType.quantityType(forIdentifier: .heartRate)!,
-			HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-			HKObjectType.quantityType(forIdentifier: .stepCount)!
-		]) { (success, _) in
+		healthStore.requestAuthorization(toShare: nil, read: healthReadData) { (success, _) in
 			if success {
 				preferences.set(true, forKey: PreferenceKey.authorized)
 				preferences.set(authRequired, forKey: PreferenceKey.authVersion)

@@ -21,17 +21,24 @@ class Workout {
 	private var raw: HKWorkout
 	var delegate: WorkoutDelegate?
 	
-	private let requestToDo = 3
+	private var requests = [HKQuery]()
+	private var requestToDo: Int {
+		return requests.count
+	}
 	private var requestDone = 0 {
 		didSet {
 			if requestDone == requestToDo {
+				loading = false
+				loaded = true
 				delegate?.dataIsReady()
 			}
 		}
 	}
 	
+	private var loading = false
+	private(set) var loaded = false
 	private(set) var hasError = false
-	private(set) var details: [WorkoutMinute]
+	private(set) var details: [WorkoutMinute]?
 	
 	var startDate: Date {
 		return raw.startDate
@@ -42,18 +49,56 @@ class Workout {
 	var duration: TimeInterval {
 		return raw.duration
 	}
-	var totalDistance: Double {
-		return raw.totalDistance!.doubleValue(for: .meter()) / 1000
+	var totalDistance: Double? {
+		return raw.totalDistance?.doubleValue(for: .kilometer())
 	}
 	var maxHeart: Double? = nil
 	var avgHeart: Double? {
 		return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
 	}
-	var pace: TimeInterval {
-		return duration / totalDistance
+	///Avarage pace of the workout in seconds per kilometer.
+	var pace: TimeInterval? {
+		guard let dist = totalDistance else {
+			return nil
+		}
+		
+		return duration / dist
+	}
+	///Avarage speed of the workout in kilometer per hour.
+	var speed: Double? {
+		guard let dist = totalDistance else {
+			return nil
+		}
+		
+		return dist / (duration / 3600)
 	}
 	
 	private var heartData = [Double]()
+	
+	private let heartType = HKQuantityTypeIdentifier.heartRate.getType()!
+	private let stepType = HKQuantityTypeIdentifier.stepCount.getType()!
+	private var rawStart: TimeInterval {
+		return raw.startDate.timeIntervalSince1970
+	}
+	private let workoutPredicate: NSPredicate
+	private let timePredicate: NSPredicate
+	private let startDateSort: NSSortDescriptor
+	private let queryNoLimit = Int(HKObjectQueryNoLimit)
+	
+	enum SearchType {
+		case time, workout
+	}
+	
+	class func workoutFor(raw: HKWorkout, delegate: WorkoutDelegate? = nil) -> Workout {
+		switch raw.workoutActivityType {
+		case .running:
+			return RunninWorkout(raw, delegate: delegate)
+		case .swimming:
+			return SwimmingWorkout(raw, delegate: delegate)
+		default:
+			return Workout(raw, delegate: delegate)
+		}
+	}
 	
 	init(_ raw: HKWorkout, delegate del: WorkoutDelegate? = nil) {
 		self.raw = raw
@@ -67,87 +112,73 @@ class Workout {
 			return
 		}
 		
+		workoutPredicate = HKQuery.predicateForObjects(from: raw)
+		timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
+		startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+		
+		addRequest(for: heartType, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time)
+	}
+	
+	func addDetails() {
+		guard details == nil && !loading && !loaded else {
+			return
+		}
+		
+		details = []
+		
 		let start = raw.startDate.timeIntervalSince1970
 		let end = Int(floor( (raw.endDate.timeIntervalSince1970 - start) / 60 ))
 		
 		for m in 0 ... end {
-			details.append(WorkoutMinute(minute: UInt(m)))
+			details!.append(WorkoutMinute(minute: UInt(m)))
 		}
-		details.last?.endTime = endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970
-		if let d = details.last?.duration, d == 0 {
-			_ = details.popLast()
+		details!.last?.endTime = endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970
+		if let d = details!.last?.duration, d == 0 {
+			_ = details!.popLast()
+		}
+	}
+	
+	func addRequest(for type: HKQuantityType, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType) {
+		guard !loading && !loaded else {
+			return
 		}
 		
-		let workoutPredicate = HKQuery.predicateForObjects(from: raw)
-		let timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
-		let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
-		let noLimit = Int(HKObjectQueryNoLimit)
-		
-		//Heart data per minute
-		let heartType = HKObjectType.quantityType(forIdentifier: .heartRate)!
-		
-		let hearthQuery = HKSampleQuery(sampleType: heartType, predicate: timePredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, err) -> Void in
+		let rawStart = self.rawStart
+		let predicate = pred == .time ? timePredicate : workoutPredicate
+		let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: queryNoLimit, sortDescriptors: [startDateSort]) { (_, r, err) -> Void in
 			if err != nil {
 				self.hasError = true
 			} else {
 				var searchDetail = self.details
 				
-				for bpm in r as! [HKQuantitySample] {
-					let val = bpm.quantity.doubleValue(for: .heartRate())
-					self.maxHeart = max(self.maxHeart ?? 0, val)
-					self.heartData.append(val)
-					let data = DataPoint(time: bpm.startDate.timeIntervalSince1970 - start, value: val)
-					
-					while let d = searchDetail.first, d.add(heartRate: data) {
-						searchDetail.remove(at: 0)
-					}
-				}
-			}
-			
-			self.requestDone += 1
-		}
-		
-		//Distance data
-		let distanceType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!
-		
-		let distanceQuery = HKSampleQuery(sampleType: distanceType, predicate: workoutPredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, err) in
-			if err != nil {
-				self.hasError = true
-			} else {
-				var searchDetail = self.details
-				
-				for dist in r as! [HKQuantitySample] {
-					let val = dist.quantity.doubleValue(for: .meter()) / 1000
-					let data = RangedDataPoint(start: dist.startDate.timeIntervalSince1970 - start, end: dist.endDate.timeIntervalSince1970 - start, value: val)
-					
-					while let d = searchDetail.first, d.add(distance: data) {
-						searchDetail.remove(at: 0)
-					}
-				}
-			}
-
-			self.requestDone += 1
-		}
-		
-		//Step data
-		let stepType = HKObjectType.quantityType(forIdentifier: .stepCount)!
-		
-		let stepQuery = HKSampleQuery(sampleType: stepType, predicate: timePredicate, limit: noLimit, sortDescriptors: [startDateSort]) { (_, r, err) in
-			if err != nil {
-				self.hasError = true
-			} else {
-				var searchDetail = self.details
-				
-				for step in r as! [HKQuantitySample] {
-					if step.sourceRevision.source.name.range(of: stepSourceFilter) == nil {
+				for s in r as! [HKQuantitySample] {
+					guard s.quantity.is(compatibleWith: unit) else {
 						continue
 					}
 					
-					let val = step.quantity.doubleValue(for: .steps())
-					let data = RangedDataPoint(start: step.startDate.timeIntervalSince1970 - start, end: step.endDate.timeIntervalSince1970 - start, value: val)
+					if type == self.stepType && s.sourceRevision.source.name.range(of: stepSourceFilter) == nil {
+						continue
+					}
 					
-					while let d = searchDetail.first, d.add(steps: data) {
-						searchDetail.remove(at: 0)
+					let val = s.quantity.doubleValue(for: unit)
+					
+					if type == self.heartType {
+						self.maxHeart = max(self.maxHeart ?? 0, val)
+						self.heartData.append(val)
+					}
+					
+					let start = s.startDate.timeIntervalSince1970 - rawStart
+					let data: DataPoint
+					switch tType {
+					case .instant:
+						data = InstantDataPoint(time: start, value: val)
+					case .ranged:
+						let end = s.endDate.timeIntervalSince1970 - rawStart
+						data = RangedDataPoint(start: start, end: end, value: val)
+					}
+					
+					while let d = searchDetail?.first, d.add(data, ofType: type) {
+						searchDetail?.remove(at: 0)
 					}
 				}
 			}
@@ -155,9 +186,18 @@ class Workout {
 			self.requestDone += 1
 		}
 		
-		healthStore.execute(hearthQuery)
-		healthStore.execute(distanceQuery)
-		healthStore.execute(stepQuery)
+		requests.append(query)
+	}
+	
+	func load() {
+		guard !loading && !loaded else {
+			return
+		}
+		
+		loading = true
+		for r in requests {
+			healthStore.execute(r)
+		}
 	}
 	
 	private var generalData: [String] {

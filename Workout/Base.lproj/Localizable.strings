@@ -24,3 +24,8 @@
 "CANNOT_EXPORT" = "Cannot export workout data";
 "SEL_EXPORT_ALL" = "Select All";
 "SEL_EXPORT_NONE" = "Select None";
+
+"WORKOUT_NAME_0" = "Unknown workout";
+"WORKOUT_NAME_1" = "Running";
+"WORKOUT_NAME_2" = "Strength Training";
+"WORKOUT_NAME_3" = "Swimming";
