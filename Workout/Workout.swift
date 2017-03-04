@@ -183,7 +183,10 @@ class Workout {
 				}
 			}
 			
-			self.requestDone += 1
+			//Move to a serial queue to synchronize access to counter
+			DispatchQueue.userInitiated.async {
+				self.requestDone += 1
+			}
 		}
 		
 		requests.append(query)

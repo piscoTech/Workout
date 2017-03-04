@@ -70,8 +70,21 @@ class WorkoutMinute: CustomStringConvertible {
 		self.endTime = Double(minute + 1) * 60
 	}
 	
-	private func processRangedData(data: RangedDataPoint) -> (valFrac: Double, res: Bool) {
-		let val: Double
+	private func add(_ v: Double, to: HKQuantityType) {
+		//Adding data to the dictionary is invoked from HKQuery callback, move to a serial queue to synchonize access
+		DispatchQueue.userInitiated.async {
+			if self.data[to] == nil {
+				self.data[to] = []
+			}
+			
+			self.data[to]!.append(v)
+		}
+	}
+	
+	///Add the relevant part of the data to the minute.
+	///- returns: `true` if some of the data belongs to following minutes, `false` otherwise.
+	@discardableResult func add(_ data: RangedDataPoint, ofType type: HKQuantityType) -> Bool {
+		let val: Double?
 		if data.start >= startTime && data.start < endTime {
 			// Start time is in range
 			let frac = (min(endTime, data.end) - data.start) / data.duration
@@ -81,27 +94,13 @@ class WorkoutMinute: CustomStringConvertible {
 			let frac = (min(endTime, data.end) - startTime) / data.duration
 			val = data.value * frac
 		} else {
-			val = 0
+			val = nil
 		}
-		
-		return (val, data.end > endTime)
-	}
-	
-	private func add(_ v: Double, to: HKQuantityType) {
-		if data[to] == nil {
-			data[to] = []
+		if let val = val {
+			add(val, to: type)
 		}
-		
-		data[to]!.append(v)
-	}
-	
-	///Add the relevant part of the data to the minute.
-	///- returns: `true` if some of the data belongs to following minutes, `false` otherwise.
-	@discardableResult func add(_ data: RangedDataPoint, ofType type: HKQuantityType) -> Bool {
-		let (val, res) = processRangedData(data: data)
-		add(val, to: type)
 
-		return res
+		return data.end > endTime
 	}
 	
 	///Add the data to the minute if it belongs to it.
