@@ -177,6 +177,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	private var documentController: UIActivityViewController!
 	private var exportWorkouts = [Workout]()
 	private var waitingForExport = 0
+	private var loadingIndicator: UIAlertController?
 	
 	@IBAction func chooseExport(_ sender: AnyObject) {
 		inExportMode = true
@@ -195,6 +196,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	func doExport(_ sender: UIBarButtonItem) {
+		loadingIndicator?.dismiss(animated: false)
+		loadingIndicator = UIAlertController.getModalLoading()
+		self.present(loadingIndicator!, animated: true)
+		
 		DispatchQueue.userInitiated.async {
 			self.exportWorkouts = []
 			
@@ -259,7 +264,14 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
 				
 				DispatchQueue.main.async {
-					self.present(alert, animated: true, completion: nil)
+					if let l = self.loadingIndicator {
+						l.dismiss(animated: true) {
+							self.loadingIndicator = nil
+							self.present(alert, animated: true)
+						}
+					} else {
+						self.present(alert, animated: true)
+					}
 				}
 			}
 			
@@ -283,7 +295,15 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				self.documentController = UIActivityViewController(activityItems: [filePath], applicationActivities: nil)
 				
 				DispatchQueue.main.async {
-					self.present(self.documentController, animated: true, completion: nil)
+					if let l = self.loadingIndicator {
+						l.dismiss(animated: true) {
+							self.loadingIndicator = nil
+							self.present(self.documentController, animated: true)
+						}
+					} else {
+						self.present(self.documentController, animated: true)
+					}
+					
 					self.documentController.popoverPresentationController?.barButtonItem = self.exportCommitBtn
 				}
 			} catch _ {
