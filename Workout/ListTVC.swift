@@ -148,6 +148,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			}
 			
 			updateToggleExportAllText()
+			updateExportCommitButton()
 		} else {
 			performSegue(withIdentifier: "showWorkout", sender: self)
 		}
@@ -177,13 +178,15 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	private var documentController: UIActivityViewController!
 	private var exportWorkouts = [Workout]()
 	private var waitingForExport = 0
-	private var loadingIndicator: UIAlertController?
+	private var loadingBar: UIAlertController?
+	private weak var loadingProgress: UIProgressView?
 	
 	@IBAction func chooseExport(_ sender: AnyObject) {
 		inExportMode = true
 		
 		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_NONE", comment: "Select None")
 		exportSelection = [Bool](repeating: true, count: workouts?.count ?? 0)
+		updateExportCommitButton()
 		
 		navigationItem.leftBarButtonItem = exportLeftBtn
 		navigationItem.rightBarButtonItems = exportRightBtns
@@ -196,14 +199,23 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	func doExport(_ sender: UIBarButtonItem) {
-		loadingIndicator?.dismiss(animated: false)
-		loadingIndicator = UIAlertController.getModalLoading()
-		self.present(loadingIndicator!, animated: true)
+		loadingBar?.dismiss(animated: false)
 		
 		DispatchQueue.userInitiated.async {
 			self.exportWorkouts = []
-			
 			self.waitingForExport = self.exportSelection.map { $0 ? 1 : 0 }.reduce(0) { $0 + $1 }
+			
+			guard self.waitingForExport > 0 else {
+				return
+			}
+			
+			DispatchQueue.main.async {
+				let (bar, progress) = UIAlertController.getModalProgress()
+				self.loadingBar = bar
+				self.loadingProgress = progress
+				self.present(self.loadingBar!, animated: true)
+			}
+			
 			for (w, e) in zip(self.workouts, self.exportSelection) {
 				if e {
 					self.exportWorkouts.append(Workout(w, delegate: self))
@@ -239,12 +251,17 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		
 		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_" + newText, comment: "Select")
 		exportSelection = [Bool](repeating: newVal, count: exportSelection?.count ?? 0)
+		updateExportCommitButton()
 		
 		for i in 0 ..< (workouts?.count ?? 0) {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
 				cell.accessoryType = newVal ? .checkmark : .none
 			}
 		}
+	}
+	
+	private func updateExportCommitButton() {
+		exportCommitBtn.isEnabled = (exportSelection ?? []).index(of: true) != nil
 	}
 	
 	private func updateToggleExportAllText() {
@@ -256,58 +273,66 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	func dataIsReady() {
-		waitingForExport -= 1;
-		
-		if waitingForExport == 0 {
-			let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
-			let displayError = {
-				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
-				
-				DispatchQueue.main.async {
-					if let l = self.loadingIndicator {
-						l.dismiss(animated: true) {
-							self.loadingIndicator = nil
+		//Move to a serial queue to synchronize access to counter
+		DispatchQueue.userInitiated.async {
+			self.waitingForExport -= 1
+			DispatchQueue.main.async {
+				let total = self.exportWorkouts.count
+				self.loadingProgress?.setProgress(Float(total - self.waitingForExport) / Float(total), animated: true)
+			}
+			
+			if self.waitingForExport == 0 {
+				let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
+				let displayError = {
+					let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
+					
+					DispatchQueue.main.async {
+						if let l = self.loadingBar {
+							l.dismiss(animated: true) {
+								self.loadingBar = nil
+								self.present(alert, animated: true)
+							}
+						} else {
 							self.present(alert, animated: true)
 						}
-					} else {
-						self.present(alert, animated: true)
 					}
 				}
-			}
-			
-			var data = "Start\(CSVSeparator)End\(CSVSeparator)Duration\(CSVSeparator)Distance\(CSVSeparator)\("Average Heart Rate".toCSV())\(CSVSeparator)\("Max Heart Rate".toCSV())\(CSVSeparator)\("Average Pace".toCSV())\n"
-			for w in self.exportWorkouts {
-				if w.hasError {
-					displayError()
-					return
-				}
 				
-				data += w.exportGeneralData() + "\n"
-			}
-			
-			DispatchQueue.main.async {
-				self.cancelExport(self)
-			}
-			
-			do {
-				try data.write(to: filePath, atomically: true, encoding: .utf8)
-				
-				self.documentController = UIActivityViewController(activityItems: [filePath], applicationActivities: nil)
-				
-				DispatchQueue.main.async {
-					if let l = self.loadingIndicator {
-						l.dismiss(animated: true) {
-							self.loadingIndicator = nil
-							self.present(self.documentController, animated: true)
-						}
-					} else {
-						self.present(self.documentController, animated: true)
+				var data = "Start\(CSVSeparator)End\(CSVSeparator)Duration\(CSVSeparator)Distance\(CSVSeparator)\("Average Heart Rate".toCSV())\(CSVSeparator)\("Max Heart Rate".toCSV())\(CSVSeparator)\("Average Pace".toCSV())\n"
+				for w in self.exportWorkouts {
+					if w.hasError {
+						displayError()
+						return
 					}
 					
-					self.documentController.popoverPresentationController?.barButtonItem = self.exportCommitBtn
+					data += w.exportGeneralData() + "\n"
 				}
-			} catch _ {
-				displayError()
+				
+				DispatchQueue.main.async {
+					self.cancelExport(self)
+				}
+				
+				do {
+					try data.write(to: filePath, atomically: true, encoding: .utf8)
+					
+					self.exportWorkouts = []
+					self.documentController = UIActivityViewController(activityItems: [filePath], applicationActivities: nil)
+					
+					DispatchQueue.main.async {
+						if let l = self.loadingBar {
+							l.dismiss(animated: true) {
+								self.loadingBar = nil
+								self.present(self.documentController, animated: true)
+							}
+						} else {
+							self.present(self.documentController, animated: true)
+						}
+						
+						self.documentController.popoverPresentationController?.barButtonItem = self.exportCommitBtn
+					}
+				} catch _ {
+					displayError()
+				}
 			}
 		}
 	}
