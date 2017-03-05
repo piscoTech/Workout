@@ -9,27 +9,6 @@
 import Foundation
 import HealthKit
 
-extension HKWorkoutActivityType {
-	
-	var name: String {
-		let wType: Int
-		
-		switch self {
-		case .running:
-			wType = 1
-		case .functionalStrengthTraining:
-			wType = 2
-		case .swimming:
-			wType = 3
-		default:
-			wType = 0
-		}
-		
-		return NSLocalizedString("WORKOUT_NAME_\(wType)", comment: "Workout")
-	}
-	
-}
-
 extension HKQuantityTypeIdentifier {
 	
 	func getType() -> HKQuantityType? {

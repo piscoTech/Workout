@@ -88,24 +88,28 @@ class Workout {
 	private let workoutPredicate: NSPredicate!
 	private let timePredicate: NSPredicate!
 	private let startDateSort: NSSortDescriptor!
-	private let queryNoLimit = Int(HKObjectQueryNoLimit)
+	private let queryNoLimit = HKObjectQueryNoLimit
 	
 	enum SearchType {
 		case time, workout
 	}
 	
 	class func workoutFor(raw: HKWorkout, delegate: WorkoutDelegate? = nil) -> Workout {
+		let wClass: Workout.Type
+		
 		switch raw.workoutActivityType {
 		case .running:
-			return RunninWorkout(raw, delegate: delegate)
+			wClass = RunninWorkout.self
 		case .swimming:
-			return SwimmingWorkout(raw, delegate: delegate)
+			wClass = SwimmingWorkout.self
 		default:
-			return Workout(raw, delegate: delegate)
+			wClass = Workout.self
 		}
+		
+		return wClass.init(raw, delegate: delegate)
 	}
 	
-	init(_ raw: HKWorkout, delegate del: WorkoutDelegate? = nil) {
+	required init(_ raw: HKWorkout, delegate del: WorkoutDelegate? = nil) {
 		self.raw = raw
 		self.delegate = del
 		

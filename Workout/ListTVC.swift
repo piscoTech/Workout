@@ -72,8 +72,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 			let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 			let type = HKObjectType.workoutType()
-			let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: workoutTypes.map { HKQuery.predicateForWorkouts(with: $0) })
-			let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, err) in
+			let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { (_, r, err) in
 				self.workouts = nil
 				self.err = err
 				if let res = r as? [HKWorkout] {

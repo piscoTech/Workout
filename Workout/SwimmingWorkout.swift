@@ -12,7 +12,7 @@ import MBLibrary
 
 class SwimmingWorkout: Workout {
 	
-	override init(_ raw: HKWorkout, delegate del: WorkoutDelegate?) {
+	required init(_ raw: HKWorkout, delegate del: WorkoutDelegate?) {
 		super.init(raw, delegate: del)
 		
 		if #available(iOS 10, *) {

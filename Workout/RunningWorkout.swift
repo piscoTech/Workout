@@ -12,7 +12,7 @@ import MBLibrary
 
 class RunninWorkout: Workout {
 	
-	override init(_ raw: HKWorkout, delegate del: WorkoutDelegate?) {
+	required init(_ raw: HKWorkout, delegate del: WorkoutDelegate?) {
 		super.init(raw, delegate: del)
 		
 		self.addDetails([.pace, .heart, .steps])

@@ -30,12 +30,6 @@ let healthReadData: Set<HKObjectType> = {
 	
 	return res
 }()
-///List of supported workouts.
-let workoutTypes = [
-	HKWorkoutActivityType.running,
-	.functionalStrengthTraining,
-	.swimming
-]
 ///Enable or disable ads override.
 let adsEnable = true
 ///Ads ID.
