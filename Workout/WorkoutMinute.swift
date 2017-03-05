@@ -32,13 +32,13 @@ class WorkoutMinute: CustomStringConvertible {
 		}
 	}
 	
-	private var data = [HKQuantityType: [Double]]()
+	private var data = [HKQuantityTypeIdentifier: [Double]]()
 	
 	var distance: Double? {
-		var res = getTotal(for: HKQuantityTypeIdentifier.distanceWalkingRunning.getType()!)
+		var res = getTotal(for: .distanceWalkingRunning)
 		
 		if #available(iOS 10, *) {
-			res = res ?? getTotal(for: HKQuantityTypeIdentifier.distanceSwimming.getType()!)
+			res = res ?? getTotal(for: .distanceSwimming)
 		}
 		
 		return res
@@ -62,7 +62,7 @@ class WorkoutMinute: CustomStringConvertible {
 	}
 	
 	var bpm: Double? {
-		return getAverage(for: HKQuantityTypeIdentifier.heartRate.getType()!)
+		return getAverage(for: .heartRate)
 	}
 	
 	init(minute: UInt) {
@@ -70,9 +70,9 @@ class WorkoutMinute: CustomStringConvertible {
 		self.endTime = Double(minute + 1) * 60
 	}
 	
-	private func add(_ v: Double, to: HKQuantityType) {
+	private func add(_ v: Double, to: HKQuantityTypeIdentifier) {
 		//Adding data to the dictionary is invoked from HKQuery callback, move to a serial queue to synchonize access
-		DispatchQueue.userInitiated.async {
+		DispatchQueue.workout.async {
 			if self.data[to] == nil {
 				self.data[to] = []
 			}
@@ -83,7 +83,7 @@ class WorkoutMinute: CustomStringConvertible {
 	
 	///Add the relevant part of the data to the minute.
 	///- returns: `true` if some of the data belongs to following minutes, `false` otherwise.
-	@discardableResult func add(_ data: RangedDataPoint, ofType type: HKQuantityType) -> Bool {
+	@discardableResult func add(_ data: RangedDataPoint, ofType type: HKQuantityTypeIdentifier) -> Bool {
 		let val: Double?
 		if data.start >= startTime && data.start < endTime {
 			// Start time is in range
@@ -105,7 +105,7 @@ class WorkoutMinute: CustomStringConvertible {
 	
 	///Add the data to the minute if it belongs to it.
 	///- returns: `true` if the data belongs to following minutes, `false` otherwise.
-	@discardableResult func add(_ data: InstantDataPoint, ofType type: HKQuantityType) -> Bool {
+	@discardableResult func add(_ data: InstantDataPoint, ofType type: HKQuantityTypeIdentifier) -> Bool {
 		if data.time >= startTime && data.time < endTime {
 			add(data.value, to: type)
 		}
@@ -115,7 +115,7 @@ class WorkoutMinute: CustomStringConvertible {
 	
 	///Add the data or its relevant part to the minute if it belongs to it.
 	///- returns: `true` if the data belongs to following minutes, `false` otherwise.
-	@discardableResult func add(_ data: DataPoint, ofType type: HKQuantityType) -> Bool {
+	@discardableResult func add(_ data: DataPoint, ofType type: HKQuantityTypeIdentifier) -> Bool {
 		switch data {
 		case let i as InstantDataPoint:
 			return add(i, ofType: type)
@@ -126,7 +126,7 @@ class WorkoutMinute: CustomStringConvertible {
 		}
 	}
 	
-	func getAverage(for type: HKQuantityType) -> Double? {
+	func getAverage(for type: HKQuantityTypeIdentifier) -> Double? {
 		guard let raw = data[type] else {
 			return nil
 		}
@@ -134,7 +134,7 @@ class WorkoutMinute: CustomStringConvertible {
 		return raw.count > 0 ? raw.reduce(0) { $0 + $1 } / Double(raw.count) : nil
 	}
 	
-	func getTotal(for type: HKQuantityType) -> Double? {
+	func getTotal(for type: HKQuantityTypeIdentifier) -> Double? {
 		guard let raw = data[type] else {
 			return nil
 		}

@@ -15,11 +15,9 @@ class RunninWorkout: Workout {
 	override init(_ raw: HKWorkout, delegate del: WorkoutDelegate?) {
 		super.init(raw, delegate: del)
 		
-		self.addDetails()
-		self.addRequest(for: HKQuantityTypeIdentifier.distanceWalkingRunning.getType()!, withUnit: .kilometer(), andTimeType: .ranged, searchingBy: .workout)
-		self.addRequest(for: HKQuantityTypeIdentifier.stepCount.getType()!, withUnit: .steps(), andTimeType: .ranged, searchingBy: .time)
+		self.addDetails([.pace, .heart, .steps])
+		self.addRequest(for: .distanceWalkingRunning, withUnit: .kilometer(), andTimeType: .ranged, searchingBy: .workout)
+		self.addRequest(for: .stepCount, withUnit: .steps(), andTimeType: .ranged, searchingBy: .time)
 	}
-	
-	// TODO: Define an array with the content of details, the order in which they should appear and if they're a cumulative or average data using `DataType`.
 	
 }

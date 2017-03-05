@@ -196,7 +196,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			self.waitingForExport = self.exportSelection.map { $0 ? 1 : 0 }.reduce(0) { $0 + $1 }
 			for (w, e) in zip(self.workouts, self.exportSelection) {
 				if e {
-					self.exportWorkouts.append(Workout(w, delegate: self))
+					//Use base workout class to avoid loading additional (and unused) detail
+					let workout = Workout(w, delegate: self)
+					workout.load()
+					self.exportWorkouts.append(workout)
 				}
 			}
 		}
@@ -247,7 +250,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	func dataIsReady() {
 		waitingForExport -= 1;
-		
+		// TODO: Migrate to DispatchQueue.workout when merging in branch:v1.3, .userInitiated is not a serial queue
 		if waitingForExport == 0 {
 			let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
 			let displayError = {
@@ -258,7 +261,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				}
 			}
 			
-			var data = "Start\(CSVSeparator)End\(CSVSeparator)Duration\(CSVSeparator)Distance\(CSVSeparator)\("Average Heart Rate".toCSV())\(CSVSeparator)\("Max Heart Rate".toCSV())\(CSVSeparator)\("Average Pace".toCSV())\n"
+			let sep = CSVSeparator
+			var data = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\n"
 			for w in self.exportWorkouts {
 				if w.hasError {
 					displayError()

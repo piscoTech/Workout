@@ -16,12 +16,10 @@ class SwimmingWorkout: Workout {
 		super.init(raw, delegate: del)
 		
 		if #available(iOS 10, *) {
-			self.addDetails()
-			self.addRequest(for: HKQuantityTypeIdentifier.distanceSwimming.getType()!, withUnit: .kilometer(), andTimeType: .ranged, searchingBy: .workout)
-			self.addRequest(for: HKQuantityTypeIdentifier.swimmingStrokeCount.getType()!, withUnit: .strokes(), andTimeType: .ranged, searchingBy: .time)
+			self.addDetails([.speed, .heart, .strokes])
+			self.addRequest(for: .distanceSwimming, withUnit: .kilometer(), andTimeType: .ranged, searchingBy: .workout)
+			self.addRequest(for: .swimmingStrokeCount, withUnit: .strokes(), andTimeType: .ranged, searchingBy: .time)
 		}
 	}
-	
-	// TODO: Define an array with the content of details, the order in which they should appear and if they're a cumulative or average data using `DataType`.
 	
 }

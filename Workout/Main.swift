@@ -62,6 +62,15 @@ let distanceF = { Void -> LengthFormatter in
 	return formatter
 }()
 
+let speedF = { Void -> NumberFormatter in
+	let formatter = NumberFormatter()
+	formatter.numberStyle = .decimal
+	formatter.usesSignificantDigits = false
+	formatter.maximumFractionDigits = 1
+	
+	return formatter
+}()
+
 let integerF = { Void -> NumberFormatter in
 	let formatter = NumberFormatter()
 	formatter.numberStyle = .decimal
@@ -81,17 +90,25 @@ extension TimeInterval {
 
 extension Double {
 	
-	///- returns: The formatted values, considered in kilometers.
+	///- returns: The formatted value, considered in kilometers.
 	func getFormattedDistance() -> String {
 		return distanceF.string(fromValue: self, unit: .kilometer)
+	}
+	
+	///- returns: The formatted value, considered in kilometers per hour.
+	func getFormattedSpeed() -> String {
+		return speedF.string(from: NSNumber(value: self))! + " km/h"
 	}
 	
 	func getFormattedHeartRate() -> String {
 		return integerF.string(from: NSNumber(value: self))! + " bpm"
 	}
 	
-	func getFormattedSteps() -> String {
-		return integerF.string(from: NSNumber(value: self))! + " steps"
-	}
+}
+
+extension DispatchQueue {
+	
+	///Serial queue to synchronize access to counters and data when loading and exporting workouts.
+	static let workout = DispatchQueue(label: "Marco-Boschi.ios.Workout.loadExport")
 	
 }

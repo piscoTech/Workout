@@ -10,9 +10,19 @@ import UIKit
 
 class WorkoutDetailTableViewCell: UITableViewCell {
 
-	@IBOutlet weak var time: UILabel!
-	@IBOutlet weak var pace: UILabel!
-	@IBOutlet weak var bpm: UILabel!
-	@IBOutlet weak var steps: UILabel!
+	@IBOutlet weak var stack: UIStackView!
+	
+	func update(for details: [WorkoutDetail], withData data: WorkoutMinute) {
+		for v in stack.arrangedSubviews {
+			v.removeFromSuperview()
+		}
+		
+		for d in [.time] + details {
+			let view = d.newView()
+			d.update(view: view, with: data)
+			
+			stack.addArrangedSubview(view)
+		}
+	}
 
 }

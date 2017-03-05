@@ -38,8 +38,15 @@ class Workout {
 	private var loading = false
 	private(set) var loaded = false
 	private(set) var hasError = false
-	private(set) var details: [WorkoutMinute]?
 	
+	///Minute-by-minute details for the workout.
+	private(set) var details: [WorkoutMinute]?
+	///Specify how details should be displayed and in which order, time detail will be automaticall prepended.
+	private(set) var displayDetail: [WorkoutDetail]?
+	
+	var type: HKWorkoutActivityType {
+		return raw.workoutActivityType
+	}
 	var startDate: Date {
 		return raw.startDate
 	}
@@ -75,14 +82,12 @@ class Workout {
 	
 	private var heartData = [Double]()
 	
-	private let heartType = HKQuantityTypeIdentifier.heartRate.getType()!
-	private let stepType = HKQuantityTypeIdentifier.stepCount.getType()!
 	private var rawStart: TimeInterval {
 		return raw.startDate.timeIntervalSince1970
 	}
-	private let workoutPredicate: NSPredicate
-	private let timePredicate: NSPredicate
-	private let startDateSort: NSSortDescriptor
+	private let workoutPredicate: NSPredicate!
+	private let timePredicate: NSPredicate!
+	private let startDateSort: NSSortDescriptor!
 	private let queryNoLimit = Int(HKObjectQueryNoLimit)
 	
 	enum SearchType {
@@ -103,10 +108,12 @@ class Workout {
 	init(_ raw: HKWorkout, delegate del: WorkoutDelegate? = nil) {
 		self.raw = raw
 		self.delegate = del
-		details = []
 		
 		guard HKHealthStore.isHealthDataAvailable() else {
 			hasError = true
+			workoutPredicate = nil
+			timePredicate = nil
+			startDateSort = nil
 			delegate?.dataIsReady()
 			
 			return
@@ -116,15 +123,16 @@ class Workout {
 		timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
 		startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 		
-		addRequest(for: heartType, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time)
+		addRequest(for: .heartRate, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time)
 	}
 	
-	func addDetails() {
+	func addDetails(_ display: [WorkoutDetail]) {
 		guard details == nil && !loading && !loaded else {
 			return
 		}
 		
 		details = []
+		displayDetail = display
 		
 		let start = raw.startDate.timeIntervalSince1970
 		let end = Int(floor( (raw.endDate.timeIntervalSince1970 - start) / 60 ))
@@ -138,8 +146,12 @@ class Workout {
 		}
 	}
 	
-	func addRequest(for type: HKQuantityType, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType) {
+	func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType) {
 		guard !loading && !loaded else {
+			return
+		}
+		
+		guard let type = typeID.getType() else {
 			return
 		}
 		
@@ -156,13 +168,13 @@ class Workout {
 						continue
 					}
 					
-					if type == self.stepType && s.sourceRevision.source.name.range(of: stepSourceFilter) == nil {
+					if typeID == .stepCount && s.sourceRevision.source.name.range(of: stepSourceFilter) == nil {
 						continue
 					}
 					
 					let val = s.quantity.doubleValue(for: unit)
 					
-					if type == self.heartType {
+					if typeID == .heartRate {
 						self.maxHeart = max(self.maxHeart ?? 0, val)
 						self.heartData.append(val)
 					}
@@ -177,14 +189,14 @@ class Workout {
 						data = RangedDataPoint(start: start, end: end, value: val)
 					}
 					
-					while let d = searchDetail?.first, d.add(data, ofType: type) {
+					while let d = searchDetail?.first, d.add(data, ofType: typeID) {
 						searchDetail?.remove(at: 0)
 					}
 				}
 			}
 			
 			//Move to a serial queue to synchronize access to counter
-			DispatchQueue.userInitiated.async {
+			DispatchQueue.workout.async {
 				self.requestDone += 1
 			}
 		}
@@ -204,7 +216,7 @@ class Workout {
 	}
 	
 	private var generalData: [String] {
-		return [startDate.getUNIXDateTime().toCSV(), endDate.getUNIXDateTime().toCSV(), duration.getDuration().toCSV(), totalDistance.toCSV(), avgHeart?.toCSV() ?? "", maxHeart?.toCSV() ?? "", pace.getDuration().toCSV()]
+		return [type.name.toCSV(), startDate.getUNIXDateTime().toCSV(), endDate.getUNIXDateTime().toCSV(), duration.getDuration().toCSV(), totalDistance?.toCSV() ?? "", avgHeart?.toCSV() ?? "", maxHeart?.toCSV() ?? "", pace?.getDuration().toCSV() ?? "", speed?.toCSV() ?? ""]
 	}
 	
 	func exportGeneralData() -> String {
@@ -212,38 +224,48 @@ class Workout {
 	}
 	
 	func export() -> [URL]? {
+		var res = [URL]()
+		var data = [String]()
+		
 		var filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-		let generalDataPath = URL(fileURLWithPath: filePath)
-		filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("details.csv")
-		let detailsPath = URL(fileURLWithPath: filePath)
+		res.append(URL(fileURLWithPath: filePath))
 		
 		let genData = generalData
-		var gen = "Field\(CSVSeparator)Value\n"
-		gen += "Start\(CSVSeparator)" + genData[0] + "\n"
-		gen += "End\(CSVSeparator)" + genData[1] + "\n"
-		gen += "Duration\(CSVSeparator)" + genData[2] + "\n"
-		gen += "Distance\(CSVSeparator)" + genData[3] + "\n"
-		gen += "\("Average Heart Rate".toCSV())\(CSVSeparator)" + genData[4] + "\n"
-		gen += "\("Max Heart Rate".toCSV())\(CSVSeparator)" + genData[5] + "\n"
-		gen += "\("Average Pace".toCSV())\(CSVSeparator)" + genData[6] + "\n"
+		let sep = CSVSeparator
+		var gen = "Field\(sep)Value\n"
+		gen += "Type\(sep)" + genData[0] + "\n"
+		gen += "Start\(sep)" + genData[1] + "\n"
+		gen += "End\(sep)" + genData[2] + "\n"
+		gen += "Duration\(sep)" + genData[3] + "\n"
+		gen += "Distance\(sep)" + genData[4] + "\n"
+		gen += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
+		gen += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
+		gen += "\("Average Pace".toCSV())\(sep)" + genData[7] + "\n"
+		gen += "\("Average Speed".toCSV())\(sep)" + genData[8] + "\n"
+		data.append(gen)
 		
-		var det = "Time\(CSVSeparator)Pace\(CSVSeparator)\("Heart Rate".toCSV())\(CSVSeparator)Steps\n"
-		for d in details {
-			det += d.startTime.getDuration().toCSV() + CSVSeparator
-			det += (d.pace?.getDuration().toCSV() ?? "") + CSVSeparator
-			det += (d.bpm?.toCSV() ?? "") + CSVSeparator
-			det += d.steps?.toCSV() ?? ""
-			det += "\n"
+		if let details = self.details {
+			filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("details.csv")
+			res.append(URL(fileURLWithPath: filePath))
+			
+			let export = [WorkoutDetail.time] + self.displayDetail!
+			var det = export.map { $0.name.toCSV() }.joined(separator: sep) + "\n"
+			for d in details {
+				det += export.map { $0.export(val: d) }.joined(separator: sep) + "\n"
+			}
+			
+			data.append(det)
 		}
 		
 		do {
-			try gen.write(to: generalDataPath, atomically: true, encoding: .utf8)
-			try det.write(to: detailsPath, atomically: true, encoding: .utf8)
+			for (f, d) in zip(res, data) {
+				try d.write(to: f, atomically: true, encoding: .utf8)
+			}
 		} catch _ {
 			return nil
 		}
 		
-		return [generalDataPath, detailsPath]
+		return res
 	}
 	
 }
