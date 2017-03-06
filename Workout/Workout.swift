@@ -166,13 +166,14 @@ class Workout {
 				self.hasError = true
 			} else {
 				var searchDetail = self.details
-				
+			
+				let stepSource = stepSourceFilter
 				for s in r as! [HKQuantitySample] {
 					guard s.quantity.is(compatibleWith: unit) else {
 						continue
 					}
 					
-					if typeID == .stepCount && s.sourceRevision.source.name.range(of: stepSourceFilter) == nil {
+					if typeID == .stepCount && !stepSource.sourceMatch(s) {
 						continue
 					}
 					

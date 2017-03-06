@@ -28,7 +28,7 @@ class AboutViewController: UITableViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-		if section == 1 {
+		if section == 2 {
 			return appInfo
 		}
 		
@@ -41,14 +41,19 @@ class AboutViewController: UITableViewController {
 	}
 	
 	override func numberOfSections(in tableView: UITableView) -> Int {
-		return 2
+		return 3
 	}
 	
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		switch section {
+		//Health Access and Remove Ads
 		case 0:
 			return areAdsEnabled && iapManager.canMakePayments ? 2 : 1
+		//Step Source
 		case 1:
+			return 1
+		//Source Code
+		case 2:
 			return 1
 		default:
 			return 0
@@ -57,11 +62,19 @@ class AboutViewController: UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		switch (indexPath.section, indexPath.row) {
+		//Health Access
 		case (0, 0):
 			return tableView.dequeueReusableCell(withIdentifier: "authorize", for: indexPath)
+		//Remove Ads
 		case (0, 1):
 			return tableView.dequeueReusableCell(withIdentifier: "removeAds", for: indexPath)
+		//Step Source
 		case (1, 0):
+			let cell = tableView.dequeueReusableCell(withIdentifier: "stepSource", for: indexPath)
+			setStepSource(in: cell)
+			return cell
+		//Source Code
+		case (2, 0):
 			return tableView.dequeueReusableCell(withIdentifier: "sourceCode", for: indexPath)
 		default:
 			return UITableViewCell()
@@ -72,13 +85,23 @@ class AboutViewController: UITableViewController {
 		switch (indexPath.section, indexPath.row) {
 		case (0, 0):
 			delegate.authorize(self)
-		case (1, 0):
+		case (2, 0):
 			UIApplication.shared.openURL(URL(string: "https://github.com/piscoTech/Workout")!)
 		default:
 			break
 		}
 		
 		tableView.deselectRow(at: indexPath, animated: true)
+	}
+	
+	func updateStepSource() {
+		if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 1)) {
+			setStepSource(in: cell)
+		}
+	}
+	
+	private func setStepSource(in cell: UITableViewCell) {
+		(cell.viewWithTag(10) as? UILabel)?.text = stepSourceFilter.displayName
 	}
 	
 	// MARK: - Ads management
@@ -208,6 +231,20 @@ class AboutViewController: UITableViewController {
 	
 	@IBAction func done(_ sender: AnyObject) {
 		dismiss(animated: true, completion: nil)
+	}
+	
+	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+		guard let segueID = segue.identifier else {
+			return
+		}
+		
+		switch segueID {
+		case "stepSource":
+			let dest = segue.destination as! StepSourceTableViewController
+			dest.delegate = self
+		default:
+			break
+		}
 	}
 	
 }

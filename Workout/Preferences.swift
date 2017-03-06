@@ -14,6 +14,7 @@ let preferences = KeyValueStore(userDefaults: UserDefaults.standard)
 enum PreferenceKey: String, KeyValueStoreKey {
 	case authorized = "authorized"
 	case authVersion = "authVersion"
+	case stepSource = "stepSource"
 	
 	var description: String {
 		return rawValue
