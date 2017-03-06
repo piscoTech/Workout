@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00755F3ACCDE2F7F8B9685C3 /* Pods_Workout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC76321FF7F86708B7687C1B /* Pods_Workout.framework */; };
+		7A638B301E6E02BC00473831 /* StepSourceTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A638B2F1E6E02BC00473831 /* StepSourceTVC.swift */; };
 		7A6D1F4B1D51E4C8002A4890 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */; };
 		7A6D1F501D51EB40002A4890 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */; };
 		7A75FB521D3E52A000F66CF9 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */; };
@@ -84,6 +85,7 @@
 		33FCBA283095BB59F421FA9F /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
 		42588D93C213509410E5F0B6 /* Pods-Workout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.release.xcconfig"; sourceTree = "<group>"; };
 		7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = ../MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
+		7A638B2F1E6E02BC00473831 /* StepSourceTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepSourceTVC.swift; sourceTree = "<group>"; };
 		7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
 		7A7858B51D5680EB0068B627 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -147,6 +149,7 @@
 				7AA9F4941C48F5A1005FFCB3 /* ListTVC.swift */,
 				7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */,
 				7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */,
+				7A638B2F1E6E02BC00473831 /* StepSourceTVC.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -405,6 +408,7 @@
 				7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */,
 				7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */,
 				7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */,
+				7A638B301E6E02BC00473831 /* StepSourceTVC.swift in Sources */,
 				7A9E3A971D400A0000CF73ED /* WorkoutMinute.swift in Sources */,
 				7A6D1F501D51EB40002A4890 /* AboutVC.swift in Sources */,
 				7A9E3A991D400EB900CF73ED /* DataPoint.swift in Sources */,
