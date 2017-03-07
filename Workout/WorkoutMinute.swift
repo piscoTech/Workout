@@ -91,6 +91,12 @@ class WorkoutMinute: CustomStringConvertible {
 	///- returns: `true` if some of the data belongs to following minutes, `false` otherwise.
 	@discardableResult func add(_ data: RangedDataPoint, ofType type: HKQuantityTypeIdentifier) -> Bool {
 		let val: Double?
+		guard data.start != data.end else {
+			let instant = InstantDataPoint(time: data.start, value: data.value)
+			
+			return self.add(instant, ofType: type)
+		}
+		
 		if data.start >= startTime && data.start < endTime {
 			// Start time is in range
 			let frac = (min(endTime, data.end) - data.start) / data.duration
