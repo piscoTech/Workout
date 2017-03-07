@@ -13,6 +13,7 @@ import HealthKit
 ///Describe workout data in time range `startTime ..< endTime`.
 class WorkoutMinute: CustomStringConvertible {
 	
+	private(set) weak var owner: Workout!
 	var minute: UInt
 	var startTime: TimeInterval {
 		return Double(minute) * 60
@@ -28,13 +29,13 @@ class WorkoutMinute: CustomStringConvertible {
 	var description: String {
 		get {
 			let dur = duration < 60 ? " \(duration.getDuration())" : ""
-			return "\(minute)m\(dur): " + (distance?.getFormattedDistance() ?? "- km") + ", " + (bpm?.getFormattedHeartRate() ?? "- bpm")
+			return "\(minute)m\(dur): " + (distance?.getFormattedDistance(withUnit: owner.distanceUnit) ?? "- m") + ", " + (bpm?.getFormattedHeartRate() ?? "- bpm")
 		}
 	}
 	
 	private var data = [HKQuantityTypeIdentifier: [Double]]()
 	
-	var distance: Double? {
+	private var rawDistance: Double? {
 		var res = getTotal(for: .distanceWalkingRunning)
 		
 		if #available(iOS 10, *) {
@@ -43,18 +44,21 @@ class WorkoutMinute: CustomStringConvertible {
 		
 		return res
 	}
-	///Avarage pace of the minute in seconds per kilometer.
+	///Distance in `distanceUnit` as specified by `owner`.
+	var distance: Double? {
+		return rawDistance?.convertFrom(.meter(), to: owner.distanceUnit)
+	}
+	///Avarage pace of the minute in seconds per `paceUnit` specified by `owner`.
 	var pace: TimeInterval? {
-		if let d = distance {
-			let p  = duration / d
-			return p < 20 * 60 ? p : nil
+		if let d = rawDistance?.convertFrom(.meter(), to: owner.paceUnit) {
+			return duration / d
 		} else {
 			return nil
 		}
 	}
-	///Avarage speed of the minute in kilometer per hour.
+	///Avarage speed of the minute in `speedUnit`, specified by `owner`, per hour.
 	var speed: Double? {
-		guard let dist = distance else {
+		guard let dist = rawDistance?.convertFrom(.meter(), to: owner.speedUnit) else {
 			return nil
 		}
 		
@@ -65,9 +69,11 @@ class WorkoutMinute: CustomStringConvertible {
 		return getAverage(for: .heartRate)
 	}
 	
-	init(minute: UInt) {
+	init(minute: UInt, owner: Workout) {
 		self.minute = minute
 		self.endTime = Double(minute + 1) * 60
+		
+		self.owner = owner
 	}
 	
 	private func add(_ v: Double, to: HKQuantityTypeIdentifier) {

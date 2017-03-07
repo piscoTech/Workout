@@ -31,8 +31,4 @@ extension HKUnit {
 		return HKUnit.count()
 	}
 	
-	class func kilometer() -> HKUnit {
-		return HKUnit.meterUnit(with: .kilo)
-	}
-	
 }

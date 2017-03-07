@@ -13,7 +13,7 @@ import GoogleMobileAds
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate {
 	
-	private var workouts: [HKWorkout]!
+	private var workouts: [Workout]!
 	private var err: Error?
 	
 	private var standardRightBtns: [UIBarButtonItem]!
@@ -76,7 +76,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				self.workouts = nil
 				self.err = err
 				if let res = r as? [HKWorkout] {
-					self.workouts = res
+					//There's no need to call .load() as additional data is not needed here, we just need information about units
+					self.workouts = res.map { Workout.workoutFor(raw: $0) }
 				}
 				
 				DispatchQueue.main.async {
@@ -120,11 +121,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
 		let w = workouts[indexPath.row]
 		
-		cell.textLabel?.text = w.workoutActivityType.name
+		cell.textLabel?.text = w.type.name
 		
 		var detail = [w.startDate.getFormattedDateTime(), w.duration.getDuration() ]
-		if let dist = w.totalDistance {
-			detail.append(dist.doubleValue(for: .kilometer()).getFormattedDistance())
+		if let dist = w.totalDistance?.getFormattedDistance(withUnit: w.distanceUnit) {
+			detail.append(dist)
 		}
 		cell.detailTextLabel?.text = detail.joined(separator: " – ")
 		
@@ -212,9 +213,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			
 			for (w, e) in zip(self.workouts, self.exportSelection) {
 				if e {
-					//Use base workout class to avoid loading additional (and unused) detail
-					let workout = Workout(w, delegate: self)
-					workout.load()
+					let workout = Workout.workoutFor(raw: w.raw, delegate: self)
+					//Avoid loading additional (and unused) detail
+					workout.load(quickLoad: true)
 					self.exportWorkouts.append(workout)
 				}
 			}
@@ -270,31 +271,6 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	func dataIsReady() {
-//<<<<<<< HEAD
-//		waitingForExport -= 1;
-//		// TODO: Migrate to DispatchQueue.workout when merging in branch:v1.3, .userInitiated is not a serial queue
-//		if waitingForExport == 0 {
-//			let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
-//			let displayError = {
-//				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
-//				
-//				DispatchQueue.main.async {
-//					self.present(alert, animated: true, completion: nil)
-//				}
-//			}
-//			
-//			let sep = CSVSeparator
-//			var data = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\n"
-//			for w in self.exportWorkouts {
-//				if w.hasError {
-//					displayError()
-//					return
-//				}
-//				
-//				data += w.exportGeneralData() + "\n"
-//			}
-//			
-//=======
 		//Move to a serial queue to synchronize access to counter
 		DispatchQueue.workout.async {
 			self.waitingForExport -= 1
@@ -322,7 +298,6 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				
 				let sep = CSVSeparator
 				var data = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\n"
-//				var data = "Start\(CSVSeparator)End\(CSVSeparator)Duration\(CSVSeparator)Distance\(CSVSeparator)\("Average Heart Rate".toCSV())\(CSVSeparator)\("Max Heart Rate".toCSV())\(CSVSeparator)\("Average Pace".toCSV())\n"
 				for w in self.exportWorkouts {
 					if w.hasError {
 						displayError()
@@ -446,7 +421,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		switch id {
 		case "showWorkout":
 			if let dest = segue.destination as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
-				dest.rawWorkout = workouts[indexPath.row]
+				dest.rawWorkout = workouts[indexPath.row].raw
 			}
 		case "info":
 			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? AboutViewController {

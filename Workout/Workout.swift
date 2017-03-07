@@ -18,13 +18,15 @@ protocol WorkoutDelegate {
 
 class Workout {
 	
-	private var raw: HKWorkout
+	private(set) var raw: HKWorkout
 	var delegate: WorkoutDelegate?
 	
+	///Request required for base data.
+	private var baseReq = [HKQuery]()
+	///Request for additional details.
 	private var requests = [HKQuery]()
-	private var requestToDo: Int {
-		return requests.count
-	}
+	//Set when .load() is called
+	private var requestToDo = 0
 	private var requestDone = 0 {
 		didSet {
 			if requestDone == requestToDo {
@@ -44,6 +46,24 @@ class Workout {
 	///Specify how details should be displayed and in which order, time detail will be automaticall prepended.
 	private(set) var displayDetail: [WorkoutDetail]?
 	
+	private func updateUnits() {
+		distanceUnit = HKUnit.meterUnit(with: distancePrefix)
+		speedUnit = HKUnit.meterUnit(with: speedPrefix)
+		paceUnit = HKUnit.meterUnit(with: pacePrefix)
+	}
+	///The prefix to use with meters to represent the distance, defaults to `.kilo`.
+	private(set) var distancePrefix = HKMetricPrefix.kilo
+	///The prefix to use with meters to represent the length part of the pace, defaults to `.kilo`.
+	private(set) var speedPrefix = HKMetricPrefix.kilo
+	///The prefix to use with meters to represent the length part of the speed, defaults to `.kilo`.
+	private(set) var pacePrefix = HKMetricPrefix.kilo
+	///The length unit to represent the distance.
+	private(set) var distanceUnit: HKUnit!
+	///The length unit to use in calculating pace.
+	private(set) var paceUnit: HKUnit!
+	///The length unit to use in calculating speed.
+	private(set) var speedUnit: HKUnit!
+	
 	var type: HKWorkoutActivityType {
 		return raw.workoutActivityType
 	}
@@ -57,23 +77,23 @@ class Workout {
 		return raw.duration
 	}
 	var totalDistance: Double? {
-		return raw.totalDistance?.doubleValue(for: .kilometer())
+		return raw.totalDistance?.doubleValue(for: distanceUnit)
 	}
 	var maxHeart: Double? = nil
 	var avgHeart: Double? {
 		return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
 	}
-	///Avarage pace of the workout in seconds per kilometer.
+	///Avarage pace of the workout in seconds per `paceUnit`.
 	var pace: TimeInterval? {
-		guard let dist = totalDistance else {
+		guard let dist = raw.totalDistance?.doubleValue(for: paceUnit) else {
 			return nil
 		}
 		
 		return duration / dist
 	}
-	///Avarage speed of the workout in kilometer per hour.
+	///Avarage speed of the workout in `speedUnit` per hour.
 	var speed: Double? {
-		guard let dist = totalDistance else {
+		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit) else {
 			return nil
 		}
 		
@@ -127,7 +147,16 @@ class Workout {
 		timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
 		startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 		
-		addRequest(for: .heartRate, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time)
+		updateUnits()
+		addRequest(for: .heartRate, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time, isBase: true)
+	}
+	
+	func setLengthPrefixFor(distance dPref: HKMetricPrefix, speed sPref: HKMetricPrefix, pace pPref: HKMetricPrefix) {
+		distancePrefix = dPref
+		speedPrefix = sPref
+		pacePrefix = pPref
+		
+		updateUnits()
 	}
 	
 	func addDetails(_ display: [WorkoutDetail]) {
@@ -142,7 +171,7 @@ class Workout {
 		let end = Int(floor( (raw.endDate.timeIntervalSince1970 - start) / 60 ))
 		
 		for m in 0 ... end {
-			details!.append(WorkoutMinute(minute: UInt(m)))
+			details!.append(WorkoutMinute(minute: UInt(m), owner: self))
 		}
 		details!.last?.endTime = endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970
 		if let d = details!.last?.duration, d == 0 {
@@ -150,7 +179,9 @@ class Workout {
 		}
 	}
 	
-	func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType) {
+	///Add a query to load data for passed type.
+	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning` and `.distanceSwimming`) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
+	private func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType, isBase: Bool) {
 		guard !loading && !loaded else {
 			return
 		}
@@ -166,7 +197,7 @@ class Workout {
 				self.hasError = true
 			} else {
 				var searchDetail = self.details
-			
+				
 				let stepSource = stepSourceFilter
 				for s in r as! [HKQuantitySample] {
 					guard s.quantity.is(compatibleWith: unit) else {
@@ -206,16 +237,29 @@ class Workout {
 			}
 		}
 		
-		requests.append(query)
+		if isBase {
+			baseReq.append(query)
+		} else {
+			requests.append(query)
+		}
 	}
 	
-	func load() {
+	///Add a query to load data for passed type.
+	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning` and `.distanceSwimming`) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
+	func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType) {
+		self.addRequest(for: typeID, withUnit: unit, andTimeType: tType, searchingBy: pred, isBase: false)
+	}
+	
+	///- parameter quickLoad: If enabled only base queries, i.e. heart data, will be executed and not custom ones defined by specific workouts.
+	func load(quickLoad: Bool = false) {
 		guard !loading && !loaded else {
 			return
 		}
 		
 		loading = true
-		for r in requests {
+		let req = baseReq + (quickLoad ? [] : requests)
+		requestToDo = req.count
+		for r in req {
 			healthStore.execute(r)
 		}
 	}
@@ -242,11 +286,11 @@ class Workout {
 		gen += "Start\(sep)" + genData[1] + "\n"
 		gen += "End\(sep)" + genData[2] + "\n"
 		gen += "Duration\(sep)" + genData[3] + "\n"
-		gen += "Distance\(sep)" + genData[4] + "\n"
+		gen += "\("Distance \(distanceUnit.description)".toCSV())\(sep)" + genData[4] + "\n"
 		gen += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
 		gen += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
-		gen += "\("Average Pace".toCSV())\(sep)" + genData[7] + "\n"
-		gen += "\("Average Speed".toCSV())\(sep)" + genData[8] + "\n"
+		gen += "\("Average Pace time/\(paceUnit.description)".toCSV())\(sep)" + genData[7] + "\n"
+		gen += "\("Average Speed \(speedUnit.description)/h".toCSV())\(sep)" + genData[8] + "\n"
 		data.append(gen)
 		
 		if let details = self.details {

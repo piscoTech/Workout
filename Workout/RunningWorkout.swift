@@ -16,7 +16,7 @@ class RunninWorkout: Workout {
 		super.init(raw, delegate: del)
 		
 		self.addDetails([.pace, .heart, .steps])
-		self.addRequest(for: .distanceWalkingRunning, withUnit: .kilometer(), andTimeType: .ranged, searchingBy: .workout)
+		self.addRequest(for: .distanceWalkingRunning, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout)
 		self.addRequest(for: .stepCount, withUnit: .steps(), andTimeType: .ranged, searchingBy: .time)
 	}
 	

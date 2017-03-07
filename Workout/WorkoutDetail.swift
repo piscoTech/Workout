@@ -18,7 +18,7 @@ class WorkoutDetail {
 	private let displayer: (WorkoutMinute) -> String?
 	private let exporter: (WorkoutMinute) -> String?
 	
-	///Create a new workout detail.
+	///Create a new workout detail to present values stored inside a `WorkoutMinute`.
 	///- parameter name: The name of the detail used as header when exporting.
 	///- parameter valueFormatter: A block called to format the value for display on screen, return `nil` if the value is not available.
 	///- parameter exportFormatter: A block called to format the value for exporting, return `nil` if the value is not available, remember to invoke `.toCSV()` inside the block.
@@ -44,30 +44,35 @@ class WorkoutDetail {
 		return exporter(val) ?? ""
 	}
 	
+	///Provides information about the time.
 	static let time = WorkoutDetail(name: "Time", valueFormatter: { (m) in
 		return "\(m.minute)m"
 	}, exportFormatter: { (m) in
 		return m.startTime.getDuration().toCSV()
 	}, color: .black)
 	
+	///Provides the avarage pace in seconds per kilometer.
 	static let pace = WorkoutDetail(name: "Pace", valueFormatter: { (m) in
-		return m.pace?.getFormattedPace()
+		return m.pace?.getFormattedPace(forLengthUnit: m.owner.paceUnit)
 	}, exportFormatter: { (m) in
 		return m.pace?.getDuration().toCSV()
 	})
 	
+	///Provides the avarage speed in kilometer per hour.
 	static let speed = WorkoutDetail(name: "Speed", valueFormatter: { (m) in
-		return m.speed?.getFormattedSpeed()
+		return m.speed?.getFormattedSpeed(forLengthUnit: m.owner.speedUnit)
 	}, exportFormatter: { (m) in
 		return m.speed?.toCSV()
 	})
 	
+	///Provides the avarage heart rate.
 	static let heart = WorkoutDetail(name: "Heart Rate", valueFormatter: { (m) in
 		return m.bpm?.getFormattedHeartRate()
 	}, exportFormatter: { (m) in
 		return m.bpm?.toCSV()
 	})
 	
+	///Provides the number of steps.
 	static let steps = WorkoutDetail(name: "Steps", valueFormatter: { (m) in
 		guard let count = m.getTotal(for: .stepCount), let txt = integerF.string(from: NSNumber(value: count)) else {
 			return nil
@@ -78,6 +83,7 @@ class WorkoutDetail {
 		return m.getTotal(for: .stepCount)?.toCSV()
 	})
 	
+	///Provides the number of strokes.
 	@available(iOS 10, *)
 	static let strokes = WorkoutDetail(name: "Strokes", valueFormatter: { (m) in
 		guard let count = m.getTotal(for: .swimmingStrokeCount), let txt = integerF.string(from: NSNumber(value: count)) else {
