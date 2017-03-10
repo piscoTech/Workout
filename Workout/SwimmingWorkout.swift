@@ -17,7 +17,7 @@ class SwimmingWorkout: Workout {
 		self.setLengthPrefixFor(distance: .none, speed: .kilo, pace: .kilo)
 		
 		if #available(iOS 10, *) {
-			self.addDetails([.speed, .heart, .strokes])
+			self.addDetails([.pace, .heart, .strokes])
 			self.addRequest(for: .distanceSwimming, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout)
 			self.addRequest(for: .swimmingStrokeCount, withUnit: .strokes(), andTimeType: .ranged, searchingBy: .time)
 		}

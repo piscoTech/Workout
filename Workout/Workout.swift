@@ -83,7 +83,7 @@ class Workout {
 	var avgHeart: Double? {
 		return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
 	}
-	///Avarage pace of the workout in seconds per `paceUnit`.
+	///Average pace of the workout in seconds per `paceUnit`.
 	var pace: TimeInterval? {
 		guard let dist = raw.totalDistance?.doubleValue(for: paceUnit) else {
 			return nil
@@ -91,7 +91,7 @@ class Workout {
 		
 		return duration / dist
 	}
-	///Avarage speed of the workout in `speedUnit` per hour.
+	///Average speed of the workout in `speedUnit` per hour.
 	var speed: Double? {
 		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit) else {
 			return nil
@@ -180,7 +180,7 @@ class Workout {
 	}
 	
 	///Add a query to load data for passed type.
-	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning` and `.distanceSwimming`) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
+	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
 	private func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType, isBase: Bool) {
 		guard !loading && !loaded else {
 			return
@@ -245,7 +245,7 @@ class Workout {
 	}
 	
 	///Add a query to load data for passed type.
-	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning` and `.distanceSwimming`) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
+	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
 	func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType) {
 		self.addRequest(for: typeID, withUnit: unit, andTimeType: tType, searchingBy: pred, isBase: false)
 	}

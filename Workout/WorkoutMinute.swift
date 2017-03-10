@@ -48,7 +48,7 @@ class WorkoutMinute: CustomStringConvertible {
 	var distance: Double? {
 		return rawDistance?.convertFrom(.meter(), to: owner.distanceUnit)
 	}
-	///Avarage pace of the minute in seconds per `paceUnit` specified by `owner`.
+	///Average pace of the minute in seconds per `paceUnit` specified by `owner`.
 	var pace: TimeInterval? {
 		if let d = rawDistance?.convertFrom(.meter(), to: owner.paceUnit) {
 			return duration / d
@@ -56,7 +56,7 @@ class WorkoutMinute: CustomStringConvertible {
 			return nil
 		}
 	}
-	///Avarage speed of the minute in `speedUnit`, specified by `owner`, per hour.
+	///Average speed of the minute in `speedUnit`, specified by `owner`, per hour.
 	var speed: Double? {
 		guard let dist = rawDistance?.convertFrom(.meter(), to: owner.speedUnit) else {
 			return nil

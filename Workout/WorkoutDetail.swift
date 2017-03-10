@@ -51,21 +51,21 @@ class WorkoutDetail {
 		return m.startTime.getDuration().toCSV()
 	}, color: .black)
 	
-	///Provides the avarage pace in seconds per kilometer.
+	///Provides the average pace in seconds per kilometer.
 	static let pace = WorkoutDetail(name: "Pace", valueFormatter: { (m) in
 		return m.pace?.getFormattedPace(forLengthUnit: m.owner.paceUnit)
 	}, exportFormatter: { (m) in
 		return m.pace?.getDuration().toCSV()
 	})
 	
-	///Provides the avarage speed in kilometer per hour.
+	///Provides the average speed in kilometer per hour.
 	static let speed = WorkoutDetail(name: "Speed", valueFormatter: { (m) in
 		return m.speed?.getFormattedSpeed(forLengthUnit: m.owner.speedUnit)
 	}, exportFormatter: { (m) in
 		return m.speed?.toCSV()
 	})
 	
-	///Provides the avarage heart rate.
+	///Provides the average heart rate.
 	static let heart = WorkoutDetail(name: "Heart Rate", valueFormatter: { (m) in
 		return m.bpm?.getFormattedHeartRate()
 	}, exportFormatter: { (m) in
