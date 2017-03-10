@@ -13,7 +13,7 @@ import GoogleMobileAds
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate {
 	
-	private var workouts: [HKWorkout]!
+	private var workouts: [Workout]!
 	private var err: Error?
 	
 	private var standardRightBtns: [UIBarButtonItem]!
@@ -72,12 +72,12 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 			let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 			let type = HKObjectType.workoutType()
-			let predicate =  HKQuery.predicateForWorkouts(with: .running)
-			let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: Int(HKObjectQueryNoLimit), sortDescriptors: [sortDescriptor]) { (_, r, err) in
+			let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { (_, r, err) in
 				self.workouts = nil
 				self.err = err
 				if let res = r as? [HKWorkout] {
-					self.workouts = res
+					//There's no need to call .load() as additional data is not needed here, we just need information about units
+					self.workouts = res.map { Workout.workoutFor(raw: $0) }
 				}
 				
 				DispatchQueue.main.async {
@@ -121,13 +121,13 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
 		let w = workouts[indexPath.row]
 		
-		cell.textLabel?.text = w.startDate.getFormattedDateTime()
+		cell.textLabel?.text = w.type.name
 		
-		var detail = w.duration.getDuration()
-		if let dist = w.totalDistance {
-			detail += " - " + (dist.doubleValue(for: .meter()) / 1000).getFormattedDistance()
+		var detail = [w.startDate.getFormattedDateTime(), w.duration.getDuration() ]
+		if let dist = w.totalDistance?.getFormattedDistance(withUnit: w.distanceUnit) {
+			detail.append(dist)
 		}
-		cell.detailTextLabel?.text = detail
+		cell.detailTextLabel?.text = detail.joined(separator: " – ")
 		
 		if inExportMode {
 			cell.accessoryType = exportSelection[indexPath.row] ? .checkmark : .none
@@ -157,12 +157,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	func authorize(_ sender: AnyObject) {
-		healthStore.requestAuthorization(toShare: nil, read: [
-			HKObjectType.workoutType(),
-			HKObjectType.quantityType(forIdentifier: .heartRate)!,
-			HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-			HKObjectType.quantityType(forIdentifier: .stepCount)!
-		]) { (success, _) in
+		healthStore.requestAuthorization(toShare: nil, read: healthReadData) { (success, _) in
 			if success {
 				preferences.set(true, forKey: PreferenceKey.authorized)
 				preferences.set(authRequired, forKey: PreferenceKey.authVersion)
@@ -218,7 +213,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			
 			for (w, e) in zip(self.workouts, self.exportSelection) {
 				if e {
-					self.exportWorkouts.append(Workout(w, delegate: self))
+					let workout = Workout.workoutFor(raw: w.raw, delegate: self)
+					//Avoid loading additional (and unused) detail
+					workout.load(quickLoad: true)
+					self.exportWorkouts.append(workout)
 				}
 			}
 		}
@@ -274,7 +272,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	func dataIsReady() {
 		//Move to a serial queue to synchronize access to counter
-		DispatchQueue.userInitiated.async {
+		DispatchQueue.workout.async {
 			self.waitingForExport -= 1
 			DispatchQueue.main.async {
 				let total = self.exportWorkouts.count
@@ -298,7 +296,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 					}
 				}
 				
-				var data = "Start\(CSVSeparator)End\(CSVSeparator)Duration\(CSVSeparator)Distance\(CSVSeparator)\("Average Heart Rate".toCSV())\(CSVSeparator)\("Max Heart Rate".toCSV())\(CSVSeparator)\("Average Pace".toCSV())\n"
+				let sep = CSVSeparator
+				var data = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\n"
 				for w in self.exportWorkouts {
 					if w.hasError {
 						displayError()
@@ -422,7 +421,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		switch id {
 		case "showWorkout":
 			if let dest = segue.destination as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
-				dest.rawWorkout = workouts[indexPath.row]
+				dest.rawWorkout = workouts[indexPath.row].raw
 			}
 		case "info":
 			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? AboutViewController {

@@ -27,7 +27,8 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        workout = Workout(rawWorkout, delegate: self)
+        workout = Workout.workoutFor(raw: rawWorkout, delegate: self)
+		workout.load()
     }
 
     override func didReceiveMemoryWarning() {
@@ -46,7 +47,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
     // MARK: - Table view data source
 
 	override func numberOfSections(in tableView: UITableView) -> Int {
-		return error ? 1 : 2
+		return error ? 1 : (workout.details != nil ? 2 : 1)
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -54,7 +55,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return 1
 		}
 		
-		return section == 0 ? 7 : workout.details.count
+		return section == 0 ? 9 : workout.details?.count ?? 0
     }
 
 
@@ -74,12 +75,9 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		
 		if indexPath.section == 1 {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
-			let d = workout.details[indexPath.row]
+			let d = workout.details![indexPath.row]
 			
-			cell.time.text = "\(d.minute)m"
-			cell.pace.text = d.pace?.getFormattedPace() ?? "-"
-			cell.bpm.text = d.bpm?.getFormattedHeartRate() ?? "-"
-			cell.steps.text = d.steps?.getFormattedSteps() ?? "-"
+			cell.update(for: workout.displayDetail!, withData: d)
 			
 			return cell
 		} else {
@@ -88,26 +86,33 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			let title: String
 			switch indexPath.row {
 			case 0:
+				title = "TYPE"
+				cell.detailTextLabel?.text = workout.type.name
+			case 1:
 				title = "START"
 				cell.detailTextLabel?.text = workout.startDate.getFormattedDateTime()
-			case 1:
+			case 2:
 				title = "END"
 				cell.detailTextLabel?.text = workout.endDate.getFormattedDateTime()
-			case 2:
+			case 3:
 				title = "DURATION"
 				cell.detailTextLabel?.text = workout.duration.getDuration()
-			case 3:
-				title = "DISTANCE"
-				cell.detailTextLabel?.text = workout.totalDistance.getFormattedDistance()
 			case 4:
-				title = "AVG_HEART"
-				cell.detailTextLabel?.text = workout.avgHeart?.getFormattedHeartRate() ?? "-"
+				title = "DISTANCE"
+				cell.detailTextLabel?.text = workout.totalDistance?.getFormattedDistance(withUnit: workout.distanceUnit) ?? WorkoutDetail.noData
 			case 5:
-				title = "MAX_HEART"
-				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? "-"
+				title = "AVG_HEART"
+				cell.detailTextLabel?.text = workout.avgHeart?.getFormattedHeartRate() ?? WorkoutDetail.noData
 			case 6:
+				title = "MAX_HEART"
+				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? WorkoutDetail.noData
+			case 7:
 				title = "AVG_PACE";
-				cell.detailTextLabel?.text = workout.pace.getFormattedPace()
+				cell.detailTextLabel?.text = workout.pace?.getFormattedPace(forLengthUnit: workout.paceUnit) ?? WorkoutDetail.noData
+			case 8:
+				title = "AVG_SPEED";
+				cell.detailTextLabel?.text = workout.speed?.getFormattedSpeed(forLengthUnit: workout.speedUnit
+					) ?? WorkoutDetail.noData
 			default:
 				return cell
 			}

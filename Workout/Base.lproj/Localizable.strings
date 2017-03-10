@@ -13,6 +13,7 @@
 "LOADING" = "Loading...";
 "ERR_NO_HEALTH" = "Health data is not available";
 
+"TYPE" = "Type";
 "START" = "Start";
 "END" = "End";
 "DURATION" = "Duration";
@@ -20,6 +21,10 @@
 "AVG_HEART" = "Average Heart Rate";
 "MAX_HEART" = "Max Heart Rate";
 "AVG_PACE" = "Average Pace";
+"AVG_SPEED" = "Average Speed";
+
+"STEPS" = "steps";
+"STROKES" = "strokes";
 
 "CANNOT_EXPORT" = "Cannot export workout data";
 "SEL_EXPORT_ALL" = "Select All";

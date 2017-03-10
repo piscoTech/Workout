@@ -8,14 +8,20 @@
 
 import Foundation
 
-struct DataPoint {
+protocol DataPoint {
+
+	var value: Double { get }
+
+}
+
+struct InstantDataPoint: DataPoint {
 	
 	let time: TimeInterval
 	let value: Double
 	
 }
 
-struct RangedDataPoint {
+struct RangedDataPoint: DataPoint {
 	
 	let start, end: TimeInterval
 	let value: Double
@@ -30,4 +36,12 @@ struct RangedDataPoint {
 		return end - start
 	}
 	
+}
+
+enum DataPointType {
+	case instant, ranged
+}
+
+enum DataType {
+	case cumulative, average
 }
