@@ -89,7 +89,7 @@ class Workout {
 			return nil
 		}
 		
-		return duration / dist
+		return (duration / dist).filterAsPace(withLengthUnit: paceUnit)
 	}
 	///Average speed of the workout in `speedUnit` per hour.
 	var speed: Double? {

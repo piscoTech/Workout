@@ -51,7 +51,7 @@ class WorkoutMinute: CustomStringConvertible {
 	///Average pace of the minute in seconds per `paceUnit` specified by `owner`.
 	var pace: TimeInterval? {
 		if let d = rawDistance?.convertFrom(.meter(), to: owner.paceUnit) {
-			return duration / d
+			return (duration / d).filterAsPace(withLengthUnit: owner.paceUnit)
 		} else {
 			return nil
 		}
