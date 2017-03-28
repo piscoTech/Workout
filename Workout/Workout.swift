@@ -85,11 +85,11 @@ class Workout {
 	}
 	///Average pace of the workout in seconds per `paceUnit`.
 	var pace: TimeInterval? {
-		guard let dist = raw.totalDistance?.doubleValue(for: paceUnit) else {
+		guard let dist = raw.totalDistance?.doubleValue(for: paceUnit), dist > 0 else {
 			return nil
 		}
 		
-		return duration / dist
+		return (duration / dist).filterAsPace(withLengthUnit: paceUnit)
 	}
 	///Average speed of the workout in `speedUnit` per hour.
 	var speed: Double? {

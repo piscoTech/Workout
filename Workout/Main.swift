@@ -36,6 +36,8 @@ let adsEnable = true
 ///
 ///For test purposes use the test ID provided by Google: `ca-app-pub-3940256099942544/2934735716`.
 let adsID = "ca-app-pub-7085161342725707/5192351673"
+///Max acceptable pace in time per kilometer.
+let maxPace: TimeInterval = 30 * 60
 ///Filter for step count source name.
 var stepSourceFilter: StepSource {
 	return StepSource.getSource(for: preferences.string(forKey: PreferenceKey.stepSource) ?? "")
@@ -83,6 +85,13 @@ extension TimeInterval {
 	///- returns: The formatted value, considered in time per `forLengthUnit`.
 	func getFormattedPace(forLengthUnit unit: HKUnit) -> String {
 		return getDuration() + "/\(unit.description)"
+	}
+	
+	func filterAsPace(withLengthUnit unit: HKUnit) -> Double? {
+		let timeKm = HKUnit.second().unitDivided(by: .meterUnit(with: .kilo))
+		let timeUnit = HKUnit.second().unitDivided(by: unit)
+		
+		return self.convertFrom(timeUnit, to: timeKm) > maxPace ? nil : self
 	}
 	
 }
