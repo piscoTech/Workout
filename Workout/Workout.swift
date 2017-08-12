@@ -77,7 +77,10 @@ class Workout {
 		return raw.duration
 	}
 	var totalDistance: Double? {
-		return raw.totalDistance?.doubleValue(for: distanceUnit)
+		let distance = raw.totalDistance?.doubleValue(for: distanceUnit)
+		
+		// Don't expose a 0 distance, give nil instead
+		return distance ?? 0 > 0 ? distance : nil
 	}
 	var maxHeart: Double? = nil
 	var avgHeart: Double? {

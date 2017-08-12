@@ -52,7 +52,7 @@ var areAdsEnabled: Bool {
 let removeAdsId = "MarcoBoschi.ios.Workout.removeAds"
 let iapManager = InAppPurchaseManager(productIds: [removeAdsId], inUserDefaults: preferences)
 
-let distanceF = { Void -> NumberFormatter in
+let distanceF: NumberFormatter = {
 	let formatter = NumberFormatter()
 	formatter.numberStyle = .decimal
 	formatter.usesSignificantDigits = false
@@ -61,7 +61,7 @@ let distanceF = { Void -> NumberFormatter in
 	return formatter
 }()
 
-let speedF = { Void -> NumberFormatter in
+let speedF: NumberFormatter = {
 	let formatter = NumberFormatter()
 	formatter.numberStyle = .decimal
 	formatter.usesSignificantDigits = false
@@ -70,7 +70,7 @@ let speedF = { Void -> NumberFormatter in
 	return formatter
 }()
 
-let integerF = { Void -> NumberFormatter in
+let integerF: NumberFormatter = {
 	let formatter = NumberFormatter()
 	formatter.numberStyle = .decimal
 	formatter.usesSignificantDigits = false

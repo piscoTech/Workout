@@ -42,7 +42,8 @@ class WorkoutMinute: CustomStringConvertible {
 			res = res ?? getTotal(for: .distanceSwimming)
 		}
 		
-		return res
+		// Don't expose a 0 distance, give nil instead
+		return res ?? 0 > 0 ? res : nil
 	}
 	///Distance in `distanceUnit` as specified by `owner`.
 	var distance: Double? {

@@ -158,7 +158,7 @@ class AboutViewController: UITableViewController {
 		iapManager.restorePurchases()
 	}
 	
-	func transactionUpdated(_ not: NSNotification) {
+	@objc func transactionUpdated(_ not: NSNotification) {
 		guard let transaction = not.object as? TransactionStatus, transaction.product == removeAdsId else {
 			return
 		}
@@ -185,7 +185,7 @@ class AboutViewController: UITableViewController {
 		}
 	}
 	
-	func restoreCompleted(_ not: NSNotification) {
+	@objc func restoreCompleted(_ not: NSNotification) {
 		guard let status = not.object as? RestorationStatus else {
 			return
 		}

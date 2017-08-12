@@ -193,7 +193,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 	}
 	
-	func doExport(_ sender: UIBarButtonItem) {
+	@objc func doExport(_ sender: UIBarButtonItem) {
 		loadingBar?.dismiss(animated: false)
 		
 		DispatchQueue.userInitiated.async {
@@ -222,7 +222,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 	}
 	
-	func cancelExport(_ sender: AnyObject) {
+	@objc func cancelExport(_ sender: AnyObject) {
 		inExportMode = false
 		
 		navigationItem.leftBarButtonItem = standardLeftBtn
@@ -235,7 +235,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 	}
 	
-	func toggleExportAll(_ sender: AnyObject) {
+	@objc func toggleExportAll(_ sender: AnyObject) {
 		let newVal: Bool
 		let newText: String
 		
@@ -379,7 +379,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 	}
 	
-	func transactionUpdated(_ not: NSNotification) {
+	@objc func transactionUpdated(_ not: NSNotification) {
 		guard let transaction = not.object as? TransactionStatus, transaction.product == removeAdsId else {
 			return
 		}
