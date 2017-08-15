@@ -16,6 +16,11 @@ class AboutViewController: UITableViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		
+		if #available(iOS 11, *) {
+			self.navigationController?.navigationBar.prefersLargeTitles = true
+			self.navigationItem.largeTitleDisplayMode = .always
+		}
 
 		appInfo = NSLocalizedString("REPORT_TEXT", comment: "Report problem") + "\n\nWorkout \(Bundle.main.versionDescription)\n© 2016-2017 Marco Boschi"
 		

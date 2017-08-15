@@ -30,6 +30,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
     override func viewDidLoad() {
         super.viewDidLoad()
 		
+		if #available(iOS 11, *) {
+			self.navigationController?.navigationBar.prefersLargeTitles = true
+			self.navigationItem.largeTitleDisplayMode = .always
+		}
+		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		standardRightBtns = navigationItem.rightBarButtonItems
 		standardLeftBtn = navigationItem.leftBarButtonItem
@@ -164,7 +169,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				preferences.synchronize()
 			}
 			
-			self.refresh()
+			DispatchQueue.main.async {
+				self.refresh()
+			}
 		}
 	}
 	

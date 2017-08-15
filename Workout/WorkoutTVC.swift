@@ -26,6 +26,10 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		if #available(iOS 11, *) {
+			self.navigationItem.largeTitleDisplayMode = .never
+		}
 
         workout = Workout.workoutFor(raw: rawWorkout, delegate: self)
 		workout.load()
