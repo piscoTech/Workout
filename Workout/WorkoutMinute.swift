@@ -59,7 +59,7 @@ class WorkoutMinute: CustomStringConvertible {
 	}
 	///Average speed of the minute in `speedUnit`, specified by `owner`, per hour.
 	var speed: Double? {
-		guard let dist = rawDistance?.convertFrom(.meter(), to: owner.speedUnit) else {
+		guard let dist = rawDistance?.convertFrom(.meter(), to: owner.speedUnit), dist > 0 else {
 			return nil
 		}
 		

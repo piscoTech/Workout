@@ -96,7 +96,7 @@ class Workout {
 	}
 	///Average speed of the workout in `speedUnit` per hour.
 	var speed: Double? {
-		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit) else {
+		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit), dist > 0 else {
 			return nil
 		}
 		

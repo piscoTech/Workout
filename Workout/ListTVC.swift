@@ -106,15 +106,21 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return workouts?.count ?? 1
+        return max(workouts?.count ?? 1, 1)
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		if workouts == nil {
+		if workouts?.count ?? 0 == 0 {
 			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
 			let msg: String
 			if HKHealthStore.isHealthDataAvailable() {
-				msg = err == nil ? "LOADING" : "ERR_LOADING"
+				if err != nil {
+					msg = "ERR_LOADING"
+				} else if workouts != nil {
+					msg = "ERR_NO_WORKOUT"
+				} else {
+					msg = "LOADING"
+				}
 			} else {
 				msg = "ERR_NO_HEALTH"
 			}

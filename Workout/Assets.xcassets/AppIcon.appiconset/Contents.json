@@ -101,6 +101,12 @@
       "idiom" : "ipad",
       "filename" : "App Icon iOS_iPad Pro.png",
       "scale" : "2x"
+    },
+    {
+      "size" : "1024x1024",
+      "idiom" : "ios-marketing",
+      "filename" : "App Icon iOS_App Store.png",
+      "scale" : "1x"
     }
   ],
   "info" : {
