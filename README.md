@@ -16,7 +16,7 @@ This project relies on CocoaPods not included the repository, after cloning run
 
 in a terminal in the project directory to download linked frameworks and use `Workout.xcworkspace` to open the project.
 
-The framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.2](https://github.com/piscoTech/MBLibrary/releases/tag/v1.2(7)).
+The framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.2.1](https://github.com/piscoTech/MBLibrary/releases/tag/v1.2.1(8)).
 
 ## Customization
 General behaviour of the app can be configured via global variables in `Main.swift`:

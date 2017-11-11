@@ -110,11 +110,12 @@ class Workout {
 	}
 	private let workoutPredicate: NSPredicate!
 	private let timePredicate: NSPredicate!
+	private let sourcePredicate: NSPredicate!
 	private let startDateSort: NSSortDescriptor!
 	private let queryNoLimit = HKObjectQueryNoLimit
 	
 	enum SearchType {
-		case time, workout
+		case time, workout(fallbackToTime: Bool)
 	}
 	
 	class func workoutFor(raw: HKWorkout, delegate: WorkoutDelegate? = nil) -> Workout {
@@ -140,6 +141,7 @@ class Workout {
 			hasError = true
 			workoutPredicate = nil
 			timePredicate = nil
+			sourcePredicate = nil
 			startDateSort = nil
 			delegate?.dataIsReady()
 			
@@ -148,6 +150,7 @@ class Workout {
 		
 		workoutPredicate = HKQuery.predicateForObjects(from: raw)
 		timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
+		sourcePredicate = HKQuery.predicateForObjects(from: raw.sourceRevision.source)
 		startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 		
 		updateUnits()
@@ -194,8 +197,27 @@ class Workout {
 		}
 		
 		let rawStart = self.rawStart
-		let predicate = pred == .time ? timePredicate : workoutPredicate
-		let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: queryNoLimit, sortDescriptors: [startDateSort]) { (_, r, err) -> Void in
+		let predicate: NSPredicate
+		var tryTimeIfEmpty = false
+		switch pred {
+		case .time:
+			predicate = timePredicate
+		case let .workout(tryTime):
+			predicate = workoutPredicate
+			tryTimeIfEmpty = tryTime
+		}
+		
+		var resultHandler: ((HKSampleQuery, [HKSample]?, Error?) -> Void)!
+		resultHandler = { (_, r, err) -> Void in
+			if tryTimeIfEmpty, err != nil || r?.count ?? 0 == 0 {
+				tryTimeIfEmpty = false
+				let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [self.timePredicate, self.sourcePredicate])
+				let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: self.queryNoLimit, sortDescriptors: [self.startDateSort], resultsHandler: resultHandler)
+				healthStore.execute(query)
+				
+				return
+			}
+			
 			if err != nil {
 				self.hasError = true
 			} else {
@@ -239,6 +261,7 @@ class Workout {
 				self.requestDone += 1
 			}
 		}
+		let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: queryNoLimit, sortDescriptors: [startDateSort], resultsHandler: resultHandler)
 		
 		if isBase {
 			baseReq.append(query)

@@ -18,7 +18,7 @@ class SwimmingWorkout: Workout {
 		
 		if #available(iOS 10, *) {
 			self.addDetails([.pace, .heart, .strokes])
-			self.addRequest(for: .distanceSwimming, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout)
+			self.addRequest(for: .distanceSwimming, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true))
 			self.addRequest(for: .swimmingStrokeCount, withUnit: .strokes(), andTimeType: .ranged, searchingBy: .time)
 		}
 	}
