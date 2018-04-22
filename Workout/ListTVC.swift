@@ -70,22 +70,20 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	private func refresh() {
+		workouts = nil
+		err = nil
 		if HKHealthStore.isHealthDataAvailable() {
-			workouts = nil
-			err = nil
 			tableView.reloadData()
 	
 			let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 			let type = HKObjectType.workoutType()
 			let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { (_, r, err) in
-				self.workouts = nil
-				self.err = err
-				if let res = r as? [HKWorkout] {
-					//There's no need to call .load() as additional data is not needed here, we just need information about units
-					self.workouts = res.map { Workout.workoutFor(raw: $0) }
-				}
+				//There's no need to call .load() as additional data is not needed here, we just need information about units
+				let wrkts = (r as? [HKWorkout])?.map { Workout.workoutFor(raw: $0) }
 				
 				DispatchQueue.main.async {
+					self.workouts = wrkts
+					self.err = err
 					self.updateExportModeEnabled()
 					self.tableView.reloadData()
 				}
