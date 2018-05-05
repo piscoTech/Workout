@@ -122,7 +122,7 @@ class Workout {
 		let wClass: Workout.Type
 		
 		switch raw.workoutActivityType {
-		case .running:
+		case .running, .walking:
 			wClass = RunninWorkout.self
 		case .swimming:
 			wClass = SwimmingWorkout.self

@@ -3,7 +3,7 @@ Do you go jogging and record your workout with your Apple Watch or record any wo
 With Workout you can export all your workouts saved inside the Health app to a CSV file and import them to your favorite spreadsheet app and view any detail:
 - General data such as distance, duration, heart rate, average pace and speed
 - Minute by minute details for supported workouts:
-  - Running: pace, heart rate, step count
+  - Running & Walking: pace, heart rate, step count
   - Swimming: speed, heart rate, stroke count
 
 
@@ -16,7 +16,7 @@ This project relies on CocoaPods not included the repository, after cloning run
 
 in a terminal in the project directory to download linked frameworks and use `Workout.xcworkspace` to open the project.
 
-The framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.2.1](https://github.com/piscoTech/MBLibrary/releases/tag/v1.2.1(8)).
+The framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.2.2](https://github.com/piscoTech/MBLibrary/releases/tag/v1.2.2(9)).
 
 ## Customization
 General behaviour of the app can be configured via global variables in `Main.swift`:
