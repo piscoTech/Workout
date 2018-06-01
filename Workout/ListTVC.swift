@@ -10,6 +10,7 @@ import UIKit
 import HealthKit
 import MBLibrary
 import GoogleMobileAds
+import PersonalizedAdConsent
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate {
 	
@@ -351,6 +352,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	private var adView: GADBannerView!
 	private var adRetryDelay = 1.0
+	private var allowPersonalizedAds = true
 	
 	private func initializeAds() {
 		navigationController?.isToolbarHidden = true
@@ -359,6 +361,66 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			return
 		}
 		
+		PACConsentInformation.sharedInstance.requestConsentInfoUpdate(forPublisherIdentifiers: [adsID]) { err in
+			if err != nil {
+				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
+			} else {
+				if PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown {
+					let consent = PACConsentInformation.sharedInstance.consentStatus
+					if consent == .unknown {
+						DispatchQueue.main.async {
+							self.collectAdsConsent()
+						}
+					} else {
+						self.allowPersonalizedAds = consent == .personalized
+						DispatchQueue.main.async {
+							self.loadAd()
+						}
+					}
+				} else {
+					self.allowPersonalizedAds = true
+					DispatchQueue.main.async {
+						self.loadAd()
+					}
+				}
+			}
+		}
+	}
+	
+	private func collectAdsConsent() {
+		guard let privacyUrl = URL(string: "https://github.com/piscoTech/Workout/blob/master/PRIVACY.md"),
+			let form = PACConsentForm(applicationPrivacyPolicyURL: privacyUrl) else {
+			fatalError("Incorrect privacy URL.")
+		}
+		
+		form.shouldOfferPersonalizedAds = true
+		form.shouldOfferNonPersonalizedAds = true
+		form.shouldOfferAdFree = true
+		
+		form.load { err in
+			if err != nil {
+				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
+			} else {
+				DispatchQueue.main.async {
+					form.present(from: self) { err, adsFree in
+						if err != nil {
+							DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
+						} else {
+							self.allowPersonalizedAds = !adsFree && PACConsentInformation.sharedInstance.consentStatus == .personalized
+							DispatchQueue.main.async {
+								self.loadAd()
+								if adsFree {
+									self.performSegue(withIdentifier: "info", sender: self)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private func loadAd() {
 		adView = GADBannerView(adSize: kGADAdSizeBanner)
 		adView.translatesAutoresizingMaskIntoConstraints = false
 		adView.rootViewController = self
@@ -418,7 +480,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	private func getAdRequest() -> GADRequest {
 		let req = GADRequest()
-		req.testDevices = [kGADSimulatorID]
+		if !allowPersonalizedAds {
+			let extras = GADExtras()
+			extras.additionalParameters = ["npa": "1"]
+			req.register(extras)
+		}
 		return req
 	}
 
