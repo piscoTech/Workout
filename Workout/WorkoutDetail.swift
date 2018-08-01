@@ -58,7 +58,7 @@ class WorkoutDetail {
 		return m.pace?.getDuration().toCSV()
 	})
 	
-	///Provides the average speed in kilometer per hour.
+	///Provides the average speed in the specified `speedUnit` per hour.
 	static let speed = WorkoutDetail(name: "Speed", valueFormatter: { (m) in
 		return m.speed?.getFormattedSpeed(forLengthUnit: m.owner.speedUnit)
 	}, exportFormatter: { (m) in

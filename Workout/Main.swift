@@ -11,14 +11,16 @@ import HealthKit
 import MBLibrary
 
 ///Keep track of the version of health authorization required, increase this number to automatically display an authorization request.
-let authRequired = 2
+let authRequired = 4
 ///List of health data to require access to.
 let healthReadData: Set<HKObjectType> = {
 	var res: Set<HKObjectType> = [
 		HKObjectType.workoutType(),
 		HKObjectType.quantityType(forIdentifier: .heartRate)!,
 		HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-		HKObjectType.quantityType(forIdentifier: .stepCount)!
+		HKObjectType.quantityType(forIdentifier: .stepCount)!,
+		HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+		HKObjectType.quantityType(forIdentifier: .basalEnergyBurned)!
 	]
 	
 	if #available(iOS 10, *) {
@@ -107,6 +109,11 @@ extension Double {
 	///- returns: The formatted value, considered in `forLengthUnit` per hour.
 	func getFormattedSpeed(forLengthUnit unit: HKUnit) -> String {
 		return speedF.string(from: NSNumber(value: self))! + " \(unit.description)/h"
+	}
+	
+	///- returns: The formatted value, considered in kilocalories.
+	func getFormattedCalories() -> String {
+		return integerF.string(from: NSNumber(value: self))! + " kcal"
 	}
 	
 	func getFormattedHeartRate() -> String {

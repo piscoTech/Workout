@@ -102,6 +102,32 @@ class Workout {
 		
 		return dist / (duration / 3600)
 	}
+	///Total energy burned in kilocalories.
+	var totalCalories: Double? {
+		return rawTotalCalories ?? rawActiveCalories
+	}
+	///Active energy burned in kilocalories.
+	var activeCalories: Double? {
+		return rawTotalCalories != nil ? rawActiveCalories : nil
+	}
+	
+	private var activeCaloriesData = 0.0
+	private var restingCaloriesData = 0.0
+	
+	private var rawTotalCalories: Double? {
+		let total = (rawActiveCalories ?? 0) + restingCaloriesData
+		return total > 0 ? total : nil
+	}
+	private var rawActiveCalories: Double? {
+		if activeCaloriesData > 0 {
+			return activeCaloriesData
+		} else if let total = raw.totalEnergyBurned?.doubleValue(for: .kilocalorie()), total > 0 {
+			return total
+		} else {
+			return nil
+		}
+	}
+	
 	
 	private var heartData = [Double]()
 	
@@ -155,6 +181,8 @@ class Workout {
 		
 		updateUnits()
 		addRequest(for: .heartRate, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time, isBase: true)
+		addRequest(for: .activeEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true), isBase: true)
+		addRequest(for: .basalEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .time, isBase: true)
 	}
 	
 	func setLengthPrefixFor(distance dPref: HKMetricPrefix, speed sPref: HKMetricPrefix, pace pPref: HKMetricPrefix) {
@@ -186,6 +214,7 @@ class Workout {
 	}
 	
 	///Add a query to load data for passed type.
+	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`.
 	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
 	private func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType, isBase: Bool) {
 		guard !loading && !loaded else {
@@ -235,9 +264,16 @@ class Workout {
 					
 					let val = s.quantity.doubleValue(for: unit)
 					
-					if typeID == .heartRate {
+					switch typeID {
+					case .heartRate:
 						self.maxHeart = max(self.maxHeart ?? 0, val)
 						self.heartData.append(val)
+					case .activeEnergyBurned:
+						self.activeCaloriesData += val
+					case .basalEnergyBurned:
+						self.restingCaloriesData += val
+					default:
+						break
 					}
 					
 					let start = s.startDate.timeIntervalSince1970 - rawStart
@@ -256,7 +292,7 @@ class Workout {
 				}
 			}
 			
-			//Move to a serial queue to synchronize access to counter
+			// Move to a serial queue to synchronize access to counter
 			DispatchQueue.workout.async {
 				self.requestDone += 1
 			}
@@ -291,7 +327,19 @@ class Workout {
 	}
 	
 	private var generalData: [String] {
-		return [type.name.toCSV(), startDate.getUNIXDateTime().toCSV(), endDate.getUNIXDateTime().toCSV(), duration.getDuration().toCSV(), totalDistance?.toCSV() ?? "", avgHeart?.toCSV() ?? "", maxHeart?.toCSV() ?? "", pace?.getDuration().toCSV() ?? "", speed?.toCSV() ?? ""]
+		return [
+			type.name.toCSV(),
+			startDate.getUNIXDateTime().toCSV(),
+			endDate.getUNIXDateTime().toCSV(),
+			duration.getDuration().toCSV(),
+			totalDistance?.toCSV() ?? "",
+			avgHeart?.toCSV() ?? "",
+			maxHeart?.toCSV() ?? "",
+			pace?.getDuration().toCSV() ?? "",
+			speed?.toCSV() ?? "",
+			activeCalories?.toCSV() ?? "",
+			totalCalories?.toCSV() ?? ""
+		]
 	}
 	
 	func exportGeneralData() -> String {
@@ -317,6 +365,8 @@ class Workout {
 		gen += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
 		gen += "\("Average Pace time/\(paceUnit.description)".toCSV())\(sep)" + genData[7] + "\n"
 		gen += "\("Average Speed \(speedUnit.description)/h".toCSV())\(sep)" + genData[8] + "\n"
+		gen += "\("Active Energy kcal".toCSV())\(sep)" + genData[9] + "\n"
+		gen += "\("Total Energy kcal".toCSV())\(sep)" + genData[10] + "\n"
 		data.append(gen)
 		
 		if let details = self.details {

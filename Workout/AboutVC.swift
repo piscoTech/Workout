@@ -91,7 +91,12 @@ class AboutViewController: UITableViewController {
 		case (0, 0):
 			delegate.authorize(self)
 		case (2, 0):
-			UIApplication.shared.openURL(URL(string: "https://github.com/piscoTech/Workout")!)
+			let url = URL(string: "https://github.com/piscoTech/Workout")!
+			if #available(iOS 10.0, *) {
+				UIApplication.shared.open(url)
+			} else {
+				UIApplication.shared.openURL(url)
+			}
 		default:
 			break
 		}

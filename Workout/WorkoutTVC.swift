@@ -59,7 +59,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return 1
 		}
 		
-		return section == 0 ? 9 : workout.details?.count ?? 0
+		return section == 0 ? 10 : workout.details?.count ?? 0
     }
 
 
@@ -111,12 +111,23 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 				title = "MAX_HEART"
 				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? WorkoutDetail.noData
 			case 7:
-				title = "AVG_PACE";
+				title = "AVG_PACE"
 				cell.detailTextLabel?.text = workout.pace?.getFormattedPace(forLengthUnit: workout.paceUnit) ?? WorkoutDetail.noData
 			case 8:
-				title = "AVG_SPEED";
+				title = "AVG_SPEED"
 				cell.detailTextLabel?.text = workout.speed?.getFormattedSpeed(forLengthUnit: workout.speedUnit
 					) ?? WorkoutDetail.noData
+			case 9:
+				title = "CALORIES"
+				if let total = workout.totalCalories {
+					if let active = workout.activeCalories {
+						cell.detailTextLabel?.text = String(format: NSLocalizedString("CAL_SPLIT", comment: "Active/Total"), active.getFormattedCalories(), total.getFormattedCalories())
+					} else {
+						cell.detailTextLabel?.text = total.getFormattedCalories()
+					}
+				} else {
+					cell.detailTextLabel?.text = WorkoutDetail.noData
+				}
 			default:
 				return cell
 			}
