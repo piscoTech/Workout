@@ -63,10 +63,6 @@ class StepSourceTableViewController: UITableViewController, UITextFieldDelegate 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-		
-		if #available(iOS 11, *) {
-			self.navigationItem.largeTitleDisplayMode = .never
-		}
     }
 	
 	override func viewWillAppear(_ animated: Bool) {

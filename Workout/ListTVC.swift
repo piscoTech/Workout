@@ -12,7 +12,7 @@ import MBLibrary
 import GoogleMobileAds
 import PersonalizedAdConsent
 
-class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate {
+class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
 	
 	private var workouts: [Workout]!
 	private var err: Error?
@@ -20,21 +20,45 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	private var standardRightBtns: [UIBarButtonItem]!
 	@IBOutlet weak var enterExportModeBtn: UIBarButtonItem!
 	private var standardLeftBtn: UIBarButtonItem!
+	
 	private var exportRightBtns: [UIBarButtonItem]!
 	private var exportLeftBtn: UIBarButtonItem!
+	
 	private var exportToggleBtn: UIBarButtonItem!
 	private var exportCommitBtn: UIBarButtonItem!
 	private var exportSelection: [Bool]!
 	
 	private var inExportMode = false
+	
+	private weak var titleLbl: UILabel!
+	private weak var filterLbl: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		if #available(iOS 11, *) {
-			self.navigationController?.navigationBar.prefersLargeTitles = true
-			self.navigationItem.largeTitleDisplayMode = .always
+		let mainTitle = UILabel()
+		mainTitle.text = self.navigationItem.title
+		mainTitle.font = .systemFont(ofSize: 17, weight: .semibold)
+		let filter = UILabel()
+		filter.text = "FILTER"
+		filter.font = .systemFont(ofSize: 10, weight: .regular)
+		
+		for v in [mainTitle, filter] {
+			v.translatesAutoresizingMaskIntoConstraints = false
+			v.setContentHuggingPriority(.required, for: .vertical)
 		}
+		
+		let title = UIStackView(arrangedSubviews: [mainTitle, filter])
+		title.alignment = .center
+		title.axis = .vertical
+		title.distribution = .fill
+		let filterChanger = UITapGestureRecognizer(target: self, action: #selector(selectFilter(_:)))
+		title.addGestureRecognizer(filterChanger)
+		navigationItem.titleView = title
+		
+		titleLbl = mainTitle
+		filterLbl = filter
+		(navigationController?.navigationBar as? EnhancedNavigationBar)?.enhancedDelegate = self
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		standardRightBtns = navigationItem.rightBarButtonItems
@@ -66,6 +90,20 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
         // Dispose of any resources that can be recreated.
     }
 	
+	func authorize(_ sender: AnyObject) {
+		healthStore.requestAuthorization(toShare: nil, read: healthReadData) { (success, _) in
+			if success {
+				preferences.set(true, forKey: PreferenceKey.authorized)
+				preferences.set(authRequired, forKey: PreferenceKey.authVersion)
+				preferences.synchronize()
+			}
+			
+			DispatchQueue.main.async {
+				self.refresh()
+			}
+		}
+	}
+	
 	@IBAction func doRefresh(_ sender: AnyObject) {
 		refresh()
 	}
@@ -96,6 +134,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 		
 		updateExportModeEnabled()
+	}
+	
+	func largeTitleChanged(isLarge: Bool) {
+		titleLbl.isHidden = isLarge
 	}
 
     // MARK: - Table view data source
@@ -166,18 +208,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
 	
-	func authorize(_ sender: AnyObject) {
-		healthStore.requestAuthorization(toShare: nil, read: healthReadData) { (success, _) in
-			if success {
-				preferences.set(true, forKey: PreferenceKey.authorized)
-				preferences.set(authRequired, forKey: PreferenceKey.authVersion)
-				preferences.synchronize()
-			}
-			
-			DispatchQueue.main.async {
-				self.refresh()
-			}
-		}
+	// MARK: - Filter Workouts
+	
+	@objc func selectFilter(_ sender: AnyObject) {
+		print("Changing filter...")
 	}
 	
 	// MARK: - Export all workouts
