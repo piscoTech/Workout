@@ -372,6 +372,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	// MARK: - Ads stuff
 	
 	private var adView: GADBannerView!
+	private let defaultAdRetryDelay = 1.0
+	private let maxAdRetryDelay = 120.0
 	private var adRetryDelay = 1.0
 	private var allowPersonalizedAds = true
 	
@@ -385,7 +387,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		PACConsentInformation.sharedInstance.requestConsentInfoUpdate(forPublisherIdentifiers: [adsID]) { err in
 			if err != nil {
 				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
+				self.adRetryDelay = min(self.maxAdRetryDelay, self.adRetryDelay * 2)
 			} else {
+				self.adRetryDelay = self.defaultAdRetryDelay
 				if PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown {
 					let consent = PACConsentInformation.sharedInstance.consentStatus
 					if consent == .unknown {
@@ -421,12 +425,16 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		form.load { err in
 			if err != nil {
 				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
+				self.adRetryDelay = min(self.maxAdRetryDelay, self.adRetryDelay * 2)
 			} else {
+				self.adRetryDelay = self.defaultAdRetryDelay
 				DispatchQueue.main.async {
 					form.present(from: self) { err, adsFree in
 						if err != nil {
 							DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
+							self.adRetryDelay = min(self.maxAdRetryDelay, self.adRetryDelay * 2)
 						} else {
+							self.adRetryDelay = self.defaultAdRetryDelay
 							self.allowPersonalizedAds = !adsFree && PACConsentInformation.sharedInstance.consentStatus == .personalized
 							DispatchQueue.main.async {
 								self.loadAd()

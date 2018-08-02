@@ -92,7 +92,7 @@
                         <outlet property="enterExportModeBtn" destination="LjV-W9-sZo" id="Nwl-vT-dgn"/>
                         <outlet property="filterLbl" destination="XkP-LW-dPB" id="tix-qq-UGL"/>
                         <outlet property="titleLbl" destination="ce9-aa-2d2" id="3bP-ru-84B"/>
-                        <outlet property="titleView" destination="v1V-1E-Zey" id="Uln-hE-a2m"/>
+                        <outlet property="titleView" destination="v1V-1E-Zey" id="m7B-is-7ef"/>
                         <segue destination="uRu-e5-1Xw" kind="show" identifier="showWorkout" id="iY8-m2-VTw"/>
                     </connections>
                 </tableViewController>
@@ -108,13 +108,13 @@
                     <rect key="frame" x="0.0" y="0.0" width="176" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" text="[Title]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ce9-aa-2d2">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="[Title]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ce9-aa-2d2">
                             <rect key="frame" x="64" y="0.0" width="48.5" height="25"/>
                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" text="[Filter]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XkP-LW-dPB">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="[Filter]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XkP-LW-dPB">
                             <rect key="frame" x="72" y="25" width="32.5" height="15"/>
                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
                             <nil key="textColor"/>
@@ -222,7 +222,7 @@
             </objects>
             <point key="canvasLocation" x="1582" y="368"/>
         </scene>
-        <!--Filter-->
+        <!--Filter List Table View Controller-->
         <scene sceneID="RWC-jo-bfz">
             <objects>
                 <tableViewController id="czl-ry-GH1" customClass="FilterListTableViewController" customModule="Workout" customModuleProvider="target" sceneMemberID="viewController">
@@ -254,14 +254,39 @@
                             <outlet property="delegate" destination="czl-ry-GH1" id="or8-o9-TcZ"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Filter" id="rlA-9e-e0Z">
+                    <navigationItem key="navigationItem" id="rlA-9e-e0Z">
                         <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="aAU-S0-gGU">
                             <connections>
                                 <action selector="done:" destination="czl-ry-GH1" id="H7R-9Y-7mf"/>
                             </connections>
                         </barButtonItem>
+                        <connections>
+                            <outlet property="titleView" destination="0Ur-uM-Xfl" id="toC-HE-6no"/>
+                        </connections>
                     </navigationItem>
+                    <connections>
+                        <outlet property="filtersCountLbl" destination="aIA-kd-flk" id="rj3-Mf-4p0"/>
+                    </connections>
                 </tableViewController>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" id="0Ur-uM-Xfl">
+                    <rect key="frame" x="0.0" y="0.0" width="176" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="Filter" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c7b-sc-qHH">
+                            <rect key="frame" x="67.5" y="0.0" width="41" height="25"/>
+                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" text="[x/y workout(s)]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aIA-kd-flk">
+                            <rect key="frame" x="49.5" y="25" width="77.5" height="15"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <gestureRecognizers/>
+                </stackView>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2ui-9c-2U3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1581" y="976"/>

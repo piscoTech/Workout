@@ -16,6 +16,7 @@ class FilterListTableViewController: UITableViewController {
 		didSet {
 			defer {
 				tableView.reloadSections([0, 1], with: .automatic)
+				updateFiltersCount()
 			}
 			
 			guard var unique = availableFilters else {
@@ -34,19 +35,27 @@ class FilterListTableViewController: UITableViewController {
 	
 	private var filterList: [(type: HKWorkoutActivityType, name: String)] = []
 	private var selected: [Int] = []
+	
+	@IBOutlet private weak var filtersCountLbl: UILabel!
+	
+	private let allStr = NSLocalizedString("FILTER_ALL", comment: "All wrkt")
+	private let oneStr = NSLocalizedString("FILTER_COUNT", comment: "1/x")
+	private let manyStr = NSLocalizedString("FILTERS_COUNT", comment: "y/x")
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 	
 	@IBAction func done(_ sender: AnyObject) {
 		self.dismiss(animated: true)
+	}
+	
+	private func updateFiltersCount() {
+		if selected.isEmpty {
+			filtersCountLbl.text = allStr
+		} else {
+			filtersCountLbl.text = String(format: selected.count > 1 ? manyStr : oneStr, selected.count, filterList.count)
+		}
 	}
 
     // MARK: - Table view data source
@@ -104,6 +113,7 @@ class FilterListTableViewController: UITableViewController {
 		#warning("Forward selection to main list")
 		
 		tableView.deselectRow(at: indexPath, animated: true)
+		updateFiltersCount()
 	}
 
 }

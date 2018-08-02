@@ -15,6 +15,8 @@
 "ERR_NO_HEALTH" = "Health data is not available";
 
 "FILTER_ALL" = "All Workouts";
+"FILTER_COUNT" = "%d/%d Workout";
+"FILTERS_COUNT" = "%d/%d Workouts";
 
 "TYPE" = "Type";
 "START" = "Start";
