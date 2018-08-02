@@ -90,10 +90,42 @@
                     </navigationItem>
                     <connections>
                         <outlet property="enterExportModeBtn" destination="LjV-W9-sZo" id="Nwl-vT-dgn"/>
+                        <outlet property="filterLbl" destination="XkP-LW-dPB" id="tix-qq-UGL"/>
+                        <outlet property="titleLbl" destination="ce9-aa-2d2" id="3bP-ru-84B"/>
+                        <outlet property="titleView" destination="v1V-1E-Zey" id="Uln-hE-a2m"/>
                         <segue destination="uRu-e5-1Xw" kind="show" identifier="showWorkout" id="iY8-m2-VTw"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1Nd-NI-tqZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="3L5-bv-p9i">
+                    <connections>
+                        <segue destination="hQ8-BZ-RnS" kind="popoverPresentation" identifier="selectFilter" popoverAnchorView="mdK-mk-IWK" id="AnV-9m-amt">
+                            <popoverArrowDirection key="popoverArrowDirection"/>
+                        </segue>
+                    </connections>
+                </tapGestureRecognizer>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" id="v1V-1E-Zey">
+                    <rect key="frame" x="0.0" y="0.0" width="176" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" text="[Title]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ce9-aa-2d2">
+                            <rect key="frame" x="64" y="0.0" width="48.5" height="25"/>
+                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="1000" text="[Filter]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XkP-LW-dPB">
+                            <rect key="frame" x="72" y="25" width="32.5" height="15"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <gestureRecognizers/>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="3L5-bv-p9i" appends="YES" id="kjc-QT-7wb"/>
+                    </connections>
+                </stackView>
             </objects>
             <point key="canvasLocation" x="739" y="368"/>
         </scene>
@@ -189,6 +221,50 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="132-WL-h3v" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1582" y="368"/>
+        </scene>
+        <!--Filter-->
+        <scene sceneID="RWC-jo-bfz">
+            <objects>
+                <tableViewController id="czl-ry-GH1" customClass="FilterListTableViewController" customModule="Workout" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="cTg-lz-xXm">
+                        <rect key="frame" x="0.0" y="0.0" width="300" height="400"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="wrktType" textLabel="9tf-W5-jAc" style="IBUITableViewCellStyleDefault" id="mRQ-y6-V9R">
+                                <rect key="frame" x="0.0" y="28" width="300" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="mRQ-y6-V9R" id="93o-Pk-KTF">
+                                    <rect key="frame" x="0.0" y="0.0" width="300" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="9tf-W5-jAc">
+                                            <rect key="frame" x="16" y="0.0" width="268" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="czl-ry-GH1" id="HvZ-kc-HW8"/>
+                            <outlet property="delegate" destination="czl-ry-GH1" id="or8-o9-TcZ"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Filter" id="rlA-9e-e0Z">
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="aAU-S0-gGU">
+                            <connections>
+                                <action selector="done:" destination="czl-ry-GH1" id="H7R-9Y-7mf"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2ui-9c-2U3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1581" y="976"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="b4V-Mu-Axq">
@@ -459,6 +535,26 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="69g-IN-w6d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1582" y="-364"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="WGh-aE-uWs">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hQ8-BZ-RnS" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <value key="contentSizeForViewInPopover" type="size" width="300" height="400"/>
+                    <size key="freeformSize" width="300" height="400"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="QlP-z4-UKQ">
+                        <rect key="frame" x="0.0" y="0.0" width="300" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="czl-ry-GH1" kind="relationship" relationship="rootViewController" id="nkB-s8-VOD"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sDf-tb-uck" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="738" y="976"/>
         </scene>
     </scenes>
     <color key="tintColor" red="1" green="0.17254901960784313" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

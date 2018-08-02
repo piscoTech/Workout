@@ -14,11 +14,12 @@ import PersonalizedAdConsent
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
 	
-	private var workouts: [Workout]!
+	private var allWorkouts: [Workout]!
+	private var displayWorkouts: [Workout]!
 	private var err: Error?
 	
 	private var standardRightBtns: [UIBarButtonItem]!
-	@IBOutlet weak var enterExportModeBtn: UIBarButtonItem!
+	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
 	private var standardLeftBtn: UIBarButtonItem!
 	
 	private var exportRightBtns: [UIBarButtonItem]!
@@ -30,35 +31,18 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	private var inExportMode = false
 	
-	private weak var titleLbl: UILabel!
-	private weak var filterLbl: UILabel!
+	@IBOutlet private var titleView: UIView!
+	@IBOutlet private weak var titleLbl: UILabel!
+	@IBOutlet private weak var filterLbl: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		let mainTitle = UILabel()
-		mainTitle.text = self.navigationItem.title
-		mainTitle.font = .systemFont(ofSize: 17, weight: .semibold)
-		let filter = UILabel()
-		filter.text = "FILTER"
-		filter.font = .systemFont(ofSize: 10, weight: .regular)
-		
-		for v in [mainTitle, filter] {
-			v.translatesAutoresizingMaskIntoConstraints = false
-			v.setContentHuggingPriority(.required, for: .vertical)
-		}
-		
-		let title = UIStackView(arrangedSubviews: [mainTitle, filter])
-		title.alignment = .center
-		title.axis = .vertical
-		title.distribution = .fill
-		let filterChanger = UITapGestureRecognizer(target: self, action: #selector(selectFilter(_:)))
-		title.addGestureRecognizer(filterChanger)
-		navigationItem.titleView = title
-		
-		titleLbl = mainTitle
-		filterLbl = filter
-		(navigationController?.navigationBar as? EnhancedNavigationBar)?.enhancedDelegate = self
+		let navBar = navigationController?.navigationBar as? EnhancedNavigationBar
+		titleLbl.text = self.navigationItem.title
+		filterLbl.textColor = navBar?.tintColor
+		navigationItem.titleView = titleView
+		navBar?.enhancedDelegate = self
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		standardRightBtns = navigationItem.rightBarButtonItems
@@ -109,7 +93,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	private func refresh() {
-		workouts = nil
+		allWorkouts = nil
+		displayWorkouts = filter(workouts: allWorkouts)
 		err = nil
 		if HKHealthStore.isHealthDataAvailable() {
 			tableView.reloadData()
@@ -121,7 +106,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				let wrkts = (r as? [HKWorkout])?.map { Workout.workoutFor(raw: $0) }
 				
 				DispatchQueue.main.async {
-					self.workouts = wrkts
+					self.allWorkouts = wrkts
+					self.displayWorkouts = self.filter(workouts: wrkts)
 					self.err = err
 					self.updateExportModeEnabled()
 					self.tableView.reloadData()
@@ -147,17 +133,17 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return max(workouts?.count ?? 1, 1)
+        return max(displayWorkouts?.count ?? 1, 1)
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		if workouts?.count ?? 0 == 0 {
+		if displayWorkouts?.count ?? 0 == 0 {
 			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
 			let msg: String
 			if HKHealthStore.isHealthDataAvailable() {
 				if err != nil {
 					msg = "ERR_LOADING"
-				} else if workouts != nil {
+				} else if displayWorkouts != nil {
 					msg = "ERR_NO_WORKOUT"
 				} else {
 					msg = "LOADING"
@@ -171,7 +157,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 
 		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
-		let w = workouts[indexPath.row]
+		let w = displayWorkouts[indexPath.row]
 		
 		cell.textLabel?.text = w.type.name
 		
@@ -210,8 +196,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	// MARK: - Filter Workouts
 	
-	@objc func selectFilter(_ sender: AnyObject) {
-		print("Changing filter...")
+	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
+		#warning("Apply filter")
+		return wrkts?.filter { _ in true }
 	}
 	
 	// MARK: - Export all workouts
@@ -226,13 +213,13 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		inExportMode = true
 		
 		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_NONE", comment: "Select None")
-		exportSelection = [Bool](repeating: true, count: workouts?.count ?? 0)
+		exportSelection = [Bool](repeating: true, count: displayWorkouts?.count ?? 0)
 		updateExportCommitButton()
 		
 		navigationItem.leftBarButtonItem = exportLeftBtn
 		navigationItem.rightBarButtonItems = exportRightBtns
 		
-		for i in 0 ..< (workouts?.count ?? 0) {
+		for i in 0 ..< (displayWorkouts?.count ?? 0) {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
 				cell.accessoryType = .checkmark
 			}
@@ -257,7 +244,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				self.present(self.loadingBar!, animated: true)
 			}
 			
-			for (w, e) in zip(self.workouts, self.exportSelection) {
+			for (w, e) in zip(self.displayWorkouts, self.exportSelection) {
 				if e {
 					let workout = Workout.workoutFor(raw: w.raw, delegate: self)
 					//Avoid loading additional (and unused) detail
@@ -274,7 +261,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		navigationItem.leftBarButtonItem = standardLeftBtn
 		navigationItem.rightBarButtonItems = standardRightBtns
 		
-		for i in 0 ..< (workouts?.count ?? 0) {
+		for i in 0 ..< (displayWorkouts?.count ?? 0) {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
 				cell.accessoryType = .disclosureIndicator
 			}
@@ -297,7 +284,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		exportSelection = [Bool](repeating: newVal, count: exportSelection?.count ?? 0)
 		updateExportCommitButton()
 		
-		for i in 0 ..< (workouts?.count ?? 0) {
+		for i in 0 ..< (displayWorkouts?.count ?? 0) {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
 				cell.accessoryType = newVal ? .checkmark : .none
 			}
@@ -313,7 +300,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	private func updateExportModeEnabled() {
-		enterExportModeBtn.isEnabled = (workouts?.count ?? 0) > 0
+		enterExportModeBtn.isEnabled = (displayWorkouts?.count ?? 0) > 0
 	}
 	
 	func dataIsReady() {
@@ -532,11 +519,20 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		switch id {
 		case "showWorkout":
 			if let dest = segue.destination as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
-				dest.rawWorkout = workouts[indexPath.row].raw
+				dest.rawWorkout = displayWorkouts[indexPath.row].raw
 			}
 		case "info":
 			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? AboutViewController {
 				root.delegate = self
+			}
+		case "selectFilter":
+			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? FilterListTableViewController {
+				PopoverController.preparePresentation(for: dest)
+				dest.popoverPresentationController?.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+				dest.popoverPresentationController?.sourceView = self.view
+				dest.popoverPresentationController?.canOverlapSourceViewRect = true
+				
+				root.availableFilters = allWorkouts.map { $0.raw.workoutActivityType }
 			}
 		default:
 			return
