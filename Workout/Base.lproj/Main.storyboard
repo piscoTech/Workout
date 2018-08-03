@@ -59,6 +59,37 @@
                                     </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="loadMore" id="7h0-AV-dcc" customClass="LoadMoreCell" customModule="Workout" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="116" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7h0-AV-dcc" id="CBF-yI-4R8">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="oJ5-r6-zie">
+                                            <rect key="frame" x="137" y="6" width="101" height="32"/>
+                                            <subviews>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Tll-1o-5Dp">
+                                                    <rect key="frame" x="0.0" y="6" width="20" height="20"/>
+                                                </activityIndicatorView>
+                                                <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ya0-9d-7C7">
+                                                    <rect key="frame" x="24" y="0.0" width="77" height="32"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <state key="normal" title="Load More"/>
+                                                </button>
+                                            </subviews>
+                                        </stackView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="oJ5-r6-zie" firstAttribute="centerX" secondItem="CBF-yI-4R8" secondAttribute="centerX" id="20V-xN-9Pc"/>
+                                        <constraint firstItem="oJ5-r6-zie" firstAttribute="centerY" secondItem="CBF-yI-4R8" secondAttribute="centerY" id="ZXr-dH-Xb9"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="loadBtn" destination="ya0-9d-7C7" id="zUB-1w-nyg"/>
+                                    <outlet property="loadIndicator" destination="Tll-1o-5Dp" id="OXu-ea-h1V"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="5g0-8u-NPu" id="ajD-ce-04Z"/>
@@ -78,7 +109,7 @@
                         <rightBarButtonItems>
                             <barButtonItem systemItem="refresh" id="yIy-Wt-wpU">
                                 <connections>
-                                    <action selector="doRefresh:" destination="5g0-8u-NPu" id="hZh-CZ-sYC"/>
+                                    <action selector="refresh:" destination="5g0-8u-NPu" id="ebI-FF-5A9"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem systemItem="action" id="LjV-W9-sZo">

@@ -14,6 +14,10 @@ import PersonalizedAdConsent
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
 	
+	private let batchSize = 2
+	private var moreToBeLoaded = true
+	private var isLoadingMore = false
+	
 	private var allWorkouts: [Workout]!
 	private var displayWorkouts: [Workout]!
 	private var err: Error?
@@ -54,7 +58,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		exportRightBtns = [exportCommitBtn, exportToggleBtn]
 		exportLeftBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelExport(_:)))
 
-        refresh()
+        refresh(self)
 		initializeAds()
     }
 	
@@ -84,60 +88,165 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			}
 			
 			DispatchQueue.main.async {
-				self.refresh()
+				self.refresh(self)
 			}
 		}
-	}
-	
-	@IBAction func doRefresh(_ sender: AnyObject) {
-		refresh()
-	}
-	
-	private func refresh() {
-		allWorkouts = nil
-		displayWorkouts = filter(workouts: allWorkouts)
-		err = nil
-		if HKHealthStore.isHealthDataAvailable() {
-			tableView.reloadSections([0], with: .automatic)
-	
-			let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-			let type = HKObjectType.workoutType()
-			let workoutQuery = HKSampleQuery(sampleType: type, predicate: nil, limit: HKObjectQueryNoLimit, sortDescriptors: [sortDescriptor]) { (_, r, err) in
-				//There's no need to call .load() as additional data is not needed here, we just need information about units
-				let wrkts = (r as? [HKWorkout])?.map { Workout.workoutFor(raw: $0) }
-				
-				DispatchQueue.main.async {
-					self.allWorkouts = wrkts
-					self.displayWorkouts = self.filter(workouts: wrkts)
-					self.err = err
-					self.updateExportModeEnabled()
-					self.tableView.reloadSections([0], with: .automatic)
-				}
-			}
-			
-			healthStore.execute(workoutQuery)
-		} else {
-			tableView.reloadSections([0], with: .automatic)
-		}
-		
-		updateExportModeEnabled()
 	}
 	
 	func largeTitleChanged(isLarge: Bool) {
 		titleLbl.isHidden = isLarge
 	}
+	
+	// MARK: Data Loading
+	
+	private weak var loadMoreCell: LoadMoreCell?
+	
+	@IBAction func refresh(_ sender: AnyObject) {
+		allWorkouts = nil
+		displayWorkouts = filter(workouts: allWorkouts)
+		err = nil
+		isLoadingMore = true
+		
+		updateExportModeEnabled()
+		tableView.beginUpdates()
+		tableView.reloadSections([0], with: .automatic)
+		if tableView.numberOfSections > 1 {
+			tableView.deleteSections([1], with: .automatic)
+		}
+		tableView.endUpdates()
+		
+		if HKHealthStore.isHealthDataAvailable() {
+			loadBatch(targetDisplayCount: batchSize)
+		}
+	}
+	
+	private func loadMore() {
+		isLoadingMore = true
+		updateExportModeEnabled()
+		loadBatch(targetDisplayCount: displayWorkouts.count + batchSize)
+	}
+	
+	private func loadBatch(targetDisplayCount target: Int) {
+		let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+		let type = HKObjectType.workoutType()
+		let predicate: NSPredicate?
+		let limit: Int
+		
+		if let last = allWorkouts?.last {
+			predicate = NSPredicate(format: "%K <= %@", HKPredicateKeyPathStartDate, last.startDate as NSDate)
+			let sameDateCount = allWorkouts.count - (allWorkouts.firstIndex { $0.startDate == last.startDate } ?? allWorkouts.count)
+			limit = target - (displayWorkouts?.count ?? 0) + sameDateCount
+		} else {
+			predicate = nil
+			limit = target
+		}
+		
+		let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: limit, sortDescriptors: [sortDescriptor]) { (_, r, err) in
+			// There's no need to call .load() as additional data is not needed here, we just need information about units
+			let res = r as? [HKWorkout]
+			var actions: [() -> Void] = []
+			
+			self.err = err
+			let addedLineCount: Int?
+			let loadingMore: Bool
+			if let res = res {
+				self.moreToBeLoaded = res.count >= limit
+				
+				var wrkts: [Workout] = []
+				do {
+					wrkts.reserveCapacity(res.count)
+					var addAll = false
+					// By searching the reversed collection we reduce comparison as both collections are sorted
+					let revLoaded = (self.allWorkouts ?? []).reversed()
+					for w in res {
+						if addAll || !revLoaded.contains(where: { $0.raw == w }) {
+							// Stop searching already loaded workouts when the first new workout is not present.
+							addAll = true
+							wrkts.append(Workout.workoutFor(raw: w))
+						}
+					}
+				}
+				let disp = self.filter(workouts: wrkts) ?? []
+				addedLineCount = self.allWorkouts == nil ? nil : disp.count
+				
+				self.allWorkouts = (self.allWorkouts ?? []) + wrkts
+				self.displayWorkouts = (self.displayWorkouts ?? []) + disp
+				
+				if self.moreToBeLoaded && self.displayWorkouts.count < target {
+					loadingMore = true
+					actions.append {
+						self.loadBatch(targetDisplayCount: target)
+					}
+				} else {
+					loadingMore = false
+				}
+			} else {
+				self.moreToBeLoaded = true
+				addedLineCount = nil
+				loadingMore = false
+				
+				self.allWorkouts = nil
+				self.displayWorkouts = self.filter(workouts: self.allWorkouts)
+				
+				actions.append(self.updateExportModeEnabled)
+			}
+			
+			actions.insert({
+				self.isLoadingMore = loadingMore
+				self.tableView.beginUpdates()
+				if let added = addedLineCount {
+					let oldCount = self.tableView.numberOfRows(inSection: 0)
+					#warning("Check whether the 'No workout' message should be removed")
+					self.tableView.insertRows(at: (oldCount ..< (oldCount + added)).map { IndexPath(row: $0, section: 0) }, with: .automatic)
+					
+					self.loadMoreCell?.isEnabled = !loadingMore
+				} else {
+					self.tableView.reloadSections([0], with: .automatic)
+				}
+				
+				if self.moreToBeLoaded && self.tableView.numberOfSections == 1 {
+					self.tableView.insertSections([1], with: .automatic)
+				} else if !self.moreToBeLoaded && self.tableView.numberOfSections > 1 {
+					self.tableView.deleteSections([1], with: .automatic)
+				}
+				self.tableView.endUpdates()
+			}, at: 0)
+			
+			for a in actions {
+				DispatchQueue.main.async(execute: a)
+			}
+		}
+		
+		healthStore.execute(workoutQuery)
+	}
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+		if self.err == nil && self.allWorkouts != nil && self.moreToBeLoaded {
+			return 2
+		} else {
+			return 1
+		}
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return max(displayWorkouts?.count ?? 1, 1)
+		if section == 0 {
+        	return max(displayWorkouts?.count ?? 1, 1)
+		} else {
+			return 1
+		}
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		if indexPath.section == 1 {
+			let res = tableView.dequeueReusableCell(withIdentifier: "loadMore", for: indexPath) as! LoadMoreCell
+			res.isEnabled = !self.isLoadingMore
+			loadMoreCell = res
+			
+			return res
+		}
+		
 		if displayWorkouts?.count ?? 0 == 0 {
 			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
 			let msg: String
@@ -178,18 +287,24 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
     }
 	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		if inExportMode {
-			let newSel = !exportSelection[indexPath.row]
-			exportSelection[indexPath.row] = newSel
-			
-			if let cell = tableView.cellForRow(at: indexPath) {
-				cell.accessoryType = newSel ? .checkmark : .none
+		if indexPath.section == 1 {
+			if loadMoreCell?.isEnabled ?? false {
+				loadMore()
 			}
-			
-			updateToggleExportAllText()
-			updateExportCommitButton()
 		} else {
-			performSegue(withIdentifier: "showWorkout", sender: self)
+			if inExportMode {
+				let newSel = !exportSelection[indexPath.row]
+				exportSelection[indexPath.row] = newSel
+				
+				if let cell = tableView.cellForRow(at: indexPath) {
+					cell.accessoryType = newSel ? .checkmark : .none
+				}
+				
+				updateToggleExportAllText()
+				updateExportCommitButton()
+			} else {
+				performSegue(withIdentifier: "showWorkout", sender: self)
+			}
 		}
 		
 		tableView.deselectRow(at: indexPath, animated: true)
@@ -234,6 +349,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	@IBAction func chooseExport(_ sender: AnyObject) {
 		inExportMode = true
+		#warning("Dispaly and hide 'Load more'")
 		
 		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_NONE", comment: "Select None")
 		exportSelection = [Bool](repeating: true, count: displayWorkouts?.count ?? 0)
@@ -280,6 +396,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	@objc func cancelExport(_ sender: AnyObject) {
 		inExportMode = false
+		#warning("Restore if needed 'Load more'")
 		
 		navigationItem.leftBarButtonItem = standardLeftBtn
 		navigationItem.rightBarButtonItems = standardRightBtns
@@ -323,11 +440,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	private func updateExportModeEnabled() {
-		enterExportModeBtn.isEnabled = (displayWorkouts?.count ?? 0) > 0
+		enterExportModeBtn.isEnabled = !isLoadingMore && (displayWorkouts?.count ?? 0) > 0
 	}
 	
 	func dataIsReady() {
-		//Move to a serial queue to synchronize access to counter
+		// Move to a serial queue to synchronize access to counter
 		DispatchQueue.workout.async {
 			self.waitingForExport -= 1
 			DispatchQueue.main.async {
@@ -580,4 +697,26 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
     }
 
+}
+
+class LoadMoreCell: UITableViewCell {
+	
+	@IBOutlet private weak var loadIndicator: UIActivityIndicatorView!
+	@IBOutlet private weak var loadBtn: UIButton!
+	
+	var isEnabled: Bool {
+		get {
+			return loadBtn.isEnabled
+		}
+		set {
+			loadBtn.isEnabled = newValue
+			loadIndicator.isHidden = newValue
+			if newValue {
+				loadIndicator.startAnimating()
+			} else {
+				loadIndicator.stopAnimating()
+			}
+		}
+	}
+	
 }
