@@ -541,6 +541,14 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 
     // MARK: - Navigation
+	
+	override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+		if identifier == "selectFilter" {
+			return !inExportMode
+		}
+		
+		return true
+	}
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		guard let id = segue.identifier else {

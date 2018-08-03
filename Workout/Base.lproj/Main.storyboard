@@ -497,7 +497,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xav-xu-1Xa">
-                                                    <rect key="frame" x="24" y="0.0" width="343" height="43.5"/>
+                                                    <rect key="frame" x="16" y="0.0" width="343" height="43.5"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Custom" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IHW-A3-oq6">
                                                             <rect key="frame" x="0.0" y="0.0" width="59.5" height="43.5"/>
@@ -520,9 +520,9 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="Xav-xu-1Xa" firstAttribute="top" secondItem="ojC-dZ-Vxy" secondAttribute="top" id="LIi-qA-uAI"/>
-                                                <constraint firstAttribute="trailing" secondItem="Xav-xu-1Xa" secondAttribute="trailing" constant="8" id="QKE-85-dk5"/>
+                                                <constraint firstAttribute="trailing" secondItem="Xav-xu-1Xa" secondAttribute="trailing" constant="16" id="QKE-85-dk5"/>
                                                 <constraint firstAttribute="bottom" secondItem="Xav-xu-1Xa" secondAttribute="bottom" id="UfD-AR-1uZ"/>
-                                                <constraint firstItem="Xav-xu-1Xa" firstAttribute="leading" secondItem="ojC-dZ-Vxy" secondAttribute="leadingMargin" constant="8" id="xxc-U1-1WT"/>
+                                                <constraint firstItem="Xav-xu-1Xa" firstAttribute="leading" secondItem="ojC-dZ-Vxy" secondAttribute="leadingMargin" id="xxc-U1-1WT"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
