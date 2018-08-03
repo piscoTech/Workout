@@ -12,6 +12,7 @@ import MBLibrary
 
 class FilterListTableViewController: UITableViewController {
 	
+	weak var delegate: ListTableViewController?
 	var availableFilters: [HKWorkoutActivityType]! {
 		didSet {
 			defer {
@@ -30,6 +31,11 @@ class FilterListTableViewController: UITableViewController {
 			let oldSel = zip(filterList, 0 ..< filterList.count).filter { selected.contains($0.1) }.map { $0.0.type }
 			filterList = unique.map { ($0, $0.name)}.sorted { $0.1 < $1.1 }
 			selected = zip(filterList, 0 ..< filterList.count).filter { oldSel.contains($0.0.type) }.map { $0.1 }
+		}
+	}
+	var selectedFilters: [HKWorkoutActivityType]! {
+		didSet {
+			selected = zip(filterList, 0 ..< filterList.count).filter { selectedFilters.contains($0.0.type) }.map { $0.1 }
 		}
 	}
 	
@@ -110,10 +116,10 @@ class FilterListTableViewController: UITableViewController {
 			}
 		}
 		
-		#warning("Forward selection to main list")
-		
 		tableView.deselectRow(at: indexPath, animated: true)
 		updateFiltersCount()
+		
+		delegate?.filters = zip(filterList, 0 ..< filterList.count).filter { selected.contains($0.1) }.map { $0.0.type }
 	}
 
 }

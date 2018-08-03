@@ -43,6 +43,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		filterLbl.textColor = navBar?.tintColor
 		navigationItem.titleView = titleView
 		navBar?.enhancedDelegate = self
+		updateFilterLabel()
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		standardRightBtns = navigationItem.rightBarButtonItems
@@ -97,7 +98,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		displayWorkouts = filter(workouts: allWorkouts)
 		err = nil
 		if HKHealthStore.isHealthDataAvailable() {
-			tableView.reloadData()
+			tableView.reloadSections([0], with: .automatic)
 	
 			let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 			let type = HKObjectType.workoutType()
@@ -110,13 +111,13 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 					self.displayWorkouts = self.filter(workouts: wrkts)
 					self.err = err
 					self.updateExportModeEnabled()
-					self.tableView.reloadData()
+					self.tableView.reloadSections([0], with: .automatic)
 				}
 			}
 			
 			healthStore.execute(workoutQuery)
 		} else {
-			tableView.reloadData()
+			tableView.reloadSections([0], with: .automatic)
 		}
 		
 		updateExportModeEnabled()
@@ -196,9 +197,31 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	// MARK: - Filter Workouts
 	
+	private let allFiltersStr = NSLocalizedString("FILTER_ALL", comment: "All")
+	private let manyFiltersStr = NSLocalizedString("FILTERS_MANY", comment: "Many")
+	
+	private func updateFilterLabel() {
+		switch filters.count {
+		case 0:
+			filterLbl.text = allFiltersStr
+		case 1:
+			filterLbl.text = filters.first?.name
+		default:
+			filterLbl.text = String(format: manyFiltersStr, filters.count)
+		}
+	}
+	
+	var filters: [HKWorkoutActivityType] = [] {
+		didSet {
+			displayWorkouts = filter(workouts: allWorkouts)
+			tableView.reloadSections([0], with: .automatic)
+			
+			updateFilterLabel()
+		}
+	}
+	
 	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
-		#warning("Apply filter")
-		return wrkts?.filter { _ in true }
+		return wrkts?.filter { filters.isEmpty || filters.contains($0.raw.workoutActivityType) }
 	}
 	
 	// MARK: - Export all workouts
@@ -372,9 +395,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	// MARK: - Ads stuff
 	
 	private var adView: GADBannerView!
-	private let defaultAdRetryDelay = 1.0
-	private let maxAdRetryDelay = 120.0
-	private var adRetryDelay = 1.0
+	private let defaultAdRetryDelay = 5.0
+	private let maxAdRetryDelay = 5 * 60.0
+	private var adRetryDelay = 5.0
 	private var allowPersonalizedAds = true
 	
 	private func initializeAds() {
@@ -541,6 +564,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				dest.popoverPresentationController?.canOverlapSourceViewRect = true
 				
 				root.availableFilters = allWorkouts.map { $0.raw.workoutActivityType }
+				root.selectedFilters = filters
+				root.delegate = self
 			}
 		default:
 			return

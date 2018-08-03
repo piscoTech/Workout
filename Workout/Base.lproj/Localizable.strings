@@ -17,6 +17,7 @@
 "FILTER_ALL" = "All Workouts";
 "FILTER_COUNT" = "%d/%d Workout";
 "FILTERS_COUNT" = "%d/%d Workouts";
+"FILTERS_MANY" = "%d Workouts";
 
 "TYPE" = "Type";
 "START" = "Start";
