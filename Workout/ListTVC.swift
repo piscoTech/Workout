@@ -14,7 +14,7 @@ import PersonalizedAdConsent
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
 	
-	private let batchSize = 2
+	private let batchSize = 40
 	private var moreToBeLoaded = true
 	private var isLoadingMore = false
 	
@@ -35,6 +35,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	private var inExportMode = false
 	
+	private var heightFixed = false
+	private var titleLblShouldHide = false
 	@IBOutlet private var titleView: UIView!
 	@IBOutlet private weak var titleLbl: UILabel!
 	@IBOutlet private weak var filterLbl: UILabel!
@@ -65,6 +67,13 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
+		if !heightFixed {
+			heightFixed = true
+			print(titleView.frame.height)
+			NSLayoutConstraint(item: titleView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: titleView.frame.height).isActive = true
+			titleLbl.isHidden = titleLblShouldHide
+		}
+		
 		if !preferences.bool(forKey: PreferenceKey.authorized) || preferences.integer(forKey: PreferenceKey.authVersion) < authRequired {
 			authorize(self)
 		}
@@ -94,7 +103,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	func largeTitleChanged(isLarge: Bool) {
-		titleLbl.isHidden = isLarge
+		if !heightFixed {
+			titleLblShouldHide = isLarge
+		} else {
+			titleLbl.isHidden = isLarge
+		}
 	}
 	
 	// MARK: Data Loading
@@ -149,6 +162,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			self.err = err
 			let addedLineCount: Int?
 			let loadingMore: Bool
+			let wasEmpty: Bool
 			if let res = res {
 				self.moreToBeLoaded = res.count >= limit
 				
@@ -169,6 +183,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				let disp = self.filter(workouts: wrkts) ?? []
 				addedLineCount = self.allWorkouts == nil ? nil : disp.count
 				
+				wasEmpty = (self.displayWorkouts?.count ?? 0) == 0
 				self.allWorkouts = (self.allWorkouts ?? []) + wrkts
 				self.displayWorkouts = (self.displayWorkouts ?? []) + disp
 				
@@ -179,11 +194,15 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 					}
 				} else {
 					loadingMore = false
+					actions.append {
+						self.updateExportModeEnabled()
+					}
 				}
 			} else {
 				self.moreToBeLoaded = true
 				addedLineCount = nil
 				loadingMore = false
+				wasEmpty = true
 				
 				self.allWorkouts = nil
 				self.displayWorkouts = self.filter(workouts: self.allWorkouts)
@@ -195,9 +214,12 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				self.isLoadingMore = loadingMore
 				self.tableView.beginUpdates()
 				if let added = addedLineCount {
-					let oldCount = self.tableView.numberOfRows(inSection: 0)
-					#warning("Check whether the 'No workout' message should be removed")
-					self.tableView.insertRows(at: (oldCount ..< (oldCount + added)).map { IndexPath(row: $0, section: 0) }, with: .automatic)
+					if wasEmpty {
+						self.tableView.reloadSections([0], with: .automatic)
+					} else {
+						let oldCount = self.tableView.numberOfRows(inSection: 0)
+						self.tableView.insertRows(at: (oldCount ..< (oldCount + added)).map { IndexPath(row: $0, section: 0) }, with: .automatic)
+					}
 					
 					self.loadMoreCell?.isEnabled = !loadingMore
 				} else {
@@ -223,7 +245,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-		if self.err == nil && self.allWorkouts != nil && self.moreToBeLoaded {
+		if self.err == nil && self.allWorkouts != nil && self.moreToBeLoaded && !self.inExportMode {
 			return 2
 		} else {
 			return 1
@@ -289,6 +311,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		if indexPath.section == 1 {
 			if loadMoreCell?.isEnabled ?? false {
+				loadMoreCell?.isEnabled = false
 				loadMore()
 			}
 		} else {
@@ -332,6 +355,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			tableView.reloadSections([0], with: .automatic)
 			
 			updateFilterLabel()
+			updateExportModeEnabled()
 		}
 	}
 	
@@ -349,7 +373,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	@IBAction func chooseExport(_ sender: AnyObject) {
 		inExportMode = true
-		#warning("Dispaly and hide 'Load more'")
+		if tableView.numberOfSections > 1 {
+			tableView.deleteSections([1], with: .automatic)
+		}
 		
 		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_NONE", comment: "Select None")
 		exportSelection = [Bool](repeating: true, count: displayWorkouts?.count ?? 0)
@@ -396,7 +422,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	@objc func cancelExport(_ sender: AnyObject) {
 		inExportMode = false
-		#warning("Restore if needed 'Load more'")
+		if moreToBeLoaded && tableView.numberOfSections == 1 {
+			tableView.insertSections([1], with: .automatic)
+		}
 		
 		navigationItem.leftBarButtonItem = standardLeftBtn
 		navigationItem.rightBarButtonItems = standardRightBtns
@@ -697,26 +725,4 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
     }
 
-}
-
-class LoadMoreCell: UITableViewCell {
-	
-	@IBOutlet private weak var loadIndicator: UIActivityIndicatorView!
-	@IBOutlet private weak var loadBtn: UIButton!
-	
-	var isEnabled: Bool {
-		get {
-			return loadBtn.isEnabled
-		}
-		set {
-			loadBtn.isEnabled = newValue
-			loadIndicator.isHidden = newValue
-			if newValue {
-				loadIndicator.startAnimating()
-			} else {
-				loadIndicator.stopAnimating()
-			}
-		}
-	}
-	
 }

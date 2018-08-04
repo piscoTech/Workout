@@ -10,6 +10,7 @@
 		7A27D3F021132B28006B1634 /* FilterListTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A27D3EF21132B28006B1634 /* FilterListTVC.swift */; };
 		7A2BDCB51E6AF21200996E36 /* SwimmingWorkout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2BDCB41E6AF21200996E36 /* SwimmingWorkout.swift */; };
 		7A2BDCB71E6AF22600996E36 /* RunningWorkout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2BDCB61E6AF22600996E36 /* RunningWorkout.swift */; };
+		7A4A0AC421159A9100763099 /* LoadMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4A0AC321159A9100763099 /* LoadMoreCell.swift */; };
 		7A638B301E6E02BC00473831 /* StepSourceTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A638B2F1E6E02BC00473831 /* StepSourceTVC.swift */; };
 		7A6D1F4B1D51E4C8002A4890 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */; };
 		7A6D1F501D51EB40002A4890 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */; };
@@ -90,6 +91,7 @@
 		7A27D3EF21132B28006B1634 /* FilterListTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterListTVC.swift; sourceTree = "<group>"; };
 		7A2BDCB41E6AF21200996E36 /* SwimmingWorkout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwimmingWorkout.swift; sourceTree = "<group>"; };
 		7A2BDCB61E6AF22600996E36 /* RunningWorkout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RunningWorkout.swift; sourceTree = "<group>"; };
+		7A4A0AC321159A9100763099 /* LoadMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreCell.swift; sourceTree = "<group>"; };
 		7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = ../MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
 		7A638B2F1E6E02BC00473831 /* StepSourceTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepSourceTVC.swift; sourceTree = "<group>"; };
 		7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 			isa = PBXGroup;
 			children = (
 				7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */,
+				7A4A0AC321159A9100763099 /* LoadMoreCell.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -415,6 +418,7 @@
 				7AA638441E6C4E0E00F006EB /* WorkoutDetail.swift in Sources */,
 				7AA9F4971C48F64E005FFCB3 /* Main.swift in Sources */,
 				7AA9F4951C48F5A1005FFCB3 /* ListTVC.swift in Sources */,
+				7A4A0AC421159A9100763099 /* LoadMoreCell.swift in Sources */,
 				7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */,
 				7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */,
 				7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */,
