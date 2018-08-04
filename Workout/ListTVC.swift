@@ -15,6 +15,7 @@ import PersonalizedAdConsent
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
 	
 	private let batchSize = 40
+	private let filteredLoadMultiplier = 5
 	private var moreToBeLoaded = true
 	private var isLoadingMore = false
 	
@@ -148,7 +149,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		if let last = allWorkouts?.last {
 			predicate = NSPredicate(format: "%K <= %@", HKPredicateKeyPathStartDate, last.startDate as NSDate)
 			let sameDateCount = allWorkouts.count - (allWorkouts.firstIndex { $0.startDate == last.startDate } ?? allWorkouts.count)
-			limit = target - (displayWorkouts?.count ?? 0) + sameDateCount
+			let missing = target - (displayWorkouts?.count ?? 0)
+			limit = sameDateCount + min(batchSize, isFiltering ? missing * filteredLoadMultiplier : missing)
 		} else {
 			predicate = nil
 			limit = target
@@ -199,7 +201,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 					}
 				}
 			} else {
-				self.moreToBeLoaded = true
+				self.moreToBeLoaded = false
 				addedLineCount = nil
 				loadingMore = false
 				wasEmpty = true
@@ -357,6 +359,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			updateFilterLabel()
 			updateExportModeEnabled()
 		}
+	}
+	
+	var isFiltering: Bool {
+		return !filters.isEmpty
 	}
 	
 	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
