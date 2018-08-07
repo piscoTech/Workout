@@ -456,6 +456,26 @@
                                     </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="contact" textLabel="wAE-M9-GC0" style="IBUITableViewCellStyleDefault" id="GbE-ev-oof">
+                                <rect key="frame" x="0.0" y="231.5" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GbE-ev-oof" id="0jM-XZ-UrR">
+                                    <rect key="frame" x="0.0" y="0.0" width="341" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Contact Me" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="wAE-M9-GC0">
+                                            <rect key="frame" x="16" y="0.0" width="324" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="aeB-4r-kvT" kind="presentation" identifier="contact" id="bBA-f1-g3T"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
                         <sections/>
                         <connections>
@@ -611,6 +631,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sDf-tb-uck" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="738" y="976"/>
+        </scene>
+        <!--Contact Me-->
+        <scene sceneID="Xm2-z5-itb">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Contact Me" bundleIdentifier="Marco-Boschi.ios.MBLibrary" id="aeB-4r-kvT" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="erM-wc-LdM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2341" y="21"/>
         </scene>
     </scenes>
     <color key="tintColor" red="1" green="0.17254901960784313" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

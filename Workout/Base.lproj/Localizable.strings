@@ -6,7 +6,7 @@
   Copyright © 2016 Marco Boschi. All rights reserved.
 */
 
-"REPORT_TEXT" = "Report any problem on Twitter @piscoTech or at GitHub tapping Source Code.";
+"REPORT_TEXT" = "Report any problem also on Twitter @piscoTech or at GitHub tapping Source Code.";
 "REMOVE_ADS" = "Remove Ads";
 
 "ERR_LOADING" = "Unable to load workout data";

@@ -52,9 +52,9 @@ class AboutViewController: UITableViewController {
 		//Step Source
 		case 1:
 			return 1
-		//Source Code
+		//Source Code & Contacts
 		case 2:
-			return 1
+			return 2
 		default:
 			return 0
 		}
@@ -76,6 +76,9 @@ class AboutViewController: UITableViewController {
 		//Source Code
 		case (2, 0):
 			return tableView.dequeueReusableCell(withIdentifier: "sourceCode", for: indexPath)
+		//Contacts
+		case (2, 1):
+			return tableView.dequeueReusableCell(withIdentifier: "contact", for: indexPath)
 		default:
 			return UITableViewCell()
 		}
@@ -247,6 +250,9 @@ class AboutViewController: UITableViewController {
 		case "stepSource":
 			let dest = segue.destination as! StepSourceTableViewController
 			dest.delegate = self
+		case "contact":
+			let dest = (segue.destination as! UINavigationController).topViewController as! ContactMeViewController
+			dest.appName = "Workout"
 		default:
 			break
 		}
