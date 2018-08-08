@@ -14,6 +14,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	
 	@IBOutlet weak var exportBtn: UIBarButtonItem!
 	
+	weak var listController: ListTableViewController!
 	var rawWorkout: HKWorkout!
 	private var workout: Workout!
 	
@@ -166,6 +167,14 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			}
 			
 			self.documentController = UIActivityViewController(activityItems: files, applicationActivities: nil)
+			self.documentController.completionWithItemsHandler = { _, completed, _, _ in
+				self.documentController = nil
+				
+				if completed {
+					Preferences.reviewRequestCounter += 1
+					self.listController.checkRequestReview()
+				}
+			}
 			
 			DispatchQueue.main.async {
 				if let l = self.loadingIndicator {

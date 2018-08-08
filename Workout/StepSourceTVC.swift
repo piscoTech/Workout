@@ -69,7 +69,7 @@ class StepSourceTableViewController: UITableViewController, UITextFieldDelegate 
 		super.viewWillAppear(animated)
 		
 		let row: Int
-		switch stepSourceFilter {
+		switch Preferences.stepSourceFilter {
 		case .iPhone:
 			row = 0
 		case .watch:
@@ -90,14 +90,11 @@ class StepSourceTableViewController: UITableViewController, UITextFieldDelegate 
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		tableView.deselectRow(at: indexPath, animated: true)
 		
-		let key = PreferenceKey.stepSource
 		switch indexPath.row {
 		case 0:
-			preferences.set(StepSource.iPhone.description, forKey: key)
-			preferences.synchronize()
+			Preferences.stepSourceFilter = .iPhone
 		case 1:
-			preferences.set(StepSource.watch.description, forKey: key)
-			preferences.synchronize()
+			Preferences.stepSourceFilter = .watch
 		default:
 			customSource.becomeFirstResponder()
 		}
@@ -115,8 +112,7 @@ class StepSourceTableViewController: UITableViewController, UITextFieldDelegate 
 			setCheckmark()
 		} else if let txt = customSource.text, txt != "" {
 			setCheckmark()
-			preferences.set(txt, forKey: key)
-			preferences.synchronize()
+			Preferences.stepSourceFilter = .custom(txt)
 		}
 		
 		delegate.updateStepSource()
@@ -131,8 +127,7 @@ class StepSourceTableViewController: UITableViewController, UITextFieldDelegate 
 			}
 			tableView.cellForRow(at: IndexPath(row: 2, section: 0))?.accessoryType = .checkmark
 			
-			preferences.set(str, forKey: PreferenceKey.stepSource)
-			preferences.synchronize()
+			Preferences.stepSourceFilter = .custom(str)
 			delegate.updateStepSource()
 		}
 	}

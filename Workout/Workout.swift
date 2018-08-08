@@ -252,7 +252,7 @@ class Workout {
 			} else {
 				var searchDetail = self.details
 				
-				let stepSource = stepSourceFilter
+				let stepSource = Preferences.stepSourceFilter
 				for s in r as! [HKQuantitySample] {
 					guard s.quantity.is(compatibleWith: unit) else {
 						continue

@@ -109,7 +109,7 @@ class AboutViewController: UITableViewController {
 	}
 	
 	private func setStepSource(in cell: UITableViewCell) {
-		(cell.viewWithTag(10) as? UILabel)?.text = stepSourceFilter.displayName
+		(cell.viewWithTag(10) as? UILabel)?.text = Preferences.stepSourceFilter.displayName
 	}
 	
 	// MARK: - Ads management

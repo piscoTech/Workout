@@ -40,10 +40,6 @@ let adsEnable = true
 let adsID = "ca-app-pub-7085161342725707/5192351673"
 ///Max acceptable pace in time per kilometer.
 let maxPace: TimeInterval = 30 * 60
-///Filter for step count source name.
-var stepSourceFilter: StepSource {
-	return StepSource.getSource(for: preferences.string(forKey: PreferenceKey.stepSource) ?? "")
-}
 
 let healthStore = HKHealthStore()
 
@@ -52,7 +48,7 @@ var areAdsEnabled: Bool {
 }
 
 let removeAdsId = "MarcoBoschi.ios.Workout.removeAds"
-let iapManager = InAppPurchaseManager(productIds: [removeAdsId], inUserDefaults: preferences)
+let iapManager = InAppPurchaseManager(productIds: [removeAdsId], inUserDefaults: Preferences.local)
 
 let distanceF: NumberFormatter = {
 	let formatter = NumberFormatter()

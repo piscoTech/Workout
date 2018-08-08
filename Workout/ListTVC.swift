@@ -11,6 +11,7 @@ import HealthKit
 import MBLibrary
 import GoogleMobileAds
 import PersonalizedAdConsent
+import StoreKit
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
 	
@@ -63,6 +64,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 
         refresh(self)
 		initializeAds()
+		
+		DispatchQueue.main.async {
+			self.checkRequestReview()
+		}
     }
 	
 	override func viewDidAppear(_ animated: Bool) {
@@ -75,7 +80,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			titleLbl.isHidden = titleLblShouldHide
 		}
 		
-		if !preferences.bool(forKey: PreferenceKey.authorized) || preferences.integer(forKey: PreferenceKey.authVersion) < authRequired {
+		if !Preferences.authorized || Preferences.authVersion < authRequired {
 			authorize(self)
 		}
 	}
@@ -92,9 +97,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	func authorize(_ sender: AnyObject) {
 		healthStore.requestAuthorization(toShare: nil, read: healthReadData) { (success, _) in
 			if success {
-				preferences.set(true, forKey: PreferenceKey.authorized)
-				preferences.set(authRequired, forKey: PreferenceKey.authVersion)
-				preferences.synchronize()
+				Preferences.authorized = true
+				Preferences.authVersion = authRequired
 			}
 			
 			DispatchQueue.main.async {
@@ -111,7 +115,17 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 	}
 	
-	// MARK: Data Loading
+	func checkRequestReview() {
+		if #available(iOS 10.3, *) {
+			guard Preferences.reviewRequestCounter >= Preferences.reviewRequestThreshold else {
+				return
+			}
+			
+			SKStoreReviewController.requestReview()
+		}
+	}
+	
+	// MARK: - Data Loading
 	
 	private weak var loadMoreCell: LoadMoreCell?
 	
@@ -523,6 +537,14 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 					
 					self.exportWorkouts = []
 					self.documentController = UIActivityViewController(activityItems: [filePath], applicationActivities: nil)
+					self.documentController.completionWithItemsHandler = { _, completed, _, _ in
+						self.documentController = nil
+						
+						if completed {
+							Preferences.reviewRequestCounter += 1
+							self.checkRequestReview()
+						}
+					}
 					
 					DispatchQueue.main.async {
 						if let l = self.loadingBar {
@@ -710,6 +732,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		case "showWorkout":
 			if let dest = segue.destination as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
 				dest.rawWorkout = displayWorkouts[indexPath.row].raw
+				dest.listController = self
 			}
 		case "info":
 			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? AboutViewController {
