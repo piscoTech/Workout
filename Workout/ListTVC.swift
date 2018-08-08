@@ -75,7 +75,6 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		
 		if !heightFixed {
 			heightFixed = true
-			print(titleView.frame.height)
 			NSLayoutConstraint(item: titleView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: titleView.frame.height).isActive = true
 			titleLbl.isHidden = titleLblShouldHide
 		}
@@ -580,7 +579,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			return
 		}
 		
-		PACConsentInformation.sharedInstance.requestConsentInfoUpdate(forPublisherIdentifiers: [adsID]) { err in
+		PACConsentInformation.sharedInstance.requestConsentInfoUpdate(forPublisherIdentifiers: [adsPublisherID]) { err in
 			if err != nil {
 				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
 				self.adRetryDelay = min(self.maxAdRetryDelay, self.adRetryDelay * 2)
@@ -608,16 +607,21 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 	}
 	
-	private func collectAdsConsent() {
+	func getAdsConsentForm(shouldOfferAdFree: Bool) -> PACConsentForm {
 		guard let privacyUrl = URL(string: "https://github.com/piscoTech/Workout/blob/master/PRIVACY.md"),
 			let form = PACConsentForm(applicationPrivacyPolicyURL: privacyUrl) else {
-			fatalError("Incorrect privacy URL.")
+				fatalError("Incorrect privacy URL.")
 		}
 		
 		form.shouldOfferPersonalizedAds = true
 		form.shouldOfferNonPersonalizedAds = true
-		form.shouldOfferAdFree = true
+		form.shouldOfferAdFree = shouldOfferAdFree
 		
+		return form
+	}
+	
+	private func collectAdsConsent() {
+		let form = getAdsConsentForm(shouldOfferAdFree: true)
 		form.load { err in
 			if err != nil {
 				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
@@ -650,7 +654,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		adView.translatesAutoresizingMaskIntoConstraints = false
 		adView.rootViewController = self
 		adView.delegate = self
-		adView.adUnitID = adsID
+		adView.adUnitID = adsUnitID
 		
 		adView.load(getAdRequest())
 		navigationController?.toolbar.addSubview(adView)
@@ -658,6 +662,19 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		constraint.isActive = true
 		constraint = NSLayoutConstraint(item: adView, attribute: .top, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .top, multiplier: 1, constant: 0)
 		constraint.isActive = true
+	}
+	
+	func adConsentChanged(allowPersonalized pers: Bool) {
+		allowPersonalizedAds = pers
+		guard areAdsEnabled else {
+			return
+		}
+		
+		if let view = adView{
+			view.load(getAdRequest())
+		} else {
+			loadAd()
+		}
 	}
 	
 	func adViewDidReceiveAd(_ bannerView: GADBannerView) {

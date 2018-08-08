@@ -8,16 +8,19 @@
 
 import UIKit
 import MBLibrary
+import PersonalizedAdConsent
 
 class AboutViewController: UITableViewController {
 	
 	private var appInfo: String!
+	private var healthInfo: String!
 	var delegate: ListTableViewController!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
 		appInfo = NSLocalizedString("REPORT_TEXT", comment: "Report problem") + "\n\nWorkout \(Bundle.main.versionDescription)\n© 2016-2018 Marco Boschi"
+		healthInfo = NSLocalizedString("HEALTH_ACCESS_MANAGE", comment: "Manage access")
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(restoreCompleted(_:)), name: InAppPurchaseManager.restoreNotification, object: nil)
@@ -28,11 +31,14 @@ class AboutViewController: UITableViewController {
 	}
 	
 	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-		if section == 2 {
+		switch section {
+		case 0:
+			return healthInfo
+		case 2:
 			return appInfo
+		default:
+			return nil
 		}
-		
-		return nil
 	}
 
 	override func didReceiveMemoryWarning() {
@@ -46,13 +52,24 @@ class AboutViewController: UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		switch section {
-		//Health Access and Remove Ads
+		// Health Access and Remove Ads
 		case 0:
-			return areAdsEnabled && iapManager.canMakePayments ? 2 : 1
-		//Step Source
+			var count = 1 // Health access
+			if areAdsEnabled {
+				if iapManager.canMakePayments {
+					count += 1 // Remove Ads & Restore
+				}
+				
+				if PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown {
+					count += 1 // Manage Consent
+				}
+			}
+			
+			return count
+		// Step Source
 		case 1:
 			return 1
-		//Source Code & Contacts
+		// Source Code & Contacts
 		case 2:
 			return 2
 		default:
@@ -62,21 +79,28 @@ class AboutViewController: UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		switch (indexPath.section, indexPath.row) {
-		//Health Access
+		// Health Access
 		case (0, 0):
 			return tableView.dequeueReusableCell(withIdentifier: "authorize", for: indexPath)
-		//Remove Ads
+		// Remove Ads
 		case (0, 1):
-			return tableView.dequeueReusableCell(withIdentifier: "removeAds", for: indexPath)
-		//Step Source
+			if iapManager.canMakePayments {
+				return tableView.dequeueReusableCell(withIdentifier: "removeAds", for: indexPath)
+			} else {
+				fallthrough
+			}
+		// Manage consent
+		case (0, 2):
+			return tableView.dequeueReusableCell(withIdentifier: "manageConsent", for: indexPath)
+		// Step Source
 		case (1, 0):
 			let cell = tableView.dequeueReusableCell(withIdentifier: "stepSource", for: indexPath)
 			setStepSource(in: cell)
 			return cell
-		//Source Code
+		// Source Code
 		case (2, 0):
 			return tableView.dequeueReusableCell(withIdentifier: "sourceCode", for: indexPath)
-		//Contacts
+		// Contacts
 		case (2, 1):
 			return tableView.dequeueReusableCell(withIdentifier: "contact", for: indexPath)
 		default:
@@ -88,6 +112,10 @@ class AboutViewController: UITableViewController {
 		switch (indexPath.section, indexPath.row) {
 		case (0, 0):
 			delegate.authorize(self)
+		case (0, 2):
+			manageConsent()
+		case (0, 1) where !iapManager.canMakePayments:
+			manageConsent()
 		case (2, 0):
 			let url = URL(string: "https://github.com/piscoTech/Workout")!
 			if #available(iOS 10.0, *) {
@@ -114,7 +142,60 @@ class AboutViewController: UITableViewController {
 	
 	// MARK: - Ads management
 	
-	var loading: UIAlertController?
+	private var loading: UIAlertController?
+	
+	private func manageConsent() {
+		guard PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown else {
+			return
+		}
+		
+		loading = UIAlertController.getModalLoading()
+		self.present(loading!, animated: true)
+		
+		func displayError() {
+			DispatchQueue.main.async {
+				let alert = UIAlertController(simpleAlert: NSLocalizedString("MANAGE_CONSENT", comment: "Manage consent"), message: NSLocalizedString("MANAGE_CONSENT_ERR", comment: "Manage consent error"))
+				
+				if let l = self.loading {
+					l.dismiss(animated: true) {
+						self.present(alert, animated: true)
+					}
+				} else {
+					self.present(alert, animated: true)
+				}
+			}
+		}
+		
+		let form = delegate.getAdsConsentForm(shouldOfferAdFree: false)
+		form.load { err in
+			if err != nil {
+				displayError()
+			} else {
+				DispatchQueue.main.async {
+					func presentForm() {
+						form.present(from: self) { err, _ in
+							if err != nil {
+								displayError()
+							} else {
+								DispatchQueue.main.async {
+									let personalized = PACConsentInformation.sharedInstance.consentStatus == .personalized
+									self.delegate.adConsentChanged(allowPersonalized: personalized)
+								}
+							}
+						}
+					}
+					
+					if let l = self.loading {
+						l.dismiss(animated: true) {
+							presentForm()
+						}
+					} else {
+						presentForm()
+					}
+				}
+			}
+		}
+	}
 	
 	@IBAction func removeAds() {
 		guard areAdsEnabled else {
@@ -179,7 +260,7 @@ class AboutViewController: UITableViewController {
 				alert = UIAlertController(simpleAlert: NSLocalizedString("REMOVE_ADS", comment: "Ads"), message: MBLocalizedString("PURCHASE_RESTORED", comment: "Restored"))
 			}
 			
-			self.deleteRemoveAdsRow()
+			self.deleteRemoveAdsRows()
 			if let load = self.loading {
 				load.dismiss(animated: true) {
 					self.loading = nil
@@ -225,14 +306,16 @@ class AboutViewController: UITableViewController {
 		}
 	}
 	
-	private func deleteRemoveAdsRow() {
-		let adsIndex = IndexPath(row: 1, section: 0)
-		
-		guard !areAdsEnabled, let _ = tableView.cellForRow(at: adsIndex) else {
+	private func deleteRemoveAdsRows() {
+		let adsSection = 0
+		let rowCount = tableView.numberOfRows(inSection: adsSection)
+		guard !areAdsEnabled, rowCount > 1 else {
+			// Rows already hidden
 			return
 		}
 		
-		tableView.deleteRows(at: [adsIndex], with: .automatic)
+		let adsIndex = (1 ..< rowCount).map { IndexPath(row: $0, section: adsSection) }
+		tableView.deleteRows(at: adsIndex, with: .automatic)
 	}
 	
 	// MARK: - Navigation

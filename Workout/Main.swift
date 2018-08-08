@@ -34,10 +34,14 @@ let healthReadData: Set<HKObjectType> = {
 }()
 ///Enable or disable ads override.
 let adsEnable = true
-///Ads ID.
+///Ads publisher ID
+let adsPublisherID = "pub-7085161342725707"
+///Ads app ID.
+let adsAppID = "ca-app-pub-7085161342725707~3715618473"
+///Ads unit ID.
 ///
 ///For test purposes use the test ID provided by Google: `ca-app-pub-3940256099942544/2934735716`.
-let adsID = "ca-app-pub-7085161342725707/5192351673"
+let adsUnitID = "ca-app-pub-7085161342725707/5192351673"
 ///Max acceptable pace in time per kilometer.
 let maxPace: TimeInterval = 30 * 60
 
@@ -47,6 +51,7 @@ var areAdsEnabled: Bool {
 	return adsEnable && !iapManager.isProductPurchased(pId: removeAdsId)
 }
 
+/// ID for InApp purchase to remove ads.
 let removeAdsId = "MarcoBoschi.ios.Workout.removeAds"
 let iapManager = InAppPurchaseManager(productIds: [removeAdsId], inUserDefaults: Preferences.local)
 
