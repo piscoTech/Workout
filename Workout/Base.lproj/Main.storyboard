@@ -218,12 +218,12 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Tcy-Pw-goL">
-                                            <rect key="frame" x="24" y="0.0" width="343" height="43.5"/>
+                                            <rect key="frame" x="16" y="0.0" width="343" height="43.5"/>
                                         </stackView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="Tcy-Pw-goL" secondAttribute="trailingMargin" constant="8" id="Ays-K2-jjW"/>
-                                        <constraint firstItem="Tcy-Pw-goL" firstAttribute="leading" secondItem="DTP-CT-N40" secondAttribute="leadingMargin" constant="8" id="MAo-bn-y02"/>
+                                        <constraint firstAttribute="trailing" secondItem="Tcy-Pw-goL" secondAttribute="trailingMargin" constant="16" id="Ays-K2-jjW"/>
+                                        <constraint firstItem="Tcy-Pw-goL" firstAttribute="leading" secondItem="DTP-CT-N40" secondAttribute="leadingMargin" id="MAo-bn-y02"/>
                                         <constraint firstItem="Tcy-Pw-goL" firstAttribute="top" secondItem="DTP-CT-N40" secondAttribute="top" id="Rch-2G-0Rb"/>
                                         <constraint firstAttribute="bottom" secondItem="Tcy-Pw-goL" secondAttribute="bottom" id="szm-h4-JcM"/>
                                     </constraints>
@@ -383,7 +383,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="LLd-HP-btd">
-                                            <rect key="frame" x="15" y="0.0" width="345" height="43.5"/>
+                                            <rect key="frame" x="16" y="0.0" width="343" height="43.5"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qam-ee-Z2S">
                                                     <rect key="frame" x="0.0" y="0.0" width="90" height="43.5"/>
@@ -394,7 +394,7 @@
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aur-kd-U1r">
-                                                    <rect key="frame" x="295" y="0.0" width="50" height="43.5"/>
+                                                    <rect key="frame" x="293" y="0.0" width="50" height="43.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <state key="normal" title="Restore"/>
                                                     <connections>
@@ -405,9 +405,9 @@
                                         </stackView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="LLd-HP-btd" firstAttribute="leading" secondItem="3zo-bT-ZYF" secondAttribute="leading" constant="15" id="0hy-BE-iM7"/>
+                                        <constraint firstItem="LLd-HP-btd" firstAttribute="leading" secondItem="3zo-bT-ZYF" secondAttribute="leadingMargin" id="0hy-BE-iM7"/>
                                         <constraint firstAttribute="bottom" secondItem="LLd-HP-btd" secondAttribute="bottom" id="1MK-VK-Ekg"/>
-                                        <constraint firstAttribute="trailing" secondItem="LLd-HP-btd" secondAttribute="trailing" constant="15" id="LLo-Si-Y2h"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="LLd-HP-btd" secondAttribute="trailing" id="LLo-Si-Y2h"/>
                                         <constraint firstItem="LLd-HP-btd" firstAttribute="top" secondItem="3zo-bT-ZYF" secondAttribute="top" id="NLZ-c4-AMF"/>
                                     </constraints>
                                 </tableViewCellContentView>
@@ -521,7 +521,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection footerTitle="Select the source from which to load step data. If your devices don't have a standard name insert a custom source." id="DE6-lx-y5P">
+                            <tableViewSection footerTitle="Select the source from which to load step data. If your devices have not a standard name insert a custom source." id="DE6-lx-y5P">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="Uxm-XN-Aib" style="IBUITableViewCellStyleDefault" id="Z0g-27-0KG">
                                         <rect key="frame" x="0.0" y="35" width="375" height="44"/>
@@ -588,7 +588,7 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="Xav-xu-1Xa" firstAttribute="top" secondItem="ojC-dZ-Vxy" secondAttribute="top" id="LIi-qA-uAI"/>
-                                                <constraint firstAttribute="trailing" secondItem="Xav-xu-1Xa" secondAttribute="trailing" constant="16" id="QKE-85-dk5"/>
+                                                <constraint firstAttribute="trailing" secondItem="Xav-xu-1Xa" secondAttribute="trailingMargin" constant="16" id="QKE-85-dk5"/>
                                                 <constraint firstAttribute="bottom" secondItem="Xav-xu-1Xa" secondAttribute="bottom" id="UfD-AR-1uZ"/>
                                                 <constraint firstItem="Xav-xu-1Xa" firstAttribute="leading" secondItem="ojC-dZ-Vxy" secondAttribute="leadingMargin" id="xxc-U1-1WT"/>
                                             </constraints>
