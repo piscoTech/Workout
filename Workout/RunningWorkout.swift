@@ -17,7 +17,7 @@ class RunninWorkout: Workout {
 		
 		self.addDetails([.pace, .heart, .steps])
 		self.addRequest(for: .distanceWalkingRunning, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true))
-		self.addRequest(for: .stepCount, withUnit: .steps(), andTimeType: .ranged, searchingBy: .time)
+		self.addRequest(for: .stepCount, withUnit: .steps(), andTimeType: .ranged, searchingBy: .time, predicate: Preferences.stepSourceFilter.predicate)
 	}
 	
 }

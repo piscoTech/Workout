@@ -175,82 +175,85 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			var actions: [() -> Void] = []
 			
 			self.err = err
-			let addedLineCount: Int?
-			let loadingMore: Bool
-			let wasEmpty: Bool
-			if let res = res {
-				self.moreToBeLoaded = res.count >= limit
+			DispatchQueue.workout.async {
+				let addedLineCount: Int?
+				let loadingMore: Bool
+				let wasEmpty: Bool
 				
-				var wrkts: [Workout] = []
-				do {
-					wrkts.reserveCapacity(res.count)
-					var addAll = false
-					// By searching the reversed collection we reduce comparison as both collections are sorted
-					let revLoaded = (self.allWorkouts ?? []).reversed()
-					for w in res {
-						if addAll || !revLoaded.contains(where: { $0.raw == w }) {
-							// Stop searching already loaded workouts when the first new workout is not present.
-							addAll = true
-							wrkts.append(Workout.workoutFor(raw: w))
+				if let res = res {
+					self.moreToBeLoaded = res.count >= limit
+					
+					var wrkts: [Workout] = []
+					do {
+						wrkts.reserveCapacity(res.count)
+						var addAll = false
+						// By searching the reversed collection we reduce comparison as both collections are sorted
+						let revLoaded = (self.allWorkouts ?? []).reversed()
+						for w in res {
+							if addAll || !revLoaded.contains(where: { $0.raw == w }) {
+								// Stop searching already loaded workouts when the first new workout is not present.
+								addAll = true
+								wrkts.append(Workout.workoutFor(raw: w))
+							}
 						}
 					}
-				}
-				let disp = self.filter(workouts: wrkts) ?? []
-				addedLineCount = self.allWorkouts == nil ? nil : disp.count
-				
-				wasEmpty = (self.displayWorkouts?.count ?? 0) == 0
-				self.allWorkouts = (self.allWorkouts ?? []) + wrkts
-				self.displayWorkouts = (self.displayWorkouts ?? []) + disp
-				
-				if self.moreToBeLoaded && self.displayWorkouts.count < target {
-					loadingMore = true
-					actions.append {
-						self.loadBatch(targetDisplayCount: target)
+					let disp = self.filter(workouts: wrkts) ?? []
+					addedLineCount = self.allWorkouts == nil ? nil : disp.count
+					
+					wasEmpty = (self.displayWorkouts?.count ?? 0) == 0
+					self.allWorkouts = (self.allWorkouts ?? []) + wrkts
+					self.displayWorkouts = (self.displayWorkouts ?? []) + disp
+					
+					if self.moreToBeLoaded && self.displayWorkouts.count < target {
+						loadingMore = true
+						actions.append {
+							self.loadBatch(targetDisplayCount: target)
+						}
+					} else {
+						loadingMore = false
+						actions.append {
+							self.updateExportModeEnabled()
+						}
 					}
 				} else {
+					self.moreToBeLoaded = false
+					addedLineCount = nil
 					loadingMore = false
-					actions.append {
-						self.updateExportModeEnabled()
-					}
+					wasEmpty = true
+					
+					self.allWorkouts = nil
+					self.displayWorkouts = self.filter(workouts: self.allWorkouts)
+					
+					actions.append(self.updateExportModeEnabled)
 				}
-			} else {
-				self.moreToBeLoaded = false
-				addedLineCount = nil
-				loadingMore = false
-				wasEmpty = true
 				
-				self.allWorkouts = nil
-				self.displayWorkouts = self.filter(workouts: self.allWorkouts)
-				
-				actions.append(self.updateExportModeEnabled)
-			}
-			
-			actions.insert({
-				self.isLoadingMore = loadingMore
-				self.tableView.beginUpdates()
-				if let added = addedLineCount {
-					if wasEmpty {
-						self.tableView.reloadSections([0], with: .automatic)
+				actions.insert({
+					self.isLoadingMore = loadingMore
+					self.tableView.beginUpdates()
+					if let added = addedLineCount {
+						if wasEmpty {
+							self.tableView.reloadSections([0], with: .automatic)
+						} else {
+							let oldCount = self.tableView.numberOfRows(inSection: 0)
+							self.tableView.insertRows(at: (oldCount ..< (oldCount + added)).map { IndexPath(row: $0, section: 0) }, with: .automatic)
+						}
+						
+						self.loadMoreCell?.isEnabled = !loadingMore
 					} else {
-						let oldCount = self.tableView.numberOfRows(inSection: 0)
-						self.tableView.insertRows(at: (oldCount ..< (oldCount + added)).map { IndexPath(row: $0, section: 0) }, with: .automatic)
+						self.tableView.reloadSections([0], with: .automatic)
 					}
 					
-					self.loadMoreCell?.isEnabled = !loadingMore
-				} else {
-					self.tableView.reloadSections([0], with: .automatic)
-				}
+					if self.moreToBeLoaded && self.tableView.numberOfSections == 1 {
+						self.tableView.insertSections([1], with: .automatic)
+					} else if !self.moreToBeLoaded && self.tableView.numberOfSections > 1 {
+						self.tableView.deleteSections([1], with: .automatic)
+					}
+					self.tableView.endUpdates()
+				}, at: 0)
 				
-				if self.moreToBeLoaded && self.tableView.numberOfSections == 1 {
-					self.tableView.insertSections([1], with: .automatic)
-				} else if !self.moreToBeLoaded && self.tableView.numberOfSections > 1 {
-					self.tableView.deleteSections([1], with: .automatic)
+				for a in actions {
+					DispatchQueue.main.async(execute: a)
 				}
-				self.tableView.endUpdates()
-			}, at: 0)
-			
-			for a in actions {
-				DispatchQueue.main.async(execute: a)
 			}
 		}
 		

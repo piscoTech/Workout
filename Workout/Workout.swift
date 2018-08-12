@@ -144,6 +144,9 @@ class Workout {
 		case time, workout(fallbackToTime: Bool)
 	}
 	
+	/// Create an instance of the proper `Workout` subclass (if any) for the given workout.
+	///
+	/// - important: Do not get this property from the background thread HealthKit uses to call the completion handlers passed to queries as this will cause a deadlock on that thread. This is due how `StepSource.predicate` is calculated as this property is needed to initialize some of the subclasses.
 	class func workoutFor(raw: HKWorkout, delegate: WorkoutDelegate? = nil) -> Workout {
 		let wClass: Workout.Type
 		
@@ -215,8 +218,8 @@ class Workout {
 	
 	///Add a query to load data for passed type.
 	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`.
-	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
-	private func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType, isBase: Bool) {
+	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you must specify `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
+	private func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType, predicate additionalPredicate: NSPredicate? = nil, isBase: Bool) {
 		guard !loading && !loaded else {
 			return
 		}
@@ -236,11 +239,22 @@ class Workout {
 			tryTimeIfEmpty = tryTime
 		}
 		
+		let mainPredicate: NSPredicate
+		if let addPred = additionalPredicate {
+			mainPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [addPred, predicate])
+		} else {
+			mainPredicate = predicate
+		}
+		
 		var resultHandler: ((HKSampleQuery, [HKSample]?, Error?) -> Void)!
 		resultHandler = { (_, r, err) -> Void in
 			if tryTimeIfEmpty, err != nil || r?.count ?? 0 == 0 {
 				tryTimeIfEmpty = false
-				let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [self.timePredicate, self.sourcePredicate])
+				var preds: [NSPredicate] = [self.timePredicate, self.sourcePredicate]
+				if let addPred = additionalPredicate {
+					preds.append(addPred)
+				}
+				let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: preds)
 				let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: self.queryNoLimit, sortDescriptors: [self.startDateSort], resultsHandler: resultHandler)
 				healthStore.execute(query)
 				
@@ -252,13 +266,8 @@ class Workout {
 			} else {
 				var searchDetail = self.details
 				
-				let stepSource = Preferences.stepSourceFilter
 				for s in r as! [HKQuantitySample] {
 					guard s.quantity.is(compatibleWith: unit) else {
-						continue
-					}
-					
-					if typeID == .stepCount && !stepSource.sourceMatch(s) {
 						continue
 					}
 					
@@ -297,7 +306,7 @@ class Workout {
 				self.requestDone += 1
 			}
 		}
-		let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: queryNoLimit, sortDescriptors: [startDateSort], resultsHandler: resultHandler)
+		let query = HKSampleQuery(sampleType: type, predicate: mainPredicate, limit: queryNoLimit, sortDescriptors: [startDateSort], resultsHandler: resultHandler)
 		
 		if isBase {
 			baseReq.append(query)
@@ -307,9 +316,9 @@ class Workout {
 	}
 	
 	///Add a query to load data for passed type.
-	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you specifies `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
-	func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType) {
-		self.addRequest(for: typeID, withUnit: unit, andTimeType: tType, searchingBy: pred, isBase: false)
+	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you must specify `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
+	func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType, predicate: NSPredicate? = nil) {
+		self.addRequest(for: typeID, withUnit: unit, andTimeType: tType, searchingBy: pred, predicate: predicate, isBase: false)
 	}
 	
 	///- parameter quickLoad: If enabled only base queries, i.e. heart data, will be executed and not custom ones defined by specific workouts.

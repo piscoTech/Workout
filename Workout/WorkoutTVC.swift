@@ -139,11 +139,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	private var documentController: UIActivityViewController!
 	private var loadingIndicator: UIAlertController?
 	
-	@IBAction func doExport(_ sender: UIBarButtonItem) {
-		export(sender)
-	}
-	
-	private func export(_ sender: UIBarButtonItem) {
+	@IBAction func export(_ sender: UIBarButtonItem) {
 		loadingIndicator?.dismiss(animated: false)
 		loadingIndicator = UIAlertController.getModalLoading()
 		self.present(loadingIndicator!, animated: true)

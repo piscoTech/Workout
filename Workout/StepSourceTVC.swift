@@ -51,9 +51,39 @@ enum StepSource: CustomStringConvertible {
 		}
 	}
 	
-	func sourceMatch(_ sample: HKQuantitySample) -> Bool {
-		return sample.sourceRevision.source.name.lowercased().range(of: description.lowercased()) != nil
+	private static var predicateCache = [String: NSPredicate]()
+	/// The predicate to load only those step data point for the relevant source(s).
+	///
+	/// - important: Do not get this property from the background thread HealthKit uses to call the completion handlers passed to queries as this will cause a deadlock on that thread.
+	var predicate: NSPredicate {
+		if let cached = StepSource.predicateCache[self.description] {
+			return cached
+		}
+		
+		guard let type = HKQuantityTypeIdentifier.stepCount.getType() else {
+			fatalError("Step count type doesn't seem to exists...")
+		}
+		
+		let group = DispatchGroup()
+		group.enter()
+		
+		var predicate: NSPredicate!
+		let q = HKSourceQuery(sampleType: type, samplePredicate: nil) { _, res, _ in
+			let sources = (res ?? Set()).filter { s in
+				return s.name.lowercased().range(of: self.description.lowercased()) != nil
+			}
+			
+			predicate = HKQuery.predicateForObjects(from: sources)
+			group.leave()
+		}
+		
+		healthStore.execute(q)
+		group.wait()
+		
+		StepSource.predicateCache[self.description] = predicate
+		return predicate
 	}
+	
 }
 
 class StepSourceTableViewController: UITableViewController, UITextFieldDelegate {

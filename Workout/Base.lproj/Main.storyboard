@@ -241,7 +241,7 @@
                     <navigationItem key="navigationItem" title="Workout detail" largeTitleDisplayMode="never" id="QUK-cG-kWu">
                         <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="action" id="3xR-ye-8lX">
                             <connections>
-                                <action selector="doExport:" destination="uRu-e5-1Xw" id="gc5-FN-x52"/>
+                                <action selector="export:" destination="uRu-e5-1Xw" id="5rd-2B-zKd"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
