@@ -18,13 +18,6 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	var rawWorkout: HKWorkout!
 	private var workout: Workout!
 	
-	private var ready = false
-	private var error: Bool {
-		get {
-			return !ready || workout.hasError
-		}
-	}
-	
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -38,21 +31,24 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
     }
 	
 	func dataIsReady() {
-		ready = true
+		sleep(5)
 		DispatchQueue.main.async {
-			self.exportBtn.isEnabled = !self.error
-			self.tableView.reloadData()
+			self.exportBtn.isEnabled = !self.workout.hasError
+			self.tableView.beginUpdates()
+			self.tableView.reloadSections([0], with: .automatic)
+			self.tableView.insertSections(IndexSet(1 ..< self.numberOfSections(in: self.tableView)), with: .automatic)
+			self.tableView.endUpdates()
 		}
 	}
 
     // MARK: - Table view data source
 
 	override func numberOfSections(in tableView: UITableView) -> Int {
-		return error ? 1 : (workout.details != nil ? 2 : 1)
+		return workout.hasError || !workout.loaded ? 1 : (workout.details != nil ? 2 : 1)
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if error {
+		if workout.hasError {
 			return 1
 		}
 		
@@ -61,11 +57,11 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		if error {
+		if workout.hasError {
 			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
 			let msg: String
 			if HKHealthStore.isHealthDataAvailable() {
-				msg = !ready ? "LOADING" : "ERR_LOADING"
+				msg = "ERR_LOADING"
 			} else {
 				msg = "ERR_NO_HEALTH"
 			}

@@ -54,7 +54,7 @@ enum StepSource: CustomStringConvertible {
 	private static var predicateCache = [String: NSPredicate]()
 	/// The predicate to load only those step data point for the relevant source(s).
 	///
-	/// - important: Do not get this property from the background thread HealthKit uses to call the completion handlers passed to queries as this will cause a deadlock on that thread.
+	/// - important: Do not access this property from the background thread HealthKit uses to call the completion handlers passed to queries as this will cause a deadlock on that thread.
 	var predicate: NSPredicate {
 		if let cached = StepSource.predicateCache[self.description] {
 			return cached
