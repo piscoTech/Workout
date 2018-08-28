@@ -139,8 +139,6 @@ class Workout {
 	private let sourcePredicate: NSPredicate!
 	
 	/// Create an instance of the proper `Workout` subclass (if any) for the given workout.
-	///
-	/// - important: Do not call this method from the background thread HealthKit uses to call the completion handlers passed to queries as this will cause a deadlock on that thread. This is due how `StepSource.predicate` is calculated as this property is needed to initialize some of the subclasses.
 	class func workoutFor(raw: HKWorkout, delegate: WorkoutDelegate? = nil) -> Workout {
 		let wClass: Workout.Type
 		
