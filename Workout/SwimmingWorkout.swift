@@ -18,8 +18,13 @@ class SwimmingWorkout: Workout {
 		
 		if #available(iOS 10, *) {
 			self.addDetails([.pace, .heart, .strokes])
-			self.addRequest(for: .distanceSwimming, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true))
-			self.addRequest(for: .swimmingStrokeCount, withUnit: .strokes(), andTimeType: .ranged, searchingBy: .time)
+			
+			if let distance = WorkoutDataQuery(typeID: .distanceSwimming, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
+				self.addQuery(distance)
+			}
+			if let strokes = WorkoutDataQuery(typeID: .swimmingStrokeCount, withUnit: .strokes(), andTimeType: .ranged, searchingBy: .time) {
+				self.addQuery(strokes)
+			}
 		}
 	}
 	

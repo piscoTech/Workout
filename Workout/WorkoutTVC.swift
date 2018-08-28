@@ -12,7 +12,7 @@ import MBLibrary
 
 class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	
-	@IBOutlet weak var exportBtn: UIBarButtonItem!
+	@IBOutlet var exportBtn: UIBarButtonItem!
 	
 	weak var listController: ListTableViewController!
 	var rawWorkout: HKWorkout!
@@ -20,6 +20,10 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		let loading = UIActivityIndicatorView(style: .gray)
+		loading.startAnimating()
+		navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loading)
 
         workout = Workout.workoutFor(raw: rawWorkout, delegate: self)
 		workout.load()
@@ -31,12 +35,12 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
     }
 	
 	func dataIsReady() {
-		sleep(5)
 		DispatchQueue.main.async {
 			self.exportBtn.isEnabled = !self.workout.hasError
+			self.navigationItem.setRightBarButton(self.exportBtn, animated: true)
 			self.tableView.beginUpdates()
-			self.tableView.reloadSections([0], with: .automatic)
-			self.tableView.insertSections(IndexSet(1 ..< self.numberOfSections(in: self.tableView)), with: .automatic)
+			self.tableView.reloadSections([0], with: .fade)
+			self.tableView.insertSections(IndexSet(1 ..< self.numberOfSections(in: self.tableView)), with: .fade)
 			self.tableView.endUpdates()
 		}
 	}
@@ -65,7 +69,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			} else {
 				msg = "ERR_NO_HEALTH"
 			}
-			res.textLabel?.text = NSLocalizedString(msg, comment: "Loading/Error")
+			res.textLabel?.text = NSLocalizedString(msg, comment: "Error")
 			
 			return res
 		}

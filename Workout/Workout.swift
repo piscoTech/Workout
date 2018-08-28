@@ -21,10 +21,10 @@ class Workout {
 	private(set) var raw: HKWorkout
 	var delegate: WorkoutDelegate?
 	
-	///Request required for base data.
-	private var baseReq = [HKQuery]()
-	///Request for additional details.
-	private var requests = [HKQuery]()
+	/// Request required for base data for a quick load.
+	private var baseReq = [WorkoutDataQuery]()
+	/// Request for additional details and a full load.
+	private var requests = [WorkoutDataQuery]()
 	//Set when .load() is called
 	private var requestToDo = 0
 	private var requestDone = 0 {
@@ -137,12 +137,6 @@ class Workout {
 	private let workoutPredicate: NSPredicate!
 	private let timePredicate: NSPredicate!
 	private let sourcePredicate: NSPredicate!
-	private let startDateSort: NSSortDescriptor!
-	private let queryNoLimit = HKObjectQueryNoLimit
-	
-	enum SearchType {
-		case time, workout(fallbackToTime: Bool)
-	}
 	
 	/// Create an instance of the proper `Workout` subclass (if any) for the given workout.
 	///
@@ -171,7 +165,6 @@ class Workout {
 			workoutPredicate = nil
 			timePredicate = nil
 			sourcePredicate = nil
-			startDateSort = nil
 			delegate?.dataIsReady()
 			
 			return
@@ -180,12 +173,17 @@ class Workout {
 		workoutPredicate = HKQuery.predicateForObjects(from: raw)
 		timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
 		sourcePredicate = HKQuery.predicateForObjects(from: raw.sourceRevision.source)
-		startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
 		
 		updateUnits()
-		addRequest(for: .heartRate, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time, isBase: true)
-		addRequest(for: .activeEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true), isBase: true)
-		addRequest(for: .basalEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .time, isBase: true)
+		if let heart = WorkoutDataQuery(typeID: .heartRate, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time) {
+			self.addQuery(heart, isBase: true)
+		}
+		if let activeCal = WorkoutDataQuery(typeID: .activeEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
+			self.addQuery(activeCal, isBase: true)
+		}
+		if let baseCal = WorkoutDataQuery(typeID: .basalEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .time) {
+			self.addQuery(baseCal, isBase: true)
+		}
 	}
 	
 	func setLengthPrefixFor(distance dPref: HKMetricPrefix, speed sPref: HKMetricPrefix, pace pPref: HKMetricPrefix) {
@@ -196,84 +194,77 @@ class Workout {
 		updateUnits()
 	}
 	
+	// MARK: - Set and load other data
+	
 	func addDetails(_ display: [WorkoutDetail]) {
 		guard details == nil && !loading && !loaded else {
 			return
 		}
 		
-		details = []
 		displayDetail = display
 		
 		let start = raw.startDate.timeIntervalSince1970
 		let end = Int(floor( (raw.endDate.timeIntervalSince1970 - start) / 60 ))
 		
-		for m in 0 ... end {
-			details!.append(WorkoutMinute(minute: UInt(m), owner: self))
-		}
-		details!.last?.endTime = endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970
-		if let d = details!.last?.duration, d == 0 {
+		details = (0 ... end).map { WorkoutMinute(minute: UInt($0), owner: self) }
+		details?.last?.endTime = endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970
+		if let d = details?.last?.duration, d == 0 {
 			_ = details!.popLast()
 		}
 	}
 	
-	///Add a query to load data for passed type.
+	/// Add a query to load data for the workout.
 	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`.
-	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you must specify `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
-	private func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType, predicate additionalPredicate: NSPredicate? = nil, isBase: Bool) {
+	private func addQuery(_ q: WorkoutDataQuery, isBase: Bool) {
 		guard !loading && !loaded else {
 			return
 		}
 		
-		guard let type = typeID.getType() else {
+		if isBase {
+			baseReq.append(q)
+		} else {
+			requests.append(q)
+		}
+	}
+	
+	/// Add a query to load data for the workout.
+	func addQuery(_ q: WorkoutDataQuery) {
+		self.addQuery(q, isBase: false)
+	}
+	
+	/// Loads required additional data for the workout.
+	/// - parameter quickLoad: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
+	func load(quickLoad: Bool = false) {
+		guard !loading && !loaded else {
 			return
 		}
 		
-		let rawStart = self.rawStart
-		let predicate: NSPredicate
-		var tryTimeIfEmpty = false
-		switch pred {
-		case .time:
-			predicate = timePredicate
-		case let .workout(tryTime):
-			predicate = workoutPredicate
-			tryTimeIfEmpty = tryTime
-		}
-		
-		let mainPredicate: NSPredicate
-		if let addPred = additionalPredicate {
-			mainPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [addPred, predicate])
-		} else {
-			mainPredicate = predicate
-		}
-		
-		var resultHandler: ((HKSampleQuery, [HKSample]?, Error?) -> Void)!
-		resultHandler = { (_, r, err) -> Void in
-			if tryTimeIfEmpty, err != nil || r?.count ?? 0 == 0 {
-				tryTimeIfEmpty = false
-				var preds: [NSPredicate] = [self.timePredicate, self.sourcePredicate]
-				if let addPred = additionalPredicate {
-					preds.append(addPred)
+		loading = true
+		let req = baseReq + (quickLoad ? [] : requests)
+		requestToDo = req.count
+		for r in req {
+			r.execute(forStart: startDate, usingWorkoutPredicate: workoutPredicate, timePredicate: timePredicate, sourcePredicate: sourcePredicate) { _, data, err  in
+				defer {
+					// Move to a serial queue to synchronize access to counter
+					DispatchQueue.workout.async {
+						self.requestDone += 1
+					}
 				}
-				let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: preds)
-				let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: self.queryNoLimit, sortDescriptors: [self.startDateSort], resultsHandler: resultHandler)
-				healthStore.execute(query)
 				
-				return
-			}
-			
-			if err != nil {
-				self.hasError = true
-			} else {
+				guard err == nil, let res = data as? [HKQuantitySample] else {
+					self.hasError = true
+					return
+				}
 				var searchDetail = self.details
 				
-				for s in r as! [HKQuantitySample] {
-					guard s.quantity.is(compatibleWith: unit) else {
+				for s in res {
+					guard s.quantity.is(compatibleWith: r.unit) else {
 						continue
 					}
 					
-					let val = s.quantity.doubleValue(for: unit)
+					let val = s.quantity.doubleValue(for: r.unit)
 					
-					switch typeID {
+					switch r.typeID {
 					case .heartRate:
 						self.maxHeart = max(self.maxHeart ?? 0, val)
 						self.heartData.append(val)
@@ -285,55 +276,25 @@ class Workout {
 						break
 					}
 					
-					let start = s.startDate.timeIntervalSince1970 - rawStart
+					let start = s.startDate.timeIntervalSince1970 - self.rawStart
 					let data: DataPoint
-					switch tType {
+					switch r.timeType {
 					case .instant:
 						data = InstantDataPoint(time: start, value: val)
 					case .ranged:
-						let end = s.endDate.timeIntervalSince1970 - rawStart
+						let end = s.endDate.timeIntervalSince1970 - self.rawStart
 						data = RangedDataPoint(start: start, end: end, value: val)
 					}
 					
-					while let d = searchDetail?.first, d.add(data, ofType: typeID) {
+					while let d = searchDetail?.first, d.add(data, ofType: r.typeID) {
 						searchDetail?.remove(at: 0)
 					}
 				}
 			}
-			
-			// Move to a serial queue to synchronize access to counter
-			DispatchQueue.workout.async {
-				self.requestDone += 1
-			}
-		}
-		let query = HKSampleQuery(sampleType: type, predicate: mainPredicate, limit: queryNoLimit, sortDescriptors: [startDateSort], resultsHandler: resultHandler)
-		
-		if isBase {
-			baseReq.append(query)
-		} else {
-			requests.append(query)
 		}
 	}
 	
-	///Add a query to load data for passed type.
-	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you must specify `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` to specify the desired prefixes.
-	func addRequest(for typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy pred: SearchType, predicate: NSPredicate? = nil) {
-		self.addRequest(for: typeID, withUnit: unit, andTimeType: tType, searchingBy: pred, predicate: predicate, isBase: false)
-	}
-	
-	///- parameter quickLoad: If enabled only base queries, i.e. heart data, will be executed and not custom ones defined by specific workouts.
-	func load(quickLoad: Bool = false) {
-		guard !loading && !loaded else {
-			return
-		}
-		
-		loading = true
-		let req = baseReq + (quickLoad ? [] : requests)
-		requestToDo = req.count
-		for r in req {
-			healthStore.execute(r)
-		}
-	}
+	// MARK: - Export
 	
 	private var generalData: [String] {
 		return [

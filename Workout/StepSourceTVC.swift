@@ -52,36 +52,42 @@ enum StepSource: CustomStringConvertible {
 	}
 	
 	private static var predicateCache = [String: NSPredicate]()
-	/// The predicate to load only those step data point for the relevant source(s).
-	///
-	/// - important: Do not access this property from the background thread HealthKit uses to call the completion handlers passed to queries as this will cause a deadlock on that thread.
-	var predicate: NSPredicate {
-		if let cached = StepSource.predicateCache[self.description] {
-			return cached
-		}
+	private static var predicateRequestCache = [String: [(NSPredicate) -> Void]]()
+	
+	/// Fetch the predicate to load only those step data point for the relevant source(s).
+	func getPredicate(_ callback: @escaping (NSPredicate) -> Void) {
+		DispatchQueue.workout.async {
+			if StepSource.predicateRequestCache.keys.contains(self.description) {
+				// A request for the same predicate is ongoing, wait for it
+				StepSource.predicateRequestCache[self.description]?.append(callback)
+			} else if let cached = StepSource.predicateCache[self.description] {
+				// The requested predicate has been already loaded
+				callback(cached)
+			} else {
+				guard let type = HKQuantityTypeIdentifier.stepCount.getType() else {
+					fatalError("Step count type doesn't seem to exists...")
+				}
 		
-		guard let type = HKQuantityTypeIdentifier.stepCount.getType() else {
-			fatalError("Step count type doesn't seem to exists...")
-		}
-		
-		let group = DispatchGroup()
-		group.enter()
-		
-		var predicate: NSPredicate!
-		let q = HKSourceQuery(sampleType: type, samplePredicate: nil) { _, res, _ in
-			let sources = (res ?? Set()).filter { s in
-				return s.name.lowercased().range(of: self.description.lowercased()) != nil
+				let q = HKSourceQuery(sampleType: type, samplePredicate: nil) { _, res, _ in
+					let sources = (res ?? Set()).filter { s in
+						return s.name.lowercased().range(of: self.description.lowercased()) != nil
+					}
+					
+					let predicate = HKQuery.predicateForObjects(from: sources)
+					DispatchQueue.workout.async {
+						StepSource.predicateCache[self.description] = predicate
+						if let callbacks = StepSource.predicateRequestCache.removeValue(forKey: self.description) {
+							for c in callbacks {
+								c(predicate)
+							}
+						}
+					}
+				}
+				
+				StepSource.predicateRequestCache[self.description] = [callback]
+				healthStore.execute(q)
 			}
-			
-			predicate = HKQuery.predicateForObjects(from: sources)
-			group.leave()
 		}
-		
-		healthStore.execute(q)
-		group.wait()
-		
-		StepSource.predicateCache[self.description] = predicate
-		return predicate
 	}
 	
 }

@@ -30,6 +30,7 @@
 		7AA9F4971C48F64E005FFCB3 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4961C48F64E005FFCB3 /* Main.swift */; };
 		7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */; };
 		7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */; };
+		7ADF92022134983100DE6DC2 /* WorkoutDataQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ADF92012134983100DE6DC2 /* WorkoutDataQuery.swift */; };
 		F175A562C6C358E504F1C3F3 /* Pods_Workout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 431555034B8677F242492DD2 /* Pods_Workout.framework */; };
 /* End PBXBuildFile section */
 
@@ -115,6 +116,7 @@
 		7AA9F49B1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutDetailTVCell.swift; sourceTree = "<group>"; };
 		7AD3D1151F3FB70C00418113 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		7AD3D1161F3FB70C00418113 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		7ADF92012134983100DE6DC2 /* WorkoutDataQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutDataQuery.swift; sourceTree = "<group>"; };
 		DF37782FB8D51E3CC94EA73D /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -190,6 +192,7 @@
 				7A9E3A981D400EB900CF73ED /* DataPoint.swift */,
 				7A9E3A961D400A0000CF73ED /* WorkoutMinute.swift */,
 				7AA638431E6C4E0E00F006EB /* WorkoutDetail.swift */,
+				7ADF92012134983100DE6DC2 /* WorkoutDataQuery.swift */,
 				7A2BDCB01E6AF13700996E36 /* Workouts */,
 			);
 			name = Model;
@@ -426,6 +429,7 @@
 				7A638B301E6E02BC00473831 /* StepSourceTVC.swift in Sources */,
 				7A9E3A971D400A0000CF73ED /* WorkoutMinute.swift in Sources */,
 				7A2BDCB51E6AF21200996E36 /* SwimmingWorkout.swift in Sources */,
+				7ADF92022134983100DE6DC2 /* WorkoutDataQuery.swift in Sources */,
 				7A812E0C1E6AC1140086ECA7 /* HealthKit.swift in Sources */,
 				7A6D1F501D51EB40002A4890 /* AboutVC.swift in Sources */,
 				7A2BDCB71E6AF22600996E36 /* RunningWorkout.swift in Sources */,
