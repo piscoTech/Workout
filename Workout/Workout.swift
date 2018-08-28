@@ -319,7 +319,7 @@ class Workout {
 	func export() -> [URL]? {
 		var res = [URL]()
 		var data = [String]()
-		
+		#warning("Include files from additional data providers")
 		var filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
 		res.append(URL(fileURLWithPath: filePath))
 		
