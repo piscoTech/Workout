@@ -33,6 +33,11 @@
 "AVG_SPEED" = "Average Speed";
 "CALORIES" = "Calories";
 
+"HEART_ZONES_TITLE" = "Heart Zones";
+"HEART_ZONE" = "Zone %d";
+"HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
+
+"DETAILS_TITLE" = "Details";
 "STEPS" = "steps";
 "STROKES" = "strokes";
 "CAL_SPLIT" = "%@ (%@ total)";

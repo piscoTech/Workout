@@ -11,10 +11,10 @@ import UIKit
 protocol AdditionalDataProvider {
 	
 	var preferAppearanceBeforeDetails: Bool { get }
-	var sectionHeader: String { get }
+	var sectionHeader: String? { get }
 	var numberOfRows: Int { get }
 	
-	func cellForRowAt(_ index: Int) -> UITableViewCell
+	func cellForRowAt(_ indexPath: IndexPath, for tableView: UITableView) -> UITableViewCell
 	func export() -> [URL]?
 	
 }

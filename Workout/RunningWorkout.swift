@@ -23,6 +23,12 @@ class RunninWorkout: Workout {
 		if let steps = WorkoutDataQuery(typeID: .stepCount, withUnit: .steps(), andTimeType: .ranged, searchingBy: .time, predicate: Preferences.stepSourceFilter.getPredicate) {
 			self.addQuery(steps)
 		}
+		
+		if raw.workoutActivityType == .running {
+			let heartZone = RunningHeartZones()
+			self.addAdditionalDataProcessors(heartZone)
+			self.addAdditionalDataProviders(heartZone)
+		}
 	}
 	
 }
