@@ -78,6 +78,14 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		
 		return nil
 	}
+	
+	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+		if section > 0, let dp = dataSectionCache[section - 1] {
+			return dp.sectionFooter
+		}
+		
+		return nil
+	}
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if workout.hasError {

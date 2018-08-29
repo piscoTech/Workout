@@ -13,6 +13,7 @@ enum PreferenceKeys: String, KeyValueStoreKey {
 	case authorized = "authorized"
 	case authVersion = "authVersion"
 	case stepSource = "stepSource"
+	case maxHeartRate = "maxHeartRate"
 	
 	case reviewRequestCounter = "reviewRequestCounter"
 	
@@ -45,6 +46,24 @@ class Preferences {
 		}
 		set {
 			local.set(newValue.description, forKey: PreferenceKeys.stepSource)
+			local.synchronize()
+		}
+	}
+	
+	/// Max heart rate for calculating running heart zones.
+	///
+	/// Any value less than 60bpm (a normal resting heart rate) is considered invalid.
+	static var maxHeartRate: Int? {
+		get {
+			let hr = local.integer(forKey: PreferenceKeys.maxHeartRate)
+			return hr >= 60 ? hr : nil
+		}
+		set {
+			if let hr = newValue {
+				local.set(hr, forKey: PreferenceKeys.maxHeartRate)
+			} else {
+				local.removeObject(forKey: PreferenceKeys.maxHeartRate)
+			}
 			local.synchronize()
 		}
 	}

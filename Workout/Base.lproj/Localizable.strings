@@ -34,6 +34,7 @@
 "CALORIES" = "Calories";
 
 "HEART_ZONES_TITLE" = "Heart Zones";
+"HEART_ZONES_FOOTER" = "It is possible that the sum of time in each heart zone does not add up to the total duration of the workout as in some parts heart data is not available or the heart rate is below the threshold for Zone 1.";
 "HEART_ZONE" = "Zone %d";
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
 

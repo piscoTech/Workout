@@ -17,8 +17,8 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	/// The maximum valid between two samples.
 	static let maxInterval: TimeInterval = 60
 	
-	private var maxHeartRate: Int!
-	private var zones: [Int]!
+	private var maxHeartRate: Double!
+	private var zones: [Double]!
 	private var zonesData: [TimeInterval]?
 	
 	// MARK: - Process data
@@ -28,16 +28,17 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	}
 	
 	private func zone(for s: HKQuantitySample) -> Int? {
-		return nil
+		let p = s.quantity.doubleValue(for: .heartRate()) / maxHeartRate
+		return zones.lastIndex { p >= $0 }
 	}
 	
 	func process(data: [HKQuantitySample]) {
 		#warning("Implement me")
-//		guard let maxHeartRate = Preferences.maxHeartRate else {
-//			return
-//		}
-//		self.maxHeartRate = maxHeartRate
-		zones = /* Preferences.runningHeartZones ?? */ RunningHeartZones.defaultZones
+		guard let hr = Preferences.maxHeartRate else {
+			return
+		}
+		self.maxHeartRate = Double(hr)
+		zones = (/* Preferences.runningHeartZones ?? */ RunningHeartZones.defaultZones).map({ Double($0) / 100 })
 		zonesData = [TimeInterval](repeating: 0, count: zones.count)
 		
 		var previous: HKQuantitySample?
@@ -61,7 +62,22 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 			if let c = cZone, pZone == c {
 				zonesData?[c] += time
 			} else if let p = pZone, let c = cZone, abs(p - c) == 1 {
-				// split time according to a linear interpolation
+				let pH = prev.quantity.doubleValue(for: .heartRate()) / maxHeartRate
+				let cH = s.quantity.doubleValue(for: .heartRate()) / maxHeartRate
+				/// Threshold between zones
+				let th = zones[max(p, c)]
+				
+				guard th >= min(pH, cH), th <= max(pH, cH) else {
+					continue
+				}
+				
+				/// Incline of a line joining the two data points
+				let m = (cH - pH) / time
+				/// The time after the previous data point when the zone change
+				let change = (th - pH) / m
+				
+				zonesData?[p] += change
+				zonesData?[c] += time - change
 			}
 		}
 	}
@@ -70,7 +86,13 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	
 	let preferAppearanceBeforeDetails = true
 	
-	let sectionHeader: String? = NSLocalizedString("HEART_ZONES_TITLE", comment: "Heart zones")
+	private static let header = NSLocalizedString("HEART_ZONES_TITLE", comment: "Heart zones")
+	private static let footer = NSLocalizedString("HEART_ZONES_FOOTER", comment: "Can be less than total")
+	
+	let sectionHeader: String? = RunningHeartZones.header
+	var sectionFooter: String? {
+		return zonesData == nil ? nil : RunningHeartZones.footer
+	}
 	
 	var numberOfRows: Int {
 		return zonesData?.count ?? 1
