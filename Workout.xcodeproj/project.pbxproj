@@ -34,6 +34,7 @@
 		7AC1D7682135390A00F89A2E /* AdditionalDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC1D7672135390A00F89A2E /* AdditionalDataProvider.swift */; };
 		7AC1D7702135B5E400F89A2E /* RunningHeartZones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC1D76F2135B5E400F89A2E /* RunningHeartZones.swift */; };
 		7ADF92022134983100DE6DC2 /* WorkoutDataQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ADF92012134983100DE6DC2 /* WorkoutDataQuery.swift */; };
+		7AE3F28C2137041900085B08 /* RunningHeartZonesTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE3F28B2137041900085B08 /* RunningHeartZonesTVC.swift */; };
 		F175A562C6C358E504F1C3F3 /* Pods_Workout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 431555034B8677F242492DD2 /* Pods_Workout.framework */; };
 /* End PBXBuildFile section */
 
@@ -123,6 +124,7 @@
 		7AD3D1151F3FB70C00418113 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		7AD3D1161F3FB70C00418113 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		7ADF92012134983100DE6DC2 /* WorkoutDataQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutDataQuery.swift; sourceTree = "<group>"; };
+		7AE3F28B2137041900085B08 /* RunningHeartZonesTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunningHeartZonesTVC.swift; sourceTree = "<group>"; };
 		DF37782FB8D51E3CC94EA73D /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -178,8 +180,7 @@
 				7A27D3EF21132B28006B1634 /* FilterListTVC.swift */,
 				7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */,
 				7AC1D7672135390A00F89A2E /* AdditionalDataProvider.swift */,
-				7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */,
-				7A638B2F1E6E02BC00473831 /* StepSourceTVC.swift */,
+				7AE3F2872137040100085B08 /* Settings */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -259,6 +260,16 @@
 				7AC1D76F2135B5E400F89A2E /* RunningHeartZones.swift */,
 			);
 			name = "Additional Data";
+			sourceTree = "<group>";
+		};
+		7AE3F2872137040100085B08 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */,
+				7A638B2F1E6E02BC00473831 /* StepSourceTVC.swift */,
+				7AE3F28B2137041900085B08 /* RunningHeartZonesTVC.swift */,
+			);
+			name = Settings;
 			sourceTree = "<group>";
 		};
 		C6D4E5280847AC701C94ADD5 /* Pods */ = {
@@ -445,6 +456,7 @@
 				7AA9F47D1C48EFFF005FFCB3 /* AppDelegate.swift in Sources */,
 				7AA9F49C1C492BB4005FFCB3 /* WorkoutDetailTVCell.swift in Sources */,
 				7AC1D7682135390A00F89A2E /* AdditionalDataProvider.swift in Sources */,
+				7AE3F28C2137041900085B08 /* RunningHeartZonesTVC.swift in Sources */,
 				7A638B301E6E02BC00473831 /* StepSourceTVC.swift in Sources */,
 				7A9E3A971D400A0000CF73ED /* WorkoutMinute.swift in Sources */,
 				7A2BDCB51E6AF21200996E36 /* SwimmingWorkout.swift in Sources */,

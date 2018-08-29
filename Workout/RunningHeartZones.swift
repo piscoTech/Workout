@@ -12,8 +12,7 @@ import MBLibrary
 
 class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	
-	#warning("Fix me according to GitHub issue")
-	static let defaultZones = [60, 70, 80, 90]
+	static let defaultZones = [60, 70, 80, 94]
 	/// The maximum valid between two samples.
 	static let maxInterval: TimeInterval = 60
 	
@@ -33,11 +32,11 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	}
 	
 	func process(data: [HKQuantitySample]) {
-		#warning("Implement me")
 		guard let hr = Preferences.maxHeartRate else {
 			return
 		}
 		self.maxHeartRate = Double(hr)
+		#warning("Implement me")
 		zones = (/* Preferences.runningHeartZones ?? */ RunningHeartZones.defaultZones).map({ Double($0) / 100 })
 		zonesData = [TimeInterval](repeating: 0, count: zones.count)
 		
@@ -114,9 +113,26 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	}
 	
 	func export() -> [URL]? {
-		#warning("Implement me")
-		fatalError()
+		guard let zonesData = self.zonesData else {
+			return []
+		}
+		
+		let sep = CSVSeparator
+		var zones = "Zone\(sep)Time\n"
+		var i = 1
+		for t in zonesData {
+			zones += "\(i)\(sep)\(t.getDuration().toCSV())\n"
+			i += 1
+		}
+		
+		do {
+			let hzFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("heartZones.csv")
+			try zones.write(to: hzFile, atomically: true, encoding: .utf8)
+			
+			return [hzFile]
+		} catch {
+			return nil
+		}
 	}
-	
 	
 }

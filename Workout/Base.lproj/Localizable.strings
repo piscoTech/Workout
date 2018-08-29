@@ -35,8 +35,10 @@
 
 "HEART_ZONES_TITLE" = "Heart Zones";
 "HEART_ZONES_FOOTER" = "It is possible that the sum of time in each heart zone does not add up to the total duration of the workout as in some parts heart data is not available or the heart rate is below the threshold for Zone 1.";
+"HEART_ZONES_EXPLANATION" = "Heart zones are ranges of your heart rates in terms of percentage of your max heart rate. Spending certain amouts of time in each zone will help you train in a certain way, customize the zones to better suit your needs.";
 "HEART_ZONE" = "Zone %d";
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
+"HEART_ZONES_MAX_RATE" = "Max %@";
 
 "DETAILS_TITLE" = "Details";
 "STEPS" = "steps";
