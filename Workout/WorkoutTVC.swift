@@ -18,14 +18,19 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	var rawWorkout: HKWorkout!
 	private var workout: Workout!
 	
+	private var dataSectionCache: [AdditionalDataProvider?]!
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
 		let loading = UIActivityIndicatorView(style: .gray)
 		loading.startAnimating()
 		navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loading)
-
-        workout = Workout.workoutFor(raw: rawWorkout, delegate: self)
+		
+		workout = Workout.workoutFor(raw: rawWorkout, delegate: self)
+		dataSectionCache = workout.additionalProviders.filter { $0.preferAppearanceBeforeDetails }
+			+ (workout.details != nil ? [nil] : [])
+			+ workout.additionalProviders.filter { !$0.preferAppearanceBeforeDetails }
 		workout.load()
     }
 
@@ -38,9 +43,16 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		DispatchQueue.main.async {
 			self.exportBtn.isEnabled = !self.workout.hasError
 			self.navigationItem.setRightBarButton(self.exportBtn, animated: true)
+
+			let old = self.tableView.numberOfSections
+			let new = self.numberOfSections(in: self.tableView)
 			self.tableView.beginUpdates()
-			self.tableView.reloadSections([0], with: .fade)
-			self.tableView.insertSections(IndexSet(1 ..< self.numberOfSections(in: self.tableView)), with: .fade)
+			self.tableView.reloadSections(IndexSet(integersIn: 0 ..< min(old, new)), with: .fade)
+			if old < new {
+				self.tableView.insertSections(IndexSet(integersIn: old ..< new), with: .fade)
+			} else if old > new {
+				self.tableView.deleteSections(IndexSet(integersIn: new ..< old), with: .fade)
+			}
 			self.tableView.endUpdates()
 		}
 	}
@@ -48,17 +60,42 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
     // MARK: - Table view data source
 
 	override func numberOfSections(in tableView: UITableView) -> Int {
-		return workout.hasError || !workout.loaded ? 1 : (workout.details != nil ? 2 : 1)
+		if workout.hasError || !workout.loaded {
+			return 1
+		}
+		
+		return 1 + dataSectionCache.count
     }
+	
+	override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		if section > 0 {
+			if let dp = dataSectionCache[section - 1] {
+				return dp.sectionHeader
+			} else {
+				return NSLocalizedString("DETAILS_TITLE", comment: "Details")
+			}
+		}
+		
+		return nil
+	}
+	
+	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+		if section > 0, let dp = dataSectionCache[section - 1] {
+			return dp.sectionFooter
+		}
+		
+		return nil
+	}
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if workout.hasError {
 			return 1
 		}
 		
-		return section == 0 ? 10 : workout.details?.count ?? 0
+		return section == 0
+			? 10
+			: dataSectionCache[section - 1]?.numberOfRows ?? workout.details?.count ?? 0
     }
-
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if workout.hasError {
@@ -74,14 +111,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return res
 		}
 		
-		if indexPath.section == 1 {
-			let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
-			let d = workout.details![indexPath.row]
-			
-			cell.update(for: workout.displayDetail!, withData: d)
-			
-			return cell
-		} else {
+		if indexPath.section == 0 {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "basic", for: indexPath)
 			
 			let title: String
@@ -130,6 +160,15 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			}
 			
 			cell.textLabel?.text = NSLocalizedString(title, comment: "Cell title")
+			return cell
+		} else if let dp = dataSectionCache[indexPath.section - 1] { // Additional data
+			return dp.cellForRowAt(indexPath, for: tableView)
+		} else { // Details
+			let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
+			let d = workout.details![indexPath.row]
+			
+			cell.update(for: workout.displayDetail!, withData: d)
+			
 			return cell
 		}
     }

@@ -13,14 +13,14 @@ import PersonalizedAdConsent
 class AboutViewController: UITableViewController {
 	
 	private var appInfo: String!
-	private var healthInfo: String!
+	private let healthInfo = NSLocalizedString("HEALTH_ACCESS_MANAGE", comment: "Manage access")
+	private let maxHeart = NSLocalizedString("HEART_ZONES_MAX_RATE", comment: "Max x bpm")
 	var delegate: ListTableViewController!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
 		appInfo = NSLocalizedString("REPORT_TEXT", comment: "Report problem") + "\n\nWorkout \(Bundle.main.versionDescription)\n© 2016-2018 Marco Boschi"
-		healthInfo = NSLocalizedString("HEALTH_ACCESS_MANAGE", comment: "Manage access")
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(restoreCompleted(_:)), name: InAppPurchaseManager.restoreNotification, object: nil)
@@ -66,9 +66,9 @@ class AboutViewController: UITableViewController {
 			}
 			
 			return count
-		// Step Source
+		// Settings
 		case 1:
-			return 1
+			return 2
 		// Source Code & Contacts
 		case 2:
 			return 2
@@ -96,6 +96,11 @@ class AboutViewController: UITableViewController {
 		case (1, 0):
 			let cell = tableView.dequeueReusableCell(withIdentifier: "stepSource", for: indexPath)
 			setStepSource(in: cell)
+			return cell
+		// Running Heart Zones
+		case (1, 1):
+			let cell = tableView.dequeueReusableCell(withIdentifier: "heartZones", for: indexPath)
+			setMaxHeartRate(in: cell)
 			return cell
 		// Source Code
 		case (2, 0):
@@ -136,8 +141,24 @@ class AboutViewController: UITableViewController {
 		}
 	}
 	
+	func updateMaxHeartRate() {
+		if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 1)) {
+			setMaxHeartRate(in: cell)
+		}
+	}
+	
 	private func setStepSource(in cell: UITableViewCell) {
-		(cell.viewWithTag(10) as? UILabel)?.text = Preferences.stepSourceFilter.displayName
+		cell.detailTextLabel?.text = Preferences.stepSourceFilter.displayName
+	}
+	
+	private func setMaxHeartRate(in cell: UITableViewCell) {
+		let s: String?
+		if let hr = Preferences.maxHeartRate {
+			s = String(format: maxHeart, Double(hr).getFormattedHeartRate())
+		} else {
+			s = nil
+		}
+		cell.detailTextLabel?.text = s
 	}
 	
 	// MARK: - Ads management
@@ -332,6 +353,9 @@ class AboutViewController: UITableViewController {
 		switch segueID {
 		case "stepSource":
 			let dest = segue.destination as! StepSourceTableViewController
+			dest.delegate = self
+		case "heartZones":
+			let dest = segue.destination as! RunningHeartZonesTableViewController
 			dest.delegate = self
 		case "contact":
 			let dest = (segue.destination as! UINavigationController).topViewController as! ContactMeViewController

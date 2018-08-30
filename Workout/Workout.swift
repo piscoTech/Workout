@@ -37,6 +37,9 @@ class Workout {
 		}
 	}
 	
+	private var additionalProcessors = [AdditionalDataProcessor]()
+	private(set) var additionalProviders = [AdditionalDataProvider]()
+	
 	private var loading = false
 	private(set) var loaded = false
 	private(set) var hasError = false
@@ -230,6 +233,14 @@ class Workout {
 		self.addQuery(q, isBase: false)
 	}
 	
+	func addAdditionalDataProcessors(_ dp: AdditionalDataProcessor...) {
+		self.additionalProcessors += dp
+	}
+	
+	func addAdditionalDataProviders(_ dp: AdditionalDataProvider...) {
+		self.additionalProviders += dp
+	}
+	
 	/// Loads required additional data for the workout.
 	/// - parameter quickLoad: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
 	func load(quickLoad: Bool = false) {
@@ -253,8 +264,14 @@ class Workout {
 					self.hasError = true
 					return
 				}
-				var searchDetail = self.details
 				
+				for dp in self.additionalProcessors {
+					if dp.wantData(for: r.typeID) {
+						dp.process(data: res)
+					}
+				}
+				
+				var searchDetail = self.details
 				for s in res {
 					guard s.quantity.is(compatibleWith: r.unit) else {
 						continue
@@ -317,7 +334,6 @@ class Workout {
 	func export() -> [URL]? {
 		var res = [URL]()
 		var data = [String]()
-		
 		var filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
 		res.append(URL(fileURLWithPath: filePath))
 		
@@ -356,6 +372,14 @@ class Workout {
 			}
 		} catch _ {
 			return nil
+		}
+		
+		for dp in additionalProviders {
+			guard let files = dp.export() else {
+				return nil
+			}
+			
+			res += files
 		}
 		
 		return res
