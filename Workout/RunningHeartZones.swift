@@ -87,6 +87,7 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	
 	private static let header = NSLocalizedString("HEART_ZONES_TITLE", comment: "Heart zones")
 	private static let footer = NSLocalizedString("HEART_ZONES_FOOTER", comment: "Can be less than total")
+	private static let zoneTitle = NSLocalizedString("HEART_ZONE", comment: "Zone x")
 	
 	let sectionHeader: String? = RunningHeartZones.header
 	var sectionFooter: String? {
@@ -106,7 +107,7 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 		}
 		
 		let cell = tableView.dequeueReusableCell(withIdentifier: "basic", for: indexPath)
-		cell.textLabel?.text = String(format: NSLocalizedString("HEART_ZONE", comment: "Zone x"), indexPath.row + 1)
+		cell.textLabel?.text = String(format: RunningHeartZones.zoneTitle, indexPath.row + 1)
 		cell.detailTextLabel?.text = data > 0 ? data.getDuration() : WorkoutDetail.noData
 		
 		return cell
