@@ -69,6 +69,14 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 			return zones.count
 		}
     }
+	
+	override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		if section == 1 {
+			return NSLocalizedString("HEART_ZONES_TITLE", comment: "Heart zones")
+		}
+		
+		return nil
+	}
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if indexPath.section == 0 {
@@ -94,6 +102,14 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
         return indexPath.section == 1 && tableView.isEditing
     }
 	
+	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		tableView.deselectRow(at: indexPath, animated: false)
+		
+		let cell = tableView.cellForRow(at: indexPath)
+		(cell as? MaxHeartRateCell)?.heartRateField.becomeFirstResponder()
+		(cell as? HeartZoneCell)?.lower.becomeFirstResponder()
+	}
+	
 	// MARK: - Max heart rate
 	
 	@IBAction func maxHeartRateChanged(_ sender: UITextField) {
@@ -109,6 +125,7 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 	
 	private func updateButtons() {
 		self.editBtn.isEnabled = !self.isEditing || filterZones(inTable: false).count > 1
+		self.addZoneBtn.isEnabled = self.zones.last ?? 0 < 99
 	}
 	
 	private func filterZones(inTable: Bool) -> [Int] {
@@ -136,8 +153,13 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 	}
 	
 	@objc private func addZone() {
-		#warning("Implement me")
-		print("Add zone")
+		let last = zones.last ?? 55
+		zones.append(min(last + 5, 99))
+		if let cell = tableView.cellForRow(at: IndexPath(row: zones.count - 2, section: 1)) as? HeartZoneCell {
+			setCell(cell, number: zones.count - 2)
+		}
+		tableView.insertRows(at: [IndexPath(row: zones.count - 1, section: 1)], with: .automatic)
+		updateButtons()
 	}
 	
 	@objc private func cancel() {
@@ -151,7 +173,11 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 			return
 		}
 		
-		zones[index.row] = Int(cell.lower.text ?? "") ?? -1
+		let p = Int(cell.lower.text ?? "") ?? -1
+		zones[index.row] = p
+		if p >= 0, p < 100, let cell = tableView.cellForRow(at: IndexPath(row: index.row - 1, section: 1)) as? HeartZoneCell {
+			setCell(cell, number: index.row - 1)
+		}
 		updateButtons()
 	}
 	
@@ -172,23 +198,26 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 		}
 	}
 	
-	/*
-	// Override to support editing the table view.
-	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-	if editingStyle == .delete {
-	// Delete the row from the data source
-	tableView.deleteRows(at: [indexPath], with: .fade)
-	} else if editingStyle == .insert {
-	// Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+	override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+		guard editingStyle == .delete, indexPath.section == 1 else {
+			return
+		}
+		
+		zones.remove(at: indexPath.row)
+		tableView.deleteRows(at: [indexPath], with: .automatic)
+		for i in indexPath.row - 1 ..< zones.count {
+			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 1)) as? HeartZoneCell {
+				setCell(cell, number: i)
+			}
+		}
+		updateButtons()
 	}
-	}
-	*/
 
 }
 
 class MaxHeartRateCell: UITableViewCell {
 	
-	@IBOutlet private weak var heartRateField: UITextField!
+	@IBOutlet private(set) weak var heartRateField: UITextField!
 	
 	func setHeartRate(_ hr: Int?) {
 		heartRateField.text = hr?.description ?? ""
@@ -213,7 +242,7 @@ class HeartZoneCell: UITableViewCell {
 	@IBOutlet private weak var delegate: RunningHeartZonesTableViewController!
 	
 	@IBOutlet private weak var title: UILabel!
-	@IBOutlet fileprivate weak var lower: UITextField!
+	@IBOutlet fileprivate private(set) weak var lower: UITextField!
 	@IBOutlet private weak var upper: UILabel!
 	
 	private static let zoneTitle = NSLocalizedString("HEART_ZONE", comment: "Zone x")
