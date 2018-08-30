@@ -14,16 +14,17 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 	private var zones: [Int]!
 	private weak var editBtn: UIBarButtonItem!
 	private var addZoneBtn: UIBarButtonItem!
+	private var cancelBtn: UIBarButtonItem!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		#warning("Implement me")
-		zones = /* Preferences.runningHeartZones ?? */ RunningHeartZones.defaultZones
+		zones = Preferences.runningHeartZones ?? RunningHeartZones.defaultZones
 
 		editBtn = self.editButtonItem
 		self.navigationItem.rightBarButtonItems = [editBtn]
 		addZoneBtn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addZone))
+		cancelBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
     }
 	
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -33,12 +34,18 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 	}
 	
 	override func setEditing(_ editing: Bool, animated: Bool) {
+		for i in (0 ..< zones.count).map({ IndexPath(row: $0, section: 1) }) {
+			(tableView.cellForRow(at: i) as? HeartZoneCell)?.isEnabled = editing
+		}
+		
 		super.setEditing(editing, animated: animated)
 		
 		self.navigationItem.setRightBarButtonItems(self.isEditing ? [editBtn, addZoneBtn] : [editBtn], animated:  true)
-		for i in (0 ..< zones.count).map({ IndexPath(row: $0, section: 1) }) {
-			(tableView.cellForRow(at: i) as? HeartZoneCell)?.isEnabled = self.isEditing
-		}
+		self.navigationItem.setLeftBarButton(self.isEditing ? cancelBtn : nil, animated: true)
+		self.navigationController?.interactivePopGestureRecognizer?.isEnabled = !self.isEditing
+		Preferences.runningHeartZones = self.zones
+		
+		updateButtons()
 	}
 
     // MARK: - Table view data source
@@ -131,6 +138,12 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 	@objc private func addZone() {
 		#warning("Implement me")
 		print("Add zone")
+	}
+	
+	@objc private func cancel() {
+		self.zones = Preferences.runningHeartZones ?? RunningHeartZones.defaultZones
+		tableView.reloadSections([1], with: .automatic)
+		self.setEditing(false, animated: true)
 	}
 	
 	fileprivate func thresholdChanged(for cell: HeartZoneCell) {

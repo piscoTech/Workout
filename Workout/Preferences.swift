@@ -14,6 +14,7 @@ enum PreferenceKeys: String, KeyValueStoreKey {
 	case authVersion = "authVersion"
 	case stepSource = "stepSource"
 	case maxHeartRate = "maxHeartRate"
+	case runningHeartZones = "runningHeartZones"
 	
 	case reviewRequestCounter = "reviewRequestCounter"
 	
@@ -63,6 +64,23 @@ class Preferences {
 				local.set(hr, forKey: PreferenceKeys.maxHeartRate)
 			} else {
 				local.removeObject(forKey: PreferenceKeys.maxHeartRate)
+			}
+			local.synchronize()
+		}
+	}
+	
+	/// The thresholds, i.e. lower bound, for each running heart zone.
+	///
+	/// The upper bound for each zone is the threshold for the next one or 100 for the last. Each threshold is in the range `0 ..< 100` and the array is sorted. Setting a value that does not respect this conditions will result in `nil` being set instead.
+	static var runningHeartZones: [Int]? {
+		get {
+			return local.array(forKey: PreferenceKeys.runningHeartZones) as? [Int]
+		}
+		set {
+			if let hz = newValue, hz.first(where: { $0 < 0 || $0 >= 100 }) == nil, hz == hz.sorted() {
+				local.set(hz, forKey: PreferenceKeys.runningHeartZones)
+			} else {
+				local.removeObject(forKey: PreferenceKeys.runningHeartZones)
 			}
 			local.synchronize()
 		}

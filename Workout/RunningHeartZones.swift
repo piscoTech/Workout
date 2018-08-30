@@ -36,8 +36,7 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 			return
 		}
 		self.maxHeartRate = Double(hr)
-		#warning("Implement me")
-		zones = (/* Preferences.runningHeartZones ?? */ RunningHeartZones.defaultZones).map({ Double($0) / 100 })
+		zones = (Preferences.runningHeartZones ?? RunningHeartZones.defaultZones).map({ Double($0) / 100 })
 		zonesData = [TimeInterval](repeating: 0, count: zones.count)
 		
 		var previous: HKQuantitySample?
