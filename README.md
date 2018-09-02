@@ -5,26 +5,20 @@ With Workout you can export all your workouts saved inside the Health app to a C
 - Minute by minute details for supported workouts:
   - Running & Walking: pace, heart rate, step count
   - Swimming: speed, heart rate, stroke count
-
+- Heart zones for running workouts
 
 [![Download on the AppStore](http://www.marcoboschi.altervista.org/img/app_store_en.svg)](https://itunes.apple.com/us/app/workout-csv-exporter/id1140433100?ls=1&mt=8)
 
 ## Project Setup
 This project relies on CocoaPods not included the repository, after cloning run
 
-    pod install
+```bash
+pod install
+```
 
 in a terminal in the project directory to download linked frameworks and use `Workout.xcworkspace` to open the project.
 
-The framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.2.2](https://github.com/piscoTech/MBLibrary/releases/tag/v1.2.2(9)).
+The framework `MBLibrary` referenced by this project is available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.3](https://github.com/piscoTech/MBLibrary/releases/tag/v1.3(10)).
 
 ## Customization
-General behaviour of the app can be configured via global variables in `Main.swift`:
-
-* `authRequired` and `healthReadData`: Used to save the latest authorization requested in `UserDefaults`, when the former is greater than the saved value the user will be promped for authorization upon next launch, refer to the [wiki](https://github.com/piscoTech/Workout/wiki) for additional details.
-* `adsEnable`: Display ads override, set this variable to `false` to always hide ads. If this is set to `true` ads will be displayed and hidden accordingly to In-App purchase.
-* Ads:
-	- `adsPublisherID`: AdMob publisher ID
-	- `adsAppID`:  AdMob app ID
-	- `adsUnitID`: AdMob ad unit ID
-	
+General behaviour of the app can be configured at compile time as specified in the [wiki](https://github.com/piscoTech/Workout/wiki#compile-time-setup).

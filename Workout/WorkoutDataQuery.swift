@@ -9,7 +9,7 @@
 import Foundation
 import HealthKit
 
-/// Manage the delayed and lazy creation of a `HKQuery` required for loading data of a workout.
+/// Manage the delayed and lazy creation of a `HKSampleQuery` required for loading data of a workout.
 class WorkoutDataQuery {
 	
 	enum SearchType {

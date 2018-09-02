@@ -13,9 +13,27 @@ import PersonalizedAdConsent
 class AboutViewController: UITableViewController {
 	
 	private var appInfo: String!
-	private let healthInfo = NSLocalizedString("HEALTH_ACCESS_MANAGE", comment: "Manage access")
 	private let maxHeart = NSLocalizedString("HEART_ZONES_MAX_RATE", comment: "Max x bpm")
 	var delegate: ListTableViewController!
+	
+	private var numberOfRowsInAdsSection: Int {
+		var count = 0
+		if areAdsEnabled {
+			if iapManager.canMakePayments {
+				count += 1 // Remove Ads & Restore
+			}
+			
+			if PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown {
+				count += 1 // Manage Consent
+			}
+		}
+		
+		return count
+	}
+	
+	private var settingsSectionOffset: Int {
+		return numberOfRowsInAdsSection > 0 ? 1 : 0
+	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -32,46 +50,28 @@ class AboutViewController: UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
 		switch section {
-		case 0:
-			return healthInfo
-		case 2:
+		case settingsSectionOffset + 1:
 			return appInfo
 		default:
 			return nil
 		}
 	}
-
-	override func didReceiveMemoryWarning() {
-		super.didReceiveMemoryWarning()
-		// Dispose of any resources that can be recreated.
-	}
 	
 	override func numberOfSections(in tableView: UITableView) -> Int {
-		return 3
+		return 2 + settingsSectionOffset
 	}
 	
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		switch section {
-		// Health Access and Remove Ads
-		case 0:
-			var count = 1 // Health access
-			if areAdsEnabled {
-				if iapManager.canMakePayments {
-					count += 1 // Remove Ads & Restore
-				}
-				
-				if PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown {
-					count += 1 // Manage Consent
-				}
-			}
-			
-			return count
 		// Settings
-		case 1:
+		case settingsSectionOffset:
 			return 2
 		// Source Code & Contacts
-		case 2:
+		case settingsSectionOffset + 1:
 			return 2
+		// Remove Ads
+		case 0:
+			return numberOfRowsInAdsSection
 		default:
 			return 0
 		}
@@ -79,35 +79,33 @@ class AboutViewController: UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		switch (indexPath.section, indexPath.row) {
-		// Health Access
-		case (0, 0):
-			return tableView.dequeueReusableCell(withIdentifier: "authorize", for: indexPath)
+		// Step Source
+		case (settingsSectionOffset, 0):
+			let cell = tableView.dequeueReusableCell(withIdentifier: "stepSource", for: indexPath)
+			setStepSource(in: cell)
+			return cell
+		// Running Heart Zones
+		case (settingsSectionOffset, 1):
+			let cell = tableView.dequeueReusableCell(withIdentifier: "heartZones", for: indexPath)
+			setMaxHeartRate(in: cell)
+			return cell
+		// Source Code
+		case (settingsSectionOffset + 1, 0):
+			return tableView.dequeueReusableCell(withIdentifier: "sourceCode", for: indexPath)
+		// Contacts
+		case (settingsSectionOffset + 1, 1):
+			return tableView.dequeueReusableCell(withIdentifier: "contact", for: indexPath)
 		// Remove Ads
-		case (0, 1):
+		case (0, 0):
 			if iapManager.canMakePayments {
 				return tableView.dequeueReusableCell(withIdentifier: "removeAds", for: indexPath)
 			} else {
 				fallthrough
 			}
 		// Manage consent
-		case (0, 2):
+		case (0, 1):
 			return tableView.dequeueReusableCell(withIdentifier: "manageConsent", for: indexPath)
-		// Step Source
-		case (1, 0):
-			let cell = tableView.dequeueReusableCell(withIdentifier: "stepSource", for: indexPath)
-			setStepSource(in: cell)
-			return cell
-		// Running Heart Zones
-		case (1, 1):
-			let cell = tableView.dequeueReusableCell(withIdentifier: "heartZones", for: indexPath)
-			setMaxHeartRate(in: cell)
-			return cell
-		// Source Code
-		case (2, 0):
-			return tableView.dequeueReusableCell(withIdentifier: "sourceCode", for: indexPath)
-		// Contacts
-		case (2, 1):
-			return tableView.dequeueReusableCell(withIdentifier: "contact", for: indexPath)
+		
 		default:
 			return UITableViewCell()
 		}
@@ -115,19 +113,21 @@ class AboutViewController: UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		switch (indexPath.section, indexPath.row) {
-		case (0, 0):
-			delegate.authorize(self)
-		case (0, 2):
-			manageConsent()
-		case (0, 1) where !iapManager.canMakePayments:
-			manageConsent()
-		case (2, 0):
+		case (settingsSectionOffset, _):
+			// This is required to avoid calling ads stuff when they are disabled
+			break
+		case (settingsSectionOffset + 1, 0):
 			let url = URL(string: "https://github.com/piscoTech/Workout")!
 			if #available(iOS 10.0, *) {
 				UIApplication.shared.open(url)
 			} else {
 				UIApplication.shared.openURL(url)
 			}
+		case (0, 1):
+			manageConsent()
+		case (0, 0) where !iapManager.canMakePayments:
+			manageConsent()
+		
 		default:
 			break
 		}
@@ -136,13 +136,13 @@ class AboutViewController: UITableViewController {
 	}
 	
 	func updateStepSource() {
-		if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 1)) {
+		if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: settingsSectionOffset)) {
 			setStepSource(in: cell)
 		}
 	}
 	
 	func updateMaxHeartRate() {
-		if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 1)) {
+		if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: settingsSectionOffset)) {
 			setMaxHeartRate(in: cell)
 		}
 	}
@@ -318,7 +318,7 @@ class AboutViewController: UITableViewController {
 				} else {
 					self.present(alert, animated: true)
 				}
-			} else if status.restored! == 0 {
+			} else if status.restored == 0 {
 				// Nothing has been restored
 				self.loading?.dismiss(animated: true) {
 					self.loading = nil
@@ -328,15 +328,14 @@ class AboutViewController: UITableViewController {
 	}
 	
 	private func deleteRemoveAdsRows() {
-		let adsSection = 0
-		let rowCount = tableView.numberOfRows(inSection: adsSection)
-		guard !areAdsEnabled, rowCount > 1 else {
+		let old = tableView.numberOfSections
+		let new = self.numberOfSections(in: tableView)
+		guard !areAdsEnabled, old > new else {
 			// Rows already hidden
 			return
 		}
 		
-		let adsIndex = (1 ..< rowCount).map { IndexPath(row: $0, section: adsSection) }
-		tableView.deleteRows(at: adsIndex, with: .automatic)
+		tableView.deleteSections(IndexSet(0 ..< old - new), with: .automatic)
 	}
 	
 	// MARK: - Navigation

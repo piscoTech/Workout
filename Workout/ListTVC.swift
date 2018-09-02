@@ -42,6 +42,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	@IBOutlet private var titleView: UIView!
 	@IBOutlet private weak var titleLbl: UILabel!
 	@IBOutlet private weak var filterLbl: UILabel!
+	
+	private var loaded = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,30 +81,33 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			titleLbl.isHidden = titleLblShouldHide
 		}
 		
-		if !Preferences.authorized || Preferences.authVersion < authRequired {
-			authorize(self)
+		if !loaded {
+			loaded = true
+			authorize()
 		}
 	}
 	
 	deinit {
 		NotificationCenter.default.removeObserver(self)
 	}
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
 	
-	func authorize(_ sender: AnyObject) {
-		healthStore.requestAuthorization(toShare: nil, read: healthReadData) { (success, _) in
-			if success {
-				Preferences.authorized = true
-				Preferences.authVersion = authRequired
+	func authorize() {
+		let req = {
+			healthStore.requestAuthorization(toShare: nil, read: healthReadData) { _, _ in
+				DispatchQueue.main.async {
+					self.refresh(self)
+				}
 			}
-			
-			DispatchQueue.main.async {
-				self.refresh(self)
+		}
+		
+		if #available(iOS 12.0, *) {
+			healthStore.getRequestStatusForAuthorization(toShare: [], read: healthReadData) { status, _ in
+				if status != .unnecessary {
+					req()
+				}
 			}
+		} else {
+			req()
 		}
 	}
 	
@@ -618,7 +623,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		
 		form.shouldOfferPersonalizedAds = true
 		form.shouldOfferNonPersonalizedAds = true
-		form.shouldOfferAdFree = shouldOfferAdFree
+		form.shouldOfferAdFree = shouldOfferAdFree && iapManager.canMakePayments
 		
 		return form
 	}

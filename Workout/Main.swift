@@ -10,9 +10,7 @@ import Foundation
 import HealthKit
 import MBLibrary
 
-///Keep track of the version of health authorization required, increase this number to automatically display an authorization request.
-let authRequired = 4
-///List of health data to require access to.
+/// List of health data to require access to.
 let healthReadData: Set<HKObjectType> = {
 	var res: Set<HKObjectType> = [
 		HKObjectType.workoutType(),

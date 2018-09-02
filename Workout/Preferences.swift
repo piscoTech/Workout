@@ -10,8 +10,7 @@ import Foundation
 import MBLibrary
 
 enum PreferenceKeys: String, KeyValueStoreKey {
-	case authorized = "authorized"
-	case authVersion = "authVersion"
+
 	case stepSource = "stepSource"
 	case maxHeartRate = "maxHeartRate"
 	case runningHeartZones = "runningHeartZones"
@@ -82,28 +81,6 @@ class Preferences {
 			} else {
 				local.removeObject(forKey: PreferenceKeys.runningHeartZones)
 			}
-			local.synchronize()
-		}
-	}
-	
-	// MARK: - Health Data Access
-	
-	static var authorized: Bool {
-		get {
-			return local.bool(forKey: PreferenceKeys.authorized)
-		}
-		set {
-			local.set(newValue, forKey: PreferenceKeys.authorized)
-			local.synchronize()
-		}
-	}
-	
-	static var authVersion: Int {
-		get {
-			return local.integer(forKey: PreferenceKeys.authVersion)
-		}
-		set {
-			local.set(newValue, forKey: PreferenceKeys.authVersion)
 			local.synchronize()
 		}
 	}
