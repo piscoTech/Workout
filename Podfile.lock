@@ -1,5 +1,5 @@
 PODS:
-  - Google-Mobile-Ads-SDK (7.32.0)
+  - Google-Mobile-Ads-SDK (7.33.0)
   - PersonalizedAdConsent (1.0.3)
 
 DEPENDENCIES:
@@ -12,7 +12,7 @@ SPEC REPOS:
     - PersonalizedAdConsent
 
 SPEC CHECKSUMS:
-  Google-Mobile-Ads-SDK: 2aca87e46e860f1e1fc0fdc1201dd9caa4be9ba6
+  Google-Mobile-Ads-SDK: b10daacc05c820433e5c0c0d57a4f0191f7d2ef5
   PersonalizedAdConsent: b50a8a5d6065b6db23121e8fcc0dce2ae983f6ea
 
 PODFILE CHECKSUM: e3e5949cccf786a467ba9fbcd6557054a70c9f55
