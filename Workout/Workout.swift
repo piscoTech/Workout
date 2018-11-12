@@ -44,8 +44,8 @@ class Workout {
 	private(set) var loaded = false
 	private(set) var hasError = false
 	
-	///Minute-by-minute details for the workout.
-	private(set) var details: [WorkoutMinute]?
+	/// Segments of the workout, separated by pauses.
+	private(set) var segments: [WorkoutSegment]?
 	///Specify how details should be displayed and in which order, time detail will be automaticall prepended.
 	private(set) var displayDetail: [WorkoutDetail]?
 	
@@ -198,19 +198,18 @@ class Workout {
 	// MARK: - Set and load other data
 	
 	func addDetails(_ display: [WorkoutDetail]) {
-		guard details == nil && !loading && !loaded else {
+		guard self.segments == nil && !loading && !loaded else {
 			return
 		}
 		
 		displayDetail = display
-		
-		let start = raw.startDate.timeIntervalSince1970
-		let end = Int(floor( (raw.endDate.timeIntervalSince1970 - start) / 60 ))
-		
-		details = (0 ... end).map { WorkoutMinute(minute: UInt($0), owner: self) }
-		details?.last?.endTime = endDate.timeIntervalSince1970 - startDate.timeIntervalSince1970
-		if let d = details?.last?.duration, d == 0 {
-			_ = details!.popLast()
+		let segments = raw.activeSegments
+		self.segments = []
+		for (cur, next) in zip(segments, (segments as [DateInterval?])[1...] + [nil]) {
+			let s = WorkoutSegment(start: cur.start, end: cur.end,
+								   pauseTime: next?.start.timeIntervalSince(cur.end),
+								   withStartingMinuteCount: (self.segments?.last?.details.last?.minute ?? -1) + 1)
+			self.segments?.append(s)
 		}
 	}
 	
@@ -271,39 +270,35 @@ class Workout {
 					}
 				}
 				
-				var searchDetail = self.details
-				for s in res {
-					guard s.quantity.is(compatibleWith: r.unit) else {
-						continue
+				if [HKQuantityTypeIdentifier.heartRate, .activeEnergyBurned, .basalEnergyBurned].contains(r.typeID) {
+					for s in res {
+						guard s.quantity.is(compatibleWith: r.unit) else {
+							continue
+						}
+						
+						let val = s.quantity.doubleValue(for: r.unit)
+						
+						switch r.typeID {
+						case .heartRate:
+							self.maxHeart = max(self.maxHeart ?? 0, val)
+							self.heartData.append(val)
+						case .activeEnergyBurned:
+							self.activeCaloriesData += val
+						case .basalEnergyBurned:
+							self.restingCaloriesData += val
+						default:
+							break
+						}
 					}
-					
-					let val = s.quantity.doubleValue(for: r.unit)
-					
-					switch r.typeID {
-					case .heartRate:
-						self.maxHeart = max(self.maxHeart ?? 0, val)
-						self.heartData.append(val)
-					case .activeEnergyBurned:
-						self.activeCaloriesData += val
-					case .basalEnergyBurned:
-						self.restingCaloriesData += val
-					default:
+				}
+				
+				var toProcess = res
+				for s in self.segments ?? [] {
+					guard !toProcess.isEmpty else {
 						break
 					}
 					
-					let start = s.startDate.timeIntervalSince1970 - self.rawStart
-					let data: DataPoint
-					switch r.timeType {
-					case .instant:
-						data = InstantDataPoint(time: start, value: val)
-					case .ranged:
-						let end = s.endDate.timeIntervalSince1970 - self.rawStart
-						data = RangedDataPoint(start: start, end: end, value: val)
-					}
-					
-					while let d = searchDetail?.first, d.add(data, ofType: r.typeID) {
-						searchDetail?.remove(at: 0)
-					}
+					toProcess = s.process(data: toProcess, for: r)
 				}
 			}
 		}

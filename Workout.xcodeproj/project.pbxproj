@@ -17,6 +17,7 @@
 		7A75FB521D3E52A000F66CF9 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */; };
 		7A75FB531D3E52A000F66CF9 /* MBLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A7D1A281D5E02060048ED64 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7A7D1A2A1D5E02060048ED64 /* Localizable.strings */; };
+		7A81017A21999E10000B5B8B /* WorkoutSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A81017921999E10000B5B8B /* WorkoutSegment.swift */; };
 		7A812E0C1E6AC1140086ECA7 /* HealthKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A812E0B1E6AC1140086ECA7 /* HealthKit.swift */; };
 		7A9E3A951D4009AB00CF73ED /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9E3A941D4009AB00CF73ED /* Workout.swift */; };
 		7A9E3A971D400A0000CF73ED /* WorkoutMinute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9E3A961D400A0000CF73ED /* WorkoutMinute.swift */; };
@@ -102,6 +103,7 @@
 		7A6D1F4A1D51E4C8002A4890 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		7A6D1F4F1D51EB40002A4890 /* AboutVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
 		7A7D1A291D5E02060048ED64 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7A81017921999E10000B5B8B /* WorkoutSegment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSegment.swift; sourceTree = "<group>"; };
 		7A812E0B1E6AC1140086ECA7 /* HealthKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKit.swift; sourceTree = "<group>"; };
 		7A9E3A941D4009AB00CF73ED /* Workout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
 		7A9E3A961D400A0000CF73ED /* WorkoutMinute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutMinute.swift; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 				7A9E3A981D400EB900CF73ED /* DataPoint.swift */,
 				7A9E3A961D400A0000CF73ED /* WorkoutMinute.swift */,
 				7AA638431E6C4E0E00F006EB /* WorkoutDetail.swift */,
+				7A81017921999E10000B5B8B /* WorkoutSegment.swift */,
 				7ADF92012134983100DE6DC2 /* WorkoutDataQuery.swift */,
 				7A2BDCB01E6AF13700996E36 /* Workouts */,
 			);
@@ -458,6 +461,7 @@
 				7AC1D7682135390A00F89A2E /* AdditionalDataProvider.swift in Sources */,
 				7AE3F28C2137041900085B08 /* RunningHeartZonesTVC.swift in Sources */,
 				7A638B301E6E02BC00473831 /* StepSourceTVC.swift in Sources */,
+				7A81017A21999E10000B5B8B /* WorkoutSegment.swift in Sources */,
 				7A9E3A971D400A0000CF73ED /* WorkoutMinute.swift in Sources */,
 				7A2BDCB51E6AF21200996E36 /* SwimmingWorkout.swift in Sources */,
 				7ADF92022134983100DE6DC2 /* WorkoutDataQuery.swift in Sources */,
@@ -556,7 +560,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-D DEBUG";
@@ -605,7 +609,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
