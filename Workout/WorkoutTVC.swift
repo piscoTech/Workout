@@ -18,8 +18,6 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	var rawWorkout: HKWorkout!
 	private var workout: Workout!
 	
-	private var dataSectionCache: [AdditionalDataProvider?]!
-	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
@@ -28,9 +26,6 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loading)
 		
 		workout = Workout.workoutFor(raw: rawWorkout, delegate: self)
-		dataSectionCache = workout.additionalProviders.filter { $0.preferAppearanceBeforeDetails }
-			+ (workout.details != nil ? [nil] : [])
-			+ workout.additionalProviders.filter { !$0.preferAppearanceBeforeDetails }
 		workout.load()
     }
 
@@ -64,24 +59,20 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return 1
 		}
 		
-		return 1 + dataSectionCache.count
+		return 1 + workout.additionalProviders.count
     }
 	
 	override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 		if section > 0 {
-			if let dp = dataSectionCache[section - 1] {
-				return dp.sectionHeader
-			} else {
-				return NSLocalizedString("DETAILS_TITLE", comment: "Details")
-			}
+			return workout.additionalProviders[section - 1].sectionHeader
 		}
 		
 		return nil
 	}
 	
 	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-		if section > 0, let dp = dataSectionCache[section - 1] {
-			return dp.sectionFooter
+		if section > 0 {
+			return workout.additionalProviders[section - 1].sectionFooter
 		}
 		
 		return nil
@@ -92,9 +83,11 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return 1
 		}
 		
-		return section == 0
-			? 10
-			: dataSectionCache[section - 1]?.numberOfRows ?? workout.details?.count ?? 0
+		if section == 0 {
+			return 10
+		} else {
+			return workout.additionalProviders[section - 1].numberOfRows
+		}
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -161,15 +154,8 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			
 			cell.textLabel?.text = NSLocalizedString(title, comment: "Cell title")
 			return cell
-		} else if let dp = dataSectionCache[indexPath.section - 1] { // Additional data
-			return dp.cellForRowAt(indexPath, for: tableView)
-		} else { // Details
-			let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
-			let d = workout.details![indexPath.row]
-			
-			cell.update(for: workout.displayDetail!, withData: d)
-			
-			return cell
+		} else {
+			return workout.additionalProviders[indexPath.section - 1].cellForRowAt(indexPath, for: tableView)
 		}
     }
 	

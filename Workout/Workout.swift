@@ -44,11 +44,6 @@ class Workout {
 	private(set) var loaded = false
 	private(set) var hasError = false
 	
-	/// Segments of the workout, separated by pauses.
-	private(set) var segments: [WorkoutSegment]?
-	///Specify how details should be displayed and in which order, time detail will be automaticall prepended.
-	private(set) var displayDetail: [WorkoutDetail]?
-	
 	private func updateUnits() {
 		distanceUnit = HKUnit.meterUnit(with: distancePrefix)
 		speedUnit = HKUnit.meterUnit(with: speedPrefix)
@@ -197,22 +192,6 @@ class Workout {
 	
 	// MARK: - Set and load other data
 	
-	func addDetails(_ display: [WorkoutDetail]) {
-		guard self.segments == nil && !loading && !loaded else {
-			return
-		}
-		
-		displayDetail = display
-		let segments = raw.activeSegments
-		self.segments = []
-		for (cur, next) in zip(segments, (segments as [DateInterval?])[1...] + [nil]) {
-			let s = WorkoutSegment(start: cur.start, end: cur.end,
-								   pauseTime: next?.start.timeIntervalSince(cur.end),
-								   withStartingMinuteCount: (self.segments?.last?.details.last?.minute ?? -1) + 1)
-			self.segments?.append(s)
-		}
-	}
-	
 	/// Add a query to load data for the workout.
 	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`.
 	private func addQuery(_ q: WorkoutDataQuery, isBase: Bool) {
@@ -233,11 +212,28 @@ class Workout {
 	}
 	
 	func addAdditionalDataProcessors(_ dp: AdditionalDataProcessor...) {
+		guard !loading && !loaded else {
+			return
+		}
+		
 		self.additionalProcessors += dp
 	}
 	
 	func addAdditionalDataProviders(_ dp: AdditionalDataProvider...) {
+		guard !loading && !loaded else {
+			return
+		}
+		
 		self.additionalProviders += dp
+	}
+	
+	func addAdditionalDataProcessorsAndProviders(_ dp: (AdditionalDataProcessor & AdditionalDataProvider)...) {
+		guard !loading && !loaded else {
+			return
+		}
+		
+		self.additionalProcessors += dp as [AdditionalDataProcessor]
+		self.additionalProviders += dp as [AdditionalDataProvider]
 	}
 	
 	/// Loads required additional data for the workout.
@@ -245,6 +241,10 @@ class Workout {
 	func load(quickLoad: Bool = false) {
 		guard !loading && !loaded else {
 			return
+		}
+		
+		for dp in additionalProcessors {
+			dp.set(workout: self)
 		}
 		
 		loading = true
@@ -266,7 +266,7 @@ class Workout {
 				
 				for dp in self.additionalProcessors {
 					if dp.wantData(for: r.typeID) {
-						dp.process(data: res)
+						dp.process(data: res, for: r)
 					}
 				}
 				
@@ -290,15 +290,6 @@ class Workout {
 							break
 						}
 					}
-				}
-				
-				var toProcess = res
-				for s in self.segments ?? [] {
-					guard !toProcess.isEmpty else {
-						break
-					}
-					
-					toProcess = s.process(data: toProcess, for: r)
 				}
 			}
 		}
@@ -328,43 +319,26 @@ class Workout {
 	
 	func export() -> [URL]? {
 		var res = [URL]()
-		var data = [String]()
-		var filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-		res.append(URL(fileURLWithPath: filePath))
+		let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
+		res.append(general)
 		
 		let genData = generalData
 		let sep = CSVSeparator
-		var gen = "Field\(sep)Value\n"
-		gen += "Type\(sep)" + genData[0] + "\n"
-		gen += "Start\(sep)" + genData[1] + "\n"
-		gen += "End\(sep)" + genData[2] + "\n"
-		gen += "Duration\(sep)" + genData[3] + "\n"
-		gen += "\("Distance \(distanceUnit.description)".toCSV())\(sep)" + genData[4] + "\n"
-		gen += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
-		gen += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
-		gen += "\("Average Pace time/\(paceUnit.description)".toCSV())\(sep)" + genData[7] + "\n"
-		gen += "\("Average Speed \(speedUnit.description)/h".toCSV())\(sep)" + genData[8] + "\n"
-		gen += "\("Active Energy kcal".toCSV())\(sep)" + genData[9] + "\n"
-		gen += "\("Total Energy kcal".toCSV())\(sep)" + genData[10] + "\n"
-		data.append(gen)
-		
-		if let details = self.details {
-			filePath = NSString(string: NSTemporaryDirectory()).appendingPathComponent("details.csv")
-			res.append(URL(fileURLWithPath: filePath))
-			
-			let export = [WorkoutDetail.time] + self.displayDetail!
-			var det = export.map { $0.name.toCSV() }.joined(separator: sep) + "\n"
-			for d in details {
-				det += export.map { $0.export(val: d) }.joined(separator: sep) + "\n"
-			}
-			
-			data.append(det)
-		}
+		var data = "Field\(sep)Value\n"
+		data += "Type\(sep)" + genData[0] + "\n"
+		data += "Start\(sep)" + genData[1] + "\n"
+		data += "End\(sep)" + genData[2] + "\n"
+		data += "Duration\(sep)" + genData[3] + "\n"
+		data += "\("Distance \(distanceUnit.description)".toCSV())\(sep)" + genData[4] + "\n"
+		data += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
+		data += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
+		data += "\("Average Pace time/\(paceUnit.description)".toCSV())\(sep)" + genData[7] + "\n"
+		data += "\("Average Speed \(speedUnit.description)/h".toCSV())\(sep)" + genData[8] + "\n"
+		data += "\("Active Energy kcal".toCSV())\(sep)" + genData[9] + "\n"
+		data += "\("Total Energy kcal".toCSV())\(sep)" + genData[10] + "\n"
 		
 		do {
-			for (f, d) in zip(res, data) {
-				try d.write(to: f, atomically: true, encoding: .utf8)
-			}
+			try data.write(to: general, atomically: true, encoding: .utf8)
 		} catch _ {
 			return nil
 		}

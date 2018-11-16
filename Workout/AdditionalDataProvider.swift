@@ -10,11 +10,6 @@ import UIKit
 
 protocol AdditionalDataProvider {
 	
-	/// Whether the section for the provider should appear before or after minute-by-minute details.
-	///
-	/// Even if minute-by-minute details are not available, providers that specify `true` will appear before those which specify `false`.
-	var preferAppearanceBeforeDetails: Bool { get }
-	
 	var sectionHeader: String? { get }
 	var sectionFooter: String? { get }
 	var numberOfRows: Int { get }

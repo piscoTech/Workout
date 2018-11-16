@@ -20,7 +20,7 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	private var zones: [Double]!
 	private var zonesData: [TimeInterval]?
 	
-	// MARK: - Process data
+	// MARK: - Process Data
 	
 	func wantData(for typeIdentifier: HKQuantityTypeIdentifier) -> Bool {
 		return typeIdentifier == .heartRate
@@ -31,7 +31,7 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 		return zones.lastIndex { p >= $0 }
 	}
 	
-	func process(data: [HKQuantitySample]) {
+	func process(data: [HKQuantitySample], for _: WorkoutDataQuery) {
 		guard let hr = Preferences.maxHeartRate else {
 			return
 		}
@@ -80,9 +80,7 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 		}
 	}
 	
-	// MARK: - Display data
-	
-	let preferAppearanceBeforeDetails = true
+	// MARK: - Display Data
 	
 	private static let header = NSLocalizedString("HEART_ZONES_TITLE", comment: "Heart zones")
 	private static let footer = NSLocalizedString("HEART_ZONES_FOOTER", comment: "Can be less than total")

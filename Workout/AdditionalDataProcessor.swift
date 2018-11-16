@@ -11,7 +11,15 @@ import HealthKit
 
 protocol AdditionalDataProcessor {
 	
+	/// Pass the parent workout if needed. The default implementation does nothing.
+	func set(workout: Workout)
 	func wantData(for typeIdentifier: HKQuantityTypeIdentifier) -> Bool
-	func process(data: [HKQuantitySample])
+	func process(data: [HKQuantitySample], for request: WorkoutDataQuery)
+	
+}
+
+extension AdditionalDataProcessor {
+	
+	func set(workout: Workout) {}
 	
 }

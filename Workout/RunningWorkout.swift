@@ -15,7 +15,13 @@ class RunninWorkout: Workout {
 	required init(_ raw: HKWorkout, delegate del: WorkoutDelegate?) {
 		super.init(raw, delegate: del)
 		
-		self.addDetails([.pace, .heart, .steps])
+		if raw.workoutActivityType == .running {
+			let heartZone = RunningHeartZones()
+			self.addAdditionalDataProcessorsAndProviders(heartZone)
+		}
+		
+		let details = MinuteByMinuteBreakdown(details: [.pace, .heart, .steps])
+		self.addAdditionalDataProcessorsAndProviders(details)
 		
 		if let distance = WorkoutDataQuery(typeID: .distanceWalkingRunning, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(distance)
@@ -24,11 +30,7 @@ class RunninWorkout: Workout {
 			self.addQuery(steps)
 		}
 		
-		if raw.workoutActivityType == .running {
-			let heartZone = RunningHeartZones()
-			self.addAdditionalDataProcessors(heartZone)
-			self.addAdditionalDataProviders(heartZone)
-		}
+		
 	}
 	
 }

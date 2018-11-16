@@ -1,5 +1,5 @@
 //
-//  WorkoutDetailTableViewCell.swift
+//  WorkoutMinuteTableViewCell.swift
 //  Workout
 //
 //  Created by Marco Boschi on 15/01/16.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class WorkoutDetailTableViewCell: UITableViewCell {
+class WorkoutMinuteTableViewCell: UITableViewCell {
 
 	@IBOutlet weak var stack: UIStackView!
 	
