@@ -73,7 +73,7 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 	
 	func cellForRowAt(_ indexPath: IndexPath, for tableView: UITableView) -> UITableViewCell {
 		guard let seg = self.segments else {
-			fatalError("Workout not set up")
+			preconditionFailure("Workout not set up")
 		}
 		
 		var sum = 0
@@ -87,9 +87,14 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 					cell.update(for: displayDetail, withData: d)
 					
 					return cell
+				} else if let p = s.pauseTime {
+					let cell = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
+					#warning("Improve message")
+					cell.textLabel?.text = "Pause for \(p.getDuration(hideHours: true))"
+					
+					return cell
 				} else {
-					#warning("Implement me")
-					fatalError("Display a pause")
+					preconditionFailure("Given index path cannot be rendered")
 				}
 			}
 			
@@ -97,14 +102,6 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 		}
 		
 		preconditionFailure("Given index path cannot be rendered")
-//		guard let s = seg.first(where: { $0.minutes.count })
-//
-//		let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutDetailTableViewCell
-//		let d = workout.details![indexPath.row]
-//
-//		cell.update(for: displayDetail!, withData: d)
-//
-//		return cell
 	}
 	
 	func export() -> [URL]? {

@@ -48,7 +48,7 @@ class WorkoutDetail {
 	static let time = WorkoutDetail(name: "Time", valueFormatter: { (m) in
 		return "\(m.minute)m"
 	}, exportFormatter: { (m) in
-		return m.startTime.getDuration().toCSV()
+		return (TimeInterval(m.minute) * 60).getDuration().toCSV()
 	}, color: .black)
 	
 	///Provides the average pace in seconds per kilometer.

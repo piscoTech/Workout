@@ -33,9 +33,9 @@ class WorkoutSegment {
 		self.owner = owner
 		
 		let s = start.timeIntervalSince1970
-		let e = Int(floor( (end.timeIntervalSince1970 - s) / 60 ))
+		let e = UInt(floor( (end.timeIntervalSince1970 - s) / 60 ))
 		
-		minutes = (0 ... e).map { WorkoutMinute(minute: UInt($0) + minuteStart, owner: owner) }
+		minutes = (0 ... e).map { WorkoutMinute(minute: $0 + minuteStart, start: $0, owner: owner) }
 		minutes.last?.endTime = end.timeIntervalSince1970 - s
 		if let d = minutes.last?.duration, d == 0 {
 			_ = minutes.popLast()
@@ -48,7 +48,7 @@ class WorkoutSegment {
 		var searchDetail = self.minutes
 		let rawStart = start.timeIntervalSince1970
 		
-		for s in res {
+		for (sIndex, s) in res.enumerated() {
 			guard s.quantity.is(compatibleWith: request.unit) else {
 				continue
 			}
@@ -65,22 +65,13 @@ class WorkoutSegment {
 				data = RangedDataPoint(start: start, end: end, value: val)
 			}
 			
-			var hasPartsToBeAdded = true
-			while let d = searchDetail.first {
-				hasPartsToBeAdded = d.add(data, ofType: request.typeID)
-				if hasPartsToBeAdded {
-					searchDetail.remove(at: 0)
-				} else {
-					break
-				}
+			// Add the sample to as many minutes as needed
+			while let d = searchDetail.first, d.add(data, ofType: request.typeID) {
+				searchDetail.remove(at: 0)
 			}
 			
-			if hasPartsToBeAdded {
+			if searchDetail.isEmpty {
 				// The sample has not been fully processed but no more minutes are available, stop
-				guard let sIndex = res.index(of: s) else {
-					fatalError("The sample seems to not belong to the given array")
-				}
-				
 				return Array(res[sIndex...])
 			}
 		}

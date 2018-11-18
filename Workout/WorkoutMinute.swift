@@ -14,10 +14,8 @@ import HealthKit
 class WorkoutMinute: CustomStringConvertible {
 	
 	private(set) weak var owner: Workout!
-	var minute: UInt
-	var startTime: TimeInterval {
-		return Double(minute) * 60
-	}
+	let minute: UInt
+	let startTime: TimeInterval
 	var endTime: TimeInterval {
 		didSet {
 			precondition(duration >= 0 && duration <= 60, "Invalid endTime")
@@ -70,9 +68,12 @@ class WorkoutMinute: CustomStringConvertible {
 		return getAverage(for: .heartRate)
 	}
 	
-	init(minute: UInt, owner: Workout) {
+	/// - parameter minute: The overall number of the minute.
+	/// - parameter start: The number of minute inside the parent segment. This is used to compute the start time of the minute inside the segment as `TimeInterval(start)*60`.
+	init(minute: UInt, start: UInt, owner: Workout) {
 		self.minute = minute
-		self.endTime = Double(minute + 1) * 60
+		self.startTime = TimeInterval(start) * 60
+		self.endTime = startTime + 60
 		
 		self.owner = owner
 	}
