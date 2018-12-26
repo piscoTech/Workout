@@ -11,11 +11,11 @@ import HealthKit
 import MBLibrary
 
 class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
-	#warning("Test with multiple segments!!")
+
 	/// Segments of the workout, separated by pauses.
 	private(set) var segments: [WorkoutSegment]?
-	///Specify how details should be displayed and in which order, time detail will be automaticall prepended.
-	private(set) var displayDetail: [WorkoutDetail]
+	/// Specify how details should be displayed and in which order, time detail will be automaticall prepended.
+	let displayDetail: [WorkoutDetail]
 	
 	/// Display minute-by-minute details for the workout.
 	/// - parameter details: The details to display, time will be added as the first one automatically.
@@ -29,13 +29,13 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 	
 	func set(workout: Workout) {
 		let segments = workout.raw.activeSegments
-		self.segments = []
-		for (cur, next) in zip(segments, (segments as [DateInterval?])[1...] + [nil]) {
-			let s = WorkoutSegment(start: cur.start, end: cur.end,
-								   pauseTime: next?.start.timeIntervalSince(cur.end),
-								   owner: workout,
-								   withStartingMinuteCount: (self.segments?.last?.minutes.last?.minute ?? UInt.max) &+ 1) // 0 for the first segment
-			self.segments?.append(s)
+		self.segments = zip(segments, (segments as [DateInterval?])[1...] + [nil]).reduce(into: [WorkoutSegment]()) { (segments, segInfo) in
+			let (cur, next) = segInfo
+			segments.append(WorkoutSegment(start: cur.start, end: cur.end,
+										   pauseTime: next?.start.timeIntervalSince(cur.end),
+										   owner: workout,
+										   withStartingMinuteCount: (segments.last?.minutes.last?.minute ?? UInt.max) &+ 1) // 0 for the first segment
+			)
 		}
 	}
 	
@@ -48,18 +48,7 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 	}
 	
 	func process(data: [HKQuantitySample], for request: WorkoutDataQuery) {
-		guard let seg = self.segments else {
-			return
-		}
-		
-		var toProcess = data
-		for s in seg {
-			guard !toProcess.isEmpty else {
-				break
-			}
-			
-			toProcess = s.process(data: toProcess, for: request)
-		}
+		_ = self.segments?.reduce(data) { $1.process(data: $0, for: request) }
 	}
 	
 	// MARK: - Display Data
@@ -89,8 +78,8 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 					return cell
 				} else if let p = s.pauseTime {
 					let cell = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
-					#warning("Improve message")
-					cell.textLabel?.text = "Pause for \(p.getDuration(hideHours: true))"
+					let text = NSLocalizedString("PAUSE_TIME", comment: "Pause for mm:ss")
+					cell.textLabel?.text = String(format: text, p.getDuration(hideHours: true))
 					
 					return cell
 				} else {
@@ -105,7 +94,6 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 	}
 	
 	func export() -> [URL]? {
-		#warning("Check me!!")
 		guard let seg = self.segments else {
 			return []
 		}

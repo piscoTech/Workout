@@ -43,6 +43,7 @@
 "STEPS" = "steps";
 "STROKES" = "strokes";
 "CAL_SPLIT" = "%@ (%@ total)";
+"PAUSE_TIME" = "Pause for %@";
 
 "CANNOT_EXPORT" = "Cannot export workout data";
 "SEL_EXPORT_ALL" = "Select All";

@@ -318,9 +318,8 @@ class Workout {
 	}
 	
 	func export() -> [URL]? {
-		var res = [URL]()
 		let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-		res.append(general)
+		var res = [general]
 		
 		let genData = generalData
 		let sep = CSVSeparator

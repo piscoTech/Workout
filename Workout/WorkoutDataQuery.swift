@@ -31,7 +31,7 @@ class WorkoutDataQuery {
 	/// Prepare all data required for creating the query.
 	///
 	/// The creation fails if the given type identifier does not correspond to a concrete type.
-	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you must specify `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` of the `Workout` to specify the desired prefixes.
+	/// - important: Make sure that when loading distance data (`.distanceWalkingRunning`, `.distanceSwimming` or others) you specify `.meter()` as unit, use `setLengthPrefixFor(distance: _, speed: _, pace: _)` of the `Workout` to specify the desired prefixes.
 	init?(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: AdditionalPredicateProvider? = nil) {
 		guard let type = typeID.getType() else {
 			return nil

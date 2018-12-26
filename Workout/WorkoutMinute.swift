@@ -69,7 +69,7 @@ class WorkoutMinute: CustomStringConvertible {
 	}
 	
 	/// - parameter minute: The overall number of the minute.
-	/// - parameter start: The number of minute inside the parent segment. This is used to compute the start time of the minute inside the segment as `TimeInterval(start)*60`.
+	/// - parameter start: The number of the minute inside the parent segment. This is used to compute the start time of the minute inside the segment as `TimeInterval(start)*60`.
 	init(minute: UInt, start: UInt, owner: Workout) {
 		self.minute = minute
 		self.startTime = TimeInterval(start) * 60
