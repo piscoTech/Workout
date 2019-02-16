@@ -45,22 +45,28 @@ class Workout {
 	private(set) var hasError = false
 	
 	private func updateUnits() {
+		guard !loading && !loaded else {
+			return
+		}
+
 		distanceUnit = HKUnit.meterUnit(with: distancePrefix)
 		speedUnit = HKUnit.meterUnit(with: speedPrefix)
 		paceUnit = HKUnit.meterUnit(with: pacePrefix)
 	}
-	///The prefix to use with meters to represent the distance, defaults to `.kilo`.
+	/// The prefix to use with meters to represent the distance, defaults to `.kilo`.
 	private(set) var distancePrefix = HKMetricPrefix.kilo
-	///The prefix to use with meters to represent the length part of the pace, defaults to `.kilo`.
+	/// The prefix to use with meters to represent the length part of the pace, defaults to `.kilo`.
 	private(set) var speedPrefix = HKMetricPrefix.kilo
-	///The prefix to use with meters to represent the length part of the speed, defaults to `.kilo`.
+	/// The prefix to use with meters to represent the length part of the speed, defaults to `.kilo`.
 	private(set) var pacePrefix = HKMetricPrefix.kilo
-	///The length unit to represent the distance.
+	/// The length unit to represent the distance.
 	private(set) var distanceUnit: HKUnit!
-	///The length unit to use in calculating pace.
+	/// The length unit to use in calculating pace.
 	private(set) var paceUnit: HKUnit!
-	///The length unit to use in calculating speed.
+	/// The length unit to use in calculating speed.
 	private(set) var speedUnit: HKUnit!
+	/// Max acceptable pace, if any, in time per kilometer.
+	private(set) var maxPace: TimeInterval?
 	
 	var type: HKWorkoutActivityType {
 		return raw.workoutActivityType
@@ -90,7 +96,7 @@ class Workout {
 			return nil
 		}
 		
-		return (duration / dist).filterAsPace(withLengthUnit: paceUnit)
+		return (duration / dist).filterAsPace(withLengthUnit: paceUnit, andMaxPace: maxPace)
 	}
 	///Average speed of the workout in `speedUnit` per hour.
 	var speed: Double? {
@@ -183,11 +189,24 @@ class Workout {
 	}
 	
 	func setLengthPrefixFor(distance dPref: HKMetricPrefix, speed sPref: HKMetricPrefix, pace pPref: HKMetricPrefix) {
+		guard !loading && !loaded else {
+			return
+		}
+
 		distancePrefix = dPref
 		speedPrefix = sPref
 		pacePrefix = pPref
 		
 		updateUnits()
+	}
+
+	/// Sets the max acceptable pace, if any, in time per kilometer.
+	func set(maxPace: TimeInterval?) {
+		guard !loading && !loaded else {
+			return
+		}
+
+		self.maxPace = maxPace ?? 0 > 0 ? maxPace : nil
 	}
 	
 	// MARK: - Set and load other data

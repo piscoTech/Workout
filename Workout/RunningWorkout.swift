@@ -14,6 +14,7 @@ class RunninWorkout: Workout {
 	
 	required init(_ raw: HKWorkout, delegate del: WorkoutDelegate?) {
 		super.init(raw, delegate: del)
+		self.set(maxPace: 30 * 60)
 		
 		if raw.workoutActivityType == .running {
 			let heartZone = RunningHeartZones()

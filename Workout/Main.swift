@@ -38,8 +38,6 @@ let adsPublisherID = "pub-7085161342725707"
 let adsAppID = "ca-app-pub-7085161342725707~3715618473"
 ///Ads unit ID.
 let adsUnitID = "ca-app-pub-7085161342725707/5192351673"
-///Max acceptable pace in time per kilometer.
-let maxPace: TimeInterval = 30 * 60
 
 let healthStore = HKHealthStore()
 
@@ -85,8 +83,14 @@ extension TimeInterval {
 	func getFormattedPace(forLengthUnit unit: HKUnit) -> String {
 		return getDuration() + "/\(unit.description)"
 	}
-	
-	func filterAsPace(withLengthUnit unit: HKUnit) -> Double? {
+
+	///- parameter withLengthUnit: The unit used to express the pace.
+	///- parameter andMaxPace: The max acceptable pace, if any, in time per kilometer.
+	func filterAsPace(withLengthUnit unit: HKUnit, andMaxPace: TimeInterval?) -> Double? {
+		guard let maxPace = andMaxPace else {
+			return self
+		}
+		
 		let timeKm = HKUnit.second().unitDivided(by: .meterUnit(with: .kilo))
 		let timeUnit = HKUnit.second().unitDivided(by: unit)
 		
