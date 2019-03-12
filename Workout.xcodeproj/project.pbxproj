@@ -32,6 +32,8 @@
 		7AA9F4971C48F64E005FFCB3 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4961C48F64E005FFCB3 /* Main.swift */; };
 		7AA9F4991C4904F9005FFCB3 /* WorkoutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F4981C4904F9005FFCB3 /* WorkoutTVC.swift */; };
 		7AA9F49C1C492BB4005FFCB3 /* WorkoutMinuteTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA9F49B1C492BB4005FFCB3 /* WorkoutMinuteTVCell.swift */; };
+		7AB95A71223848810021EE86 /* MBHealth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AB95A6E223848810021EE86 /* MBHealth.framework */; };
+		7AB95A72223848810021EE86 /* MBHealth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7AB95A6E223848810021EE86 /* MBHealth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7AC1D765213538FB00F89A2E /* AdditionalDataProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC1D761213538FA00F89A2E /* AdditionalDataProcessor.swift */; };
 		7AC1D7682135390A00F89A2E /* AdditionalDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC1D7672135390A00F89A2E /* AdditionalDataProvider.swift */; };
 		7AC1D7702135B5E400F89A2E /* RunningHeartZones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC1D76F2135B5E400F89A2E /* RunningHeartZones.swift */; };
@@ -76,6 +78,27 @@
 			remoteGlobalIDString = 7A0064DF1D3E9BFA0089297D;
 			remoteInfo = MBLibraryTests;
 		};
+		7AB95A6D223848810021EE86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AB95A4F223845ED0021EE86;
+			remoteInfo = "MBHealth iOS";
+		};
+		7AB95A6F223848810021EE86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AB95A5C2238471A0021EE86;
+			remoteInfo = "MBHealth watchOS";
+		};
+		7AB95A73223848810021EE86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A584FC91D3E2A5A000C739B /* MBLibrary.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7AB95A4E223845ED0021EE86;
+			remoteInfo = "MBHealth iOS";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -86,6 +109,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				7A75FB531D3E52A000F66CF9 /* MBLibrary.framework in Embed Frameworks */,
+				7AB95A72223848810021EE86 /* MBHealth.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -138,6 +162,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A75FB521D3E52A000F66CF9 /* MBLibrary.framework in Frameworks */,
+				7AB95A71223848810021EE86 /* MBHealth.framework in Frameworks */,
 				F175A562C6C358E504F1C3F3 /* Pods_Workout.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -172,6 +197,8 @@
 				7A584FCF1D3E2A5A000C739B /* MBLibrary.framework */,
 				7A9E3A8D1D40099200CF73ED /* MBLibrary.framework */,
 				7A9E3A8F1D40099200CF73ED /* MBLibrary.framework */,
+				7AB95A6E223848810021EE86 /* MBHealth.framework */,
+				7AB95A70223848810021EE86 /* MBHealth.framework */,
 				7A9E3A911D40099200CF73ED /* MBLibraryTests.xctest */,
 			);
 			name = Products;
@@ -305,6 +332,7 @@
 			);
 			dependencies = (
 				7A75FB551D3E52A000F66CF9 /* PBXTargetDependency */,
+				7AB95A74223848810021EE86 /* PBXTargetDependency */,
 			);
 			name = Workout;
 			productName = Workout;
@@ -391,6 +419,20 @@
 			fileType = wrapper.cfbundle;
 			path = MBLibraryTests.xctest;
 			remoteRef = 7A9E3A901D40099200CF73ED /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7AB95A6E223848810021EE86 /* MBHealth.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBHealth.framework;
+			remoteRef = 7AB95A6D223848810021EE86 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7AB95A70223848810021EE86 /* MBHealth.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBHealth.framework;
+			remoteRef = 7AB95A6F223848810021EE86 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -487,6 +529,11 @@
 			isa = PBXTargetDependency;
 			name = "MBLibrary iOS";
 			targetProxy = 7A75FB541D3E52A000F66CF9 /* PBXContainerItemProxy */;
+		};
+		7AB95A74223848810021EE86 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "MBHealth iOS";
+			targetProxy = 7AB95A73223848810021EE86 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

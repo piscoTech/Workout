@@ -9,6 +9,7 @@
 import UIKit
 import HealthKit
 import MBLibrary
+import MBHealth
 
 class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 

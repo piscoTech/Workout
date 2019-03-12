@@ -148,7 +148,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		tableView.endUpdates()
 		
 		if HKHealthStore.isHealthDataAvailable() {
-			loadBatch(targetDisplayCount: batchSize)
+			DispatchQueue.main.asyncAfter(delay: 0.7) {
+				self.loadBatch(targetDisplayCount: self.batchSize)
+			}
 		}
 	}
 	
