@@ -1,5 +1,33 @@
 PODS:
-  - Google-Mobile-Ads-SDK (7.37.0)
+  - Google-Mobile-Ads-SDK (7.42.0):
+    - GoogleAppMeasurement (~> 5.7)
+  - GoogleAppMeasurement (5.8.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
+    - GoogleUtilities/MethodSwizzler (~> 5.2)
+    - GoogleUtilities/Network (~> 5.2)
+    - "GoogleUtilities/NSData+zlib (~> 5.2)"
+    - nanopb (~> 0.3)
+  - GoogleUtilities/AppDelegateSwizzler (5.5.0):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+  - GoogleUtilities/Environment (5.5.0)
+  - GoogleUtilities/Logger (5.5.0):
+    - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (5.5.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/Network (5.5.0):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (5.5.0)"
+  - GoogleUtilities/Reachability (5.5.0):
+    - GoogleUtilities/Logger
+  - nanopb (0.3.901):
+    - nanopb/decode (= 0.3.901)
+    - nanopb/encode (= 0.3.901)
+  - nanopb/decode (0.3.901)
+  - nanopb/encode (0.3.901)
   - PersonalizedAdConsent (1.0.3)
 
 DEPENDENCIES:
@@ -9,10 +37,16 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Google-Mobile-Ads-SDK
+    - GoogleAppMeasurement
+    - GoogleUtilities
+    - nanopb
     - PersonalizedAdConsent
 
 SPEC CHECKSUMS:
-  Google-Mobile-Ads-SDK: d028682d7450749a1955679da050eaf70d997b3e
+  Google-Mobile-Ads-SDK: c7bec408202526ec4e9ccd025c00f9f30e9f8807
+  GoogleAppMeasurement: 1624046ab1bcc5e170061a56ef5679000b079c8e
+  GoogleUtilities: 6481e6318c5fcabaaa8513ef8120f329055d7c10
+  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   PersonalizedAdConsent: b50a8a5d6065b6db23121e8fcc0dce2ae983f6ea
 
 PODFILE CHECKSUM: e3e5949cccf786a467ba9fbcd6557054a70c9f55

@@ -34,8 +34,7 @@ let healthReadData: Set<HKObjectType> = {
 let adsEnable = true
 ///Ads publisher ID
 let adsPublisherID = "pub-7085161342725707"
-///Ads app ID.
-let adsAppID = "ca-app-pub-7085161342725707~3715618473"
+//Ads app ID is set in the app Info.plist file
 ///Ads unit ID.
 let adsUnitID = "ca-app-pub-7085161342725707/5192351673"
 

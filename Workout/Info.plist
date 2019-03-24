@@ -20,6 +20,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>19</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-7085161342725707~3715618473</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSBluetoothPeripheralUsageDescription</key>
