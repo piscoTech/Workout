@@ -24,13 +24,12 @@ class RunninWorkout: Workout {
 		let details = MinuteByMinuteBreakdown(details: [.pace, .heart, .steps])
 		self.addAdditionalDataProcessorsAndProviders(details)
 		
-		if let distance = WorkoutDataQuery(typeID: .distanceWalkingRunning, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
+		if let distance = WorkoutDataQuery(typeID: .distanceWalkingRunning, withUnit: .meter, andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(distance)
 		}
-		if let steps = WorkoutDataQuery(typeID: .stepCount, withUnit: .steps(), andTimeType: .ranged, searchingBy: .time, predicate: Preferences.stepSourceFilter.getPredicate) {
+		if let steps = WorkoutDataQuery(typeID: .stepCount, withUnit: .steps, andTimeType: .ranged, searchingBy: .time, predicate: Preferences.stepSourceFilter.getPredicate) {
 			self.addQuery(steps)
 		}
-		
 		
 	}
 	

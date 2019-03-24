@@ -25,10 +25,8 @@ class WorkoutMinute: CustomStringConvertible {
 		return endTime - startTime
 	}
 	var description: String {
-		get {
-			let dur = duration < 60 ? " \(duration.getDuration())" : ""
-			return "\(minute)m\(dur): " + (distance?.getFormattedDistance(withUnit: owner.distanceUnit) ?? "- m") + ", " + (bpm?.getFormattedHeartRate() ?? "- bpm")
-		}
+		let dur = duration < 60 ? " \(duration.getDuration())" : ""
+		return "\(minute)m\(dur): " + (distance?.getFormattedDistance(withUnit: owner.distanceUnit.unit) ?? "- m") + ", " + (bpm?.getFormattedHeartRate() ?? "- bpm")
 	}
 	
 	private var data = [HKQuantityTypeIdentifier: [Double]]()
@@ -45,19 +43,20 @@ class WorkoutMinute: CustomStringConvertible {
 	}
 	///Distance in `distanceUnit` as specified by `owner`.
 	var distance: Double? {
-		return rawDistance?.convertFrom(.meter(), to: owner.distanceUnit)
+		return rawDistance?.convertFrom(.meter(), to: owner.distanceUnit.unit)
 	}
 	///Average pace of the minute in seconds per `paceUnit` specified by `owner`.
 	var pace: TimeInterval? {
-		if let d = rawDistance?.convertFrom(.meter(), to: owner.paceUnit), d > 0 {
-			return (duration / d).filterAsPace(withLengthUnit: owner.paceUnit, andMaxPace: owner.maxPace)
+		let pUnit = owner.paceUnit.unit
+		if let d = rawDistance?.convertFrom(.meter(), to: pUnit), d > 0 {
+			return (duration / d).filterAsPace(withLengthUnit: pUnit, andMaxPace: owner.maxPace)
 		} else {
 			return nil
 		}
 	}
 	///Average speed of the minute in `speedUnit`, specified by `owner`, per hour.
 	var speed: Double? {
-		guard let dist = rawDistance?.convertFrom(.meter(), to: owner.speedUnit), dist > 0 else {
+		guard let dist = rawDistance?.convertFrom(.meter(), to: owner.speedUnit.unit), dist > 0 else {
 			return nil
 		}
 		

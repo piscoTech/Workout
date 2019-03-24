@@ -17,18 +17,10 @@ extension HKQuantityTypeIdentifier {
 	
 }
 
-extension HKUnit {
-	
-	class func heartRate() -> HKUnit {
-		return HKUnit.count().unitDivided(by: HKUnit.minute())
+extension HKQuantity {
+
+	func `is`(compatibleWith unit: WorkoutUnit) -> Bool {
+		return self.is(compatibleWith: unit.metric)
 	}
-	
-	class func steps() -> HKUnit {
-		return HKUnit.count()
-	}
-	
-	class func strokes() -> HKUnit {
-		return HKUnit.count()
-	}
-	
+
 }

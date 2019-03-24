@@ -84,5 +84,11 @@ class Preferences {
 			local.synchronize()
 		}
 	}
+
+	/// Whether the user prefers imperial units.
+	static var useImperialUnits: Bool {
+		#warning("Implement me!")
+		return true
+	}
 	
 }

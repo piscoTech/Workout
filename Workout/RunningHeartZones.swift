@@ -27,7 +27,7 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 	}
 	
 	private func zone(for s: HKQuantitySample) -> Int? {
-		let p = s.quantity.doubleValue(for: .heartRate()) / maxHeartRate
+		let p = s.quantity.doubleValue(for: WorkoutUnit.heartRate.unit) / maxHeartRate
 		return zones.lastIndex { p >= $0 }
 	}
 	
@@ -60,8 +60,8 @@ class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider {
 			if let c = cZone, pZone == c {
 				zonesData?[c] += time
 			} else if let p = pZone, let c = cZone, abs(p - c) == 1 {
-				let pH = prev.quantity.doubleValue(for: .heartRate()) / maxHeartRate
-				let cH = s.quantity.doubleValue(for: .heartRate()) / maxHeartRate
+				let pH = prev.quantity.doubleValue(for: WorkoutUnit.heartRate.unit) / maxHeartRate
+				let cH = s.quantity.doubleValue(for: WorkoutUnit.heartRate.unit) / maxHeartRate
 				/// Threshold between zones
 				let th = zones[max(p, c)]
 				

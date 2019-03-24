@@ -14,17 +14,17 @@ class SwimmingWorkout: Workout {
 	
 	required init(_ raw: HKWorkout, delegate del: WorkoutDelegate?) {
 		super.init(raw, delegate: del)
-		self.setLengthPrefixFor(distance: .none, speed: .kilo, pace: .kilo)
+		self.setLengthUnitsFor(distance: .meterAndYard, speed: .kilometerAndMile, pace: .kilometerAndMile)
 		self.set(maxPace: 90 * 60)
 		
 		if #available(iOS 10, *) {
 			let details = MinuteByMinuteBreakdown(details: [.pace, .heart, .strokes])
 			self.addAdditionalDataProcessorsAndProviders(details)
 			
-			if let distance = WorkoutDataQuery(typeID: .distanceSwimming, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
+			if let distance = WorkoutDataQuery(typeID: .distanceSwimming, withUnit: .meter, andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 				self.addQuery(distance)
 			}
-			if let strokes = WorkoutDataQuery(typeID: .swimmingStrokeCount, withUnit: .strokes(), andTimeType: .ranged, searchingBy: .time) {
+			if let strokes = WorkoutDataQuery(typeID: .swimmingStrokeCount, withUnit: .strokes, andTimeType: .ranged, searchingBy: .time) {
 				self.addQuery(strokes)
 			}
 		}

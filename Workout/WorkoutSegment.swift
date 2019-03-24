@@ -53,7 +53,7 @@ class WorkoutSegment {
 				continue
 			}
 			
-			let val = s.quantity.doubleValue(for: request.unit)
+			let val = s.quantity.doubleValue(for: request.unit.unit)
 			
 			let start = s.startDate.timeIntervalSince1970 - rawStart
 			let data: DataPoint

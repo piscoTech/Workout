@@ -319,7 +319,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		cell.textLabel?.text = w.type.name
 		
 		var detail = [w.startDate.getFormattedDateTime(), w.duration.getDuration() ]
-		if let dist = w.totalDistance?.getFormattedDistance(withUnit: w.distanceUnit) {
+		if let dist = w.totalDistance?.getFormattedDistance(withUnit: w.distanceUnit.unit) {
 			detail.append(dist)
 		}
 		cell.detailTextLabel?.text = detail.joined(separator: " – ")

@@ -14,7 +14,17 @@ class WorkoutDetail {
 	static let noData = "–"
 	
 	let name: String
+
+	func getNameAndUnit(for owner: Workout) -> String {
+		guard let uf = unitFormatter else {
+			return name
+		}
+
+		return "\(name) \(uf(owner))"
+	}
+
 	private let color: UIColor
+	private let unitFormatter: ((Workout) -> String)?
 	private let displayer: (WorkoutMinute) -> String?
 	private let exporter: (WorkoutMinute) -> String?
 	
@@ -22,9 +32,10 @@ class WorkoutDetail {
 	///- parameter name: The name of the detail used as header when exporting.
 	///- parameter valueFormatter: A block called to format the value for display on screen, return `nil` if the value is not available.
 	///- parameter exportFormatter: A block called to format the value for exporting, return `nil` if the value is not available, remember to invoke `.toCSV()` inside the block.
-	private init(name: String, valueFormatter v: @escaping (WorkoutMinute) -> String?, exportFormatter e: @escaping (WorkoutMinute) -> String?, color c: UIColor = #colorLiteral(red: 0.5568627451, green: 0.5568627451, blue: 0.5764705882, alpha: 1)) {
+	private init(name: String, unitFormatter u: ((Workout) -> String)? = nil, valueFormatter v: @escaping (WorkoutMinute) -> String?, exportFormatter e: @escaping (WorkoutMinute) -> String?, color c: UIColor = #colorLiteral(red: 0.5568627451, green: 0.5568627451, blue: 0.5764705882, alpha: 1)) {
 		self.name = name
 		self.color = c
+		self.unitFormatter = u
 		self.displayer = v
 		self.exporter = e
 	}
@@ -52,15 +63,15 @@ class WorkoutDetail {
 	}, color: .black)
 	
 	///Provides the average pace in seconds per kilometer.
-	static let pace = WorkoutDetail(name: "Pace", valueFormatter: { (m) in
-		return m.pace?.getFormattedPace(forLengthUnit: m.owner.paceUnit)
+	static let pace = WorkoutDetail(name: "Pace", unitFormatter: { "time/\($0.paceUnit.description)" }, valueFormatter: { (m) in
+		return m.pace?.getFormattedPace(forLengthUnit: m.owner.paceUnit.unit)
 	}, exportFormatter: { (m) in
 		return m.pace?.getDuration().toCSV()
 	})
 	
 	///Provides the average speed in the specified `speedUnit` per hour.
-	static let speed = WorkoutDetail(name: "Speed", valueFormatter: { (m) in
-		return m.speed?.getFormattedSpeed(forLengthUnit: m.owner.speedUnit)
+	static let speed = WorkoutDetail(name: "Speed", unitFormatter: { "\($0.speedUnit.description)/h" }, valueFormatter: { (m) in
+		return m.speed?.getFormattedSpeed(forLengthUnit: m.owner.speedUnit.unit)
 	}, exportFormatter: { (m) in
 		return m.speed?.toCSV()
 	})

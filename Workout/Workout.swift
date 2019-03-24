@@ -43,28 +43,14 @@ class Workout {
 	private var loading = false
 	private(set) var loaded = false
 	private(set) var hasError = false
-	
-	private func updateUnits() {
-		guard !loading && !loaded else {
-			return
-		}
 
-		distanceUnit = HKUnit.meterUnit(with: distancePrefix)
-		speedUnit = HKUnit.meterUnit(with: speedPrefix)
-		paceUnit = HKUnit.meterUnit(with: pacePrefix)
-	}
-	/// The prefix to use with meters to represent the distance, defaults to `.kilo`.
-	private(set) var distancePrefix = HKMetricPrefix.kilo
-	/// The prefix to use with meters to represent the length part of the pace, defaults to `.kilo`.
-	private(set) var speedPrefix = HKMetricPrefix.kilo
-	/// The prefix to use with meters to represent the length part of the speed, defaults to `.kilo`.
-	private(set) var pacePrefix = HKMetricPrefix.kilo
 	/// The length unit to represent the distance.
-	private(set) var distanceUnit: HKUnit!
+	private(set) var distanceUnit = WorkoutUnit.kilometerAndMile
 	/// The length unit to use in calculating pace.
-	private(set) var paceUnit: HKUnit!
+	private(set) var paceUnit = WorkoutUnit.kilometerAndMile
 	/// The length unit to use in calculating speed.
-	private(set) var speedUnit: HKUnit!
+	private(set) var speedUnit = WorkoutUnit.kilometerAndMile
+
 	/// Max acceptable pace, if any, in time per kilometer.
 	private(set) var maxPace: TimeInterval?
 	
@@ -81,7 +67,7 @@ class Workout {
 		return raw.duration
 	}
 	var totalDistance: Double? {
-		let distance = raw.totalDistance?.doubleValue(for: distanceUnit)
+		let distance = raw.totalDistance?.doubleValue(for: distanceUnit.unit)
 		
 		// Don't expose a 0 distance, give nil instead
 		return distance ?? 0 > 0 ? distance : nil
@@ -92,15 +78,16 @@ class Workout {
 	}
 	///Average pace of the workout in seconds per `paceUnit`.
 	var pace: TimeInterval? {
-		guard let dist = raw.totalDistance?.doubleValue(for: paceUnit), dist > 0 else {
+		let pUnit = paceUnit.unit
+		guard let dist = raw.totalDistance?.doubleValue(for: pUnit), dist > 0 else {
 			return nil
 		}
 		
-		return (duration / dist).filterAsPace(withLengthUnit: paceUnit, andMaxPace: maxPace)
+		return (duration / dist).filterAsPace(withLengthUnit: pUnit, andMaxPace: maxPace)
 	}
 	///Average speed of the workout in `speedUnit` per hour.
 	var speed: Double? {
-		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit), dist > 0 else {
+		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit.unit), dist > 0 else {
 			return nil
 		}
 		
@@ -125,7 +112,7 @@ class Workout {
 	private var rawActiveCalories: Double? {
 		if activeCaloriesData > 0 {
 			return activeCaloriesData
-		} else if let total = raw.totalEnergyBurned?.doubleValue(for: .kilocalorie()), total > 0 {
+		} else if let total = raw.totalEnergyBurned?.doubleValue(for: WorkoutUnit.calories.unit), total > 0 {
 			return total
 		} else {
 			return nil
@@ -176,28 +163,25 @@ class Workout {
 		timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
 		sourcePredicate = HKQuery.predicateForObjects(from: raw.sourceRevision.source)
 		
-		updateUnits()
-		if let heart = WorkoutDataQuery(typeID: .heartRate, withUnit: .heartRate(), andTimeType: .instant, searchingBy: .time) {
+		if let heart = WorkoutDataQuery(typeID: .heartRate, withUnit: .heartRate, andTimeType: .instant, searchingBy: .time) {
 			self.addQuery(heart, isBase: true)
 		}
-		if let activeCal = WorkoutDataQuery(typeID: .activeEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
+		if let activeCal = WorkoutDataQuery(typeID: .activeEnergyBurned, withUnit: .calories, andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(activeCal, isBase: true)
 		}
-		if let baseCal = WorkoutDataQuery(typeID: .basalEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .time) {
+		if let baseCal = WorkoutDataQuery(typeID: .basalEnergyBurned, withUnit: .calories, andTimeType: .ranged, searchingBy: .time) {
 			self.addQuery(baseCal, isBase: true)
 		}
 	}
 	
-	func setLengthPrefixFor(distance dPref: HKMetricPrefix, speed sPref: HKMetricPrefix, pace pPref: HKMetricPrefix) {
+	func setLengthUnitsFor(distance dUnit: WorkoutUnit, speed sUnit: WorkoutUnit, pace pUnit: WorkoutUnit) {
 		guard !loading && !loaded else {
 			return
 		}
 
-		distancePrefix = dPref
-		speedPrefix = sPref
-		pacePrefix = pPref
-		
-		updateUnits()
+		distanceUnit = dUnit
+		speedUnit = sUnit
+		paceUnit = pUnit
 	}
 
 	/// Sets the max acceptable pace, if any, in time per kilometer.
@@ -295,7 +279,7 @@ class Workout {
 							continue
 						}
 						
-						let val = s.quantity.doubleValue(for: r.unit)
+						let val = s.quantity.doubleValue(for: r.unit.unit)
 						
 						switch r.typeID {
 						case .heartRate:

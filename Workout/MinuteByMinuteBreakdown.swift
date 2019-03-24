@@ -13,6 +13,7 @@ import MBHealth
 
 class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 
+	private(set) weak var owner: Workout!
 	/// Segments of the workout, separated by pauses.
 	private(set) var segments: [WorkoutSegment]?
 	/// Specify how details should be displayed and in which order, time detail will be automaticall prepended.
@@ -29,6 +30,7 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 	// MARK: - Process Data
 	
 	func set(workout: Workout) {
+		owner = workout
 		let segments = workout.raw.activeSegments
 		self.segments = zip(segments, (segments as [DateInterval?])[1...] + [nil]).reduce(into: [WorkoutSegment]()) { (segments, segInfo) in
 			let (cur, next) = segInfo
@@ -101,7 +103,7 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 		
 		let export = [.time] + self.displayDetail
 		let sep = CSVSeparator
-		let data = export.map { $0.name.toCSV() }.joined(separator: sep) + "\n" + seg.map { $0.export(details: export) }.joined()
+		let data = export.map { $0.getNameAndUnit(for: owner).toCSV() }.joined(separator: sep) + "\n" + seg.map { $0.export(details: export) }.joined()
 		
 		do {
 			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")

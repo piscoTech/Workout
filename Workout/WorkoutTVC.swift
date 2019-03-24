@@ -123,7 +123,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 				cell.detailTextLabel?.text = workout.duration.getDuration()
 			case 4:
 				title = "DISTANCE"
-				cell.detailTextLabel?.text = workout.totalDistance?.getFormattedDistance(withUnit: workout.distanceUnit) ?? WorkoutDetail.noData
+				cell.detailTextLabel?.text = workout.totalDistance?.getFormattedDistance(withUnit: workout.distanceUnit.unit) ?? WorkoutDetail.noData
 			case 5:
 				title = "AVG_HEART"
 				cell.detailTextLabel?.text = workout.avgHeart?.getFormattedHeartRate() ?? WorkoutDetail.noData
@@ -132,10 +132,10 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? WorkoutDetail.noData
 			case 7:
 				title = "AVG_PACE"
-				cell.detailTextLabel?.text = workout.pace?.getFormattedPace(forLengthUnit: workout.paceUnit) ?? WorkoutDetail.noData
+				cell.detailTextLabel?.text = workout.pace?.getFormattedPace(forLengthUnit: workout.paceUnit.unit) ?? WorkoutDetail.noData
 			case 8:
 				title = "AVG_SPEED"
-				cell.detailTextLabel?.text = workout.speed?.getFormattedSpeed(forLengthUnit: workout.speedUnit
+				cell.detailTextLabel?.text = workout.speed?.getFormattedSpeed(forLengthUnit: workout.speedUnit.unit
 					) ?? WorkoutDetail.noData
 			case 9:
 				title = "CALORIES"
