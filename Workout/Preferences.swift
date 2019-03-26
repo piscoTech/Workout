@@ -11,6 +11,7 @@ import MBLibrary
 
 enum PreferenceKeys: String, KeyValueStoreKey {
 
+	case systemOfUnits = "systemOfUnits"
 	case stepSource = "stepSource"
 	case maxHeartRate = "maxHeartRate"
 	case runningHeartZones = "runningHeartZones"
@@ -85,10 +86,15 @@ class Preferences {
 		}
 	}
 
-	/// Whether the user prefers imperial units.
-	static var useImperialUnits: Bool {
-		#warning("Implement me!")
-		return true
+	/// The system of units, e.g. metric or imperial, the user wants to use.
+	static var systemOfUnits: Units {
+		get {
+			return Units(rawValue: local.integer(forKey: PreferenceKeys.systemOfUnits)) ?? .default
+		}
+		set {
+			local.set(newValue.rawValue, forKey: PreferenceKeys.systemOfUnits)
+			local.synchronize()
+		}
 	}
 	
 }

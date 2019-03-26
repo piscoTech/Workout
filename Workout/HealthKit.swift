@@ -20,7 +20,7 @@ extension HKQuantityTypeIdentifier {
 extension HKQuantity {
 
 	func `is`(compatibleWith unit: WorkoutUnit) -> Bool {
-		return self.is(compatibleWith: unit.metric)
+		return self.is(compatibleWith: unit.default)
 	}
 
 }

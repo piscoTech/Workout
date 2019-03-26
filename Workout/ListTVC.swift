@@ -77,7 +77,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		
 		if !heightFixed {
 			heightFixed = true
-			NSLayoutConstraint(item: titleView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: titleView.frame.height).isActive = true
+			NSLayoutConstraint(item: titleView as Any, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: titleView.frame.height).isActive = true
 			titleLbl.isHidden = titleLblShouldHide
 		}
 		
@@ -152,6 +152,10 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				self.loadBatch(targetDisplayCount: self.batchSize)
 			}
 		}
+	}
+	
+	func refreshUnits() {
+		tableView.reloadSections([0], with: .automatic)
 	}
 	
 	private func loadMore() {
@@ -469,7 +473,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		let newVal: Bool
 		let newText: String
 		
-		if exportSelection?.index(of: false) == nil {
+		if exportSelection?.firstIndex(of: false) == nil {
 			newVal = false
 			newText = "ALL"
 		} else {
@@ -489,11 +493,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	private func updateExportCommitButton() {
-		exportCommitBtn.isEnabled = (exportSelection ?? []).index(of: true) != nil
+		exportCommitBtn.isEnabled = (exportSelection ?? []).firstIndex(of: true) != nil
 	}
 	
 	private func updateToggleExportAllText() {
-		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_" + (exportSelection?.index(of: false) == nil ? "NONE" : "ALL"), comment: "Select")
+		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_" + (exportSelection?.firstIndex(of: false) == nil ? "NONE" : "ALL"), comment: "Select")
 	}
 	
 	private func updateExportModeEnabled() {
@@ -618,7 +622,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	func getAdsConsentForm(shouldOfferAdFree: Bool) -> PACConsentForm {
-		guard let privacyUrl = URL(string: "https://github.com/piscoTech/Workout/blob/master/PRIVACY.md"),
+		guard let privacyUrl = URL(string: "https://marcoboschi.altervista.org/app/workout/privacy/"),
 			let form = PACConsentForm(applicationPrivacyPolicyURL: privacyUrl) else {
 				fatalError("Incorrect privacy URL.")
 		}
@@ -668,9 +672,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		
 		adView.load(getAdRequest())
 		navigationController?.toolbar.addSubview(adView)
-		var constraint = NSLayoutConstraint(item: adView, attribute: .centerX, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .centerX, multiplier: 1, constant: 0)
+		var constraint = NSLayoutConstraint(item: adView as Any, attribute: .centerX, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .centerX, multiplier: 1, constant: 0)
 		constraint.isActive = true
-		constraint = NSLayoutConstraint(item: adView, attribute: .top, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .top, multiplier: 1, constant: 0)
+		constraint = NSLayoutConstraint(item: adView as Any, attribute: .top, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .top, multiplier: 1, constant: 0)
 		constraint.isActive = true
 	}
 	

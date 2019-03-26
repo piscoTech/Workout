@@ -10,23 +10,31 @@ import HealthKit
 
 class WorkoutUnit: CustomStringConvertible {
 
-	let metric: HKUnit
-	let imperial: HKUnit
+	/// The unit for the default system of units, i.e. `Units.default`.
+	let `default`: HKUnit
+	/// The units for other system of units.
+	let unitsLUT: [Units: HKUnit]
 
-	init(metric: HKUnit, imperial: HKUnit) {
-		precondition(HKQuantity(unit: metric, doubleValue: 1).is(compatibleWith: imperial), "Given units are not comaptible with each other")
+	/// Create a set of units using the provided ones, system of units with no specified unit default to the one provided for  the default system of units i.e. `Units.default`.
+	init(units: [Units: HKUnit]) {
+		guard let def = units[.default] else {
+			preconditionFailure("Unit for the default system of units not provided")
+		}
+		self.default = def
+		
+		precondition(units.values.reduce(true, { $0 && HKQuantity(unit: $1, doubleValue: 1).is(compatibleWith: def) }), "Given units are not comaptible with each other")
 
-		self.metric = metric
-		self.imperial = imperial
+		self.unitsLUT = units
 	}
 
-	convenience init(metricAndImperial: HKUnit) {
-		self.init(metric: metricAndImperial, imperial: metricAndImperial)
+	/// Create a set of units using the provided one for all system of units.
+	convenience init(_ unit: HKUnit) {
+		self.init(units: [.default: unit])
 	}
 
 	/// The unit (metric or imperial) preferred by the user.
 	var unit: HKUnit {
-		return Preferences.useImperialUnits ? imperial : metric
+		return unitsLUT[Preferences.systemOfUnits] ?? self.default
 	}
 
 	var description: String {
@@ -35,15 +43,15 @@ class WorkoutUnit: CustomStringConvertible {
 
 	//MARK: - Predefined Units
 
-	static let meter = WorkoutUnit(metricAndImperial: .meter())
-	static let meterAndYard = WorkoutUnit(metric: .meter(), imperial: .yard())
-	static let kilometerAndMile = WorkoutUnit(metric: .meterUnit(with: .kilo), imperial: .mile())
+	static let meter = WorkoutUnit(.meter())
+	static let meterAndYard = WorkoutUnit(units: [.metric: .meter(), .imperial: .yard()])
+	static let kilometerAndMile = WorkoutUnit(units: [.metric: .meterUnit(with: .kilo), .imperial: .mile()])
 
-	static let calories = WorkoutUnit(metricAndImperial: .kilocalorie())
+	static let calories = WorkoutUnit(.kilocalorie())
 
-	static let heartRate = WorkoutUnit(metricAndImperial: HKUnit.count().unitDivided(by: HKUnit.minute()))
+	static let heartRate = WorkoutUnit(HKUnit.count().unitDivided(by: HKUnit.minute()))
 
-	static let steps = WorkoutUnit(metricAndImperial: HKUnit.count())
-	static let strokes = WorkoutUnit(metricAndImperial: HKUnit.count())
+	static let steps = WorkoutUnit(HKUnit.count())
+	static let strokes = WorkoutUnit(HKUnit.count())
 
 }

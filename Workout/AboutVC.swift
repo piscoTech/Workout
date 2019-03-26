@@ -65,7 +65,7 @@ class AboutViewController: UITableViewController {
 		switch section {
 		// Settings
 		case settingsSectionOffset:
-			return 2
+			return 3
 		// Source Code & Contacts
 		case settingsSectionOffset + 1:
 			return 2
@@ -79,13 +79,18 @@ class AboutViewController: UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		switch (indexPath.section, indexPath.row) {
-		// Step Source
+		// Units
 		case (settingsSectionOffset, 0):
+			let cell = tableView.dequeueReusableCell(withIdentifier: "units", for: indexPath)
+			setUnits(in: cell)
+			return cell
+		// Step Source
+		case (settingsSectionOffset, 1):
 			let cell = tableView.dequeueReusableCell(withIdentifier: "stepSource", for: indexPath)
 			setStepSource(in: cell)
 			return cell
 		// Running Heart Zones
-		case (settingsSectionOffset, 1):
+		case (settingsSectionOffset, 2):
 			let cell = tableView.dequeueReusableCell(withIdentifier: "heartZones", for: indexPath)
 			setMaxHeartRate(in: cell)
 			return cell
@@ -118,11 +123,7 @@ class AboutViewController: UITableViewController {
 			break
 		case (settingsSectionOffset + 1, 0):
 			let url = URL(string: "https://github.com/piscoTech/Workout")!
-			if #available(iOS 10.0, *) {
-				UIApplication.shared.open(url)
-			} else {
-				UIApplication.shared.openURL(url)
-			}
+			UIApplication.shared.open(url)
 		case (0, 1):
 			manageConsent()
 		case (0, 0) where !iapManager.canMakePayments:
@@ -135,16 +136,27 @@ class AboutViewController: UITableViewController {
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
 	
-	func updateStepSource() {
+	func updateUnits() {
+		delegate.refreshUnits()
 		if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: settingsSectionOffset)) {
+			setUnits(in: cell)
+		}
+	}
+	
+	func updateStepSource() {
+		if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: settingsSectionOffset)) {
 			setStepSource(in: cell)
 		}
 	}
 	
 	func updateMaxHeartRate() {
-		if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: settingsSectionOffset)) {
+		if let cell = tableView.cellForRow(at: IndexPath(row: 2, section: settingsSectionOffset)) {
 			setMaxHeartRate(in: cell)
 		}
+	}
+	
+	private func setUnits(in cell: UITableViewCell) {
+		cell.detailTextLabel?.text = Preferences.systemOfUnits.displayName
 	}
 	
 	private func setStepSource(in cell: UITableViewCell) {
@@ -350,6 +362,9 @@ class AboutViewController: UITableViewController {
 		}
 		
 		switch segueID {
+		case "units":
+			let dest = segue.destination as! UnitsTableViewController
+			dest.delegate = self
 		case "stepSource":
 			let dest = segue.destination as! StepSourceTableViewController
 			dest.delegate = self
