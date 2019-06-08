@@ -6,6 +6,18 @@
   Copyright © 2016 Marco Boschi. All rights reserved.
 */
 
+// MARK: - Workout List
+"WRKT_LIST_TITLE" = "Workouts";
+
+"WRKT_FILTER" = "Filter";
+"WRKT_FILTER_ALL" = "All workouts";
+"FILTER_COUNT" = "%d/%d Workout";
+"FILTERS_COUNT" = "%d/%d Workouts";
+
+// MARK: - Settings
+
+// MARK: - Unclassified
+
 "REPORT_TEXT" = "Report any problem also on Twitter @piscoTech or at GitHub tapping Source Code.";
 "REMOVE_ADS" = "Remove Ads";
 "MANAGE_CONSENT" = "Manage Ads Consent";
@@ -15,11 +27,6 @@
 "LOADING" = "Loading from Health app...";
 "ERR_NO_WORKOUT" = "No workout";
 "ERR_NO_HEALTH" = "Health data is not available";
-
-"FILTER_ALL" = "All Workouts";
-"FILTER_COUNT" = "%d/%d Workout";
-"FILTERS_COUNT" = "%d/%d Workouts";
-"FILTERS_MANY" = "%d Workouts";
 
 "TYPE" = "Type";
 "START" = "Start";
