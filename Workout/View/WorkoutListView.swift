@@ -8,6 +8,7 @@
 
 import SwiftUI
 import MBHealth
+import HealthKit
 
 struct WorkoutListView : View {
 
@@ -15,7 +16,7 @@ struct WorkoutListView : View {
 		case none, settings, filterSelector
 	}
 
-	@EnvironmentObject private var list: WorkoutList
+	@EnvironmentObject private var appData: AppData
 	@State private var presenting = Presenting.none
 
 	var body: some View {
@@ -24,22 +25,7 @@ struct WorkoutListView : View {
 				Button(action: {
 					self.presenting = .filterSelector
 				}) {
-					VStack(alignment: .leading) {
-						Text("WRKT_FILTER")
-							.foregroundColor(.accentColor)
-
-						Group {
-							if list.filters.isEmpty {
-								Text("WRKT_FILTER_ALL")
-							} else {
-								HStack(alignment: .firstTextBaseline) {
-									Text("\(list.filters.count)_WRKT_FILTERS")
-									Text("–")
-									Text(list.filters.map { $0.name }.joined(separator: ", "))
-								}
-							}
-						}.font(.caption).foregroundColor(.secondary)
-					}
+					FilterStatusView()
 				}
 
 				ForEach(0 ..< 5) { index in
@@ -58,11 +44,38 @@ struct WorkoutListView : View {
 					self.presenting = .none
 				}
 				: nil)
+			.onAppear {
+				self.appData.authorizeHealthKitAccess()
+				self.appData.workoutList.reloadWorkouts()
+			}
 		}.presentation(presenting == .settings
 			? Modal(SettingsView()) {
 				self.presenting = .none
 			}
 			: nil)
+	}
+}
+
+struct FilterStatusView: View {
+	@EnvironmentObject private var appData: AppData
+
+	var body: some View {
+		VStack(alignment: .leading) {
+			Text("WRKT_FILTER")
+				.foregroundColor(.accentColor)
+
+			Group {
+				if appData.workoutList.filters.isEmpty {
+					Text("WRKT_FILTER_ALL")
+				} else {
+					HStack(alignment: .firstTextBaseline) {
+						Text("\(appData.workoutList.filters.count)_WRKT_FILTERS")
+						Text("–")
+						Text(appData.workoutList.filters.map { $0.name }.joined(separator: ", "))
+					}
+				}
+			}.font(.caption).foregroundColor(.secondary)
+		}
 	}
 }
 

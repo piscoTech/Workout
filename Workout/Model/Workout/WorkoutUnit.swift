@@ -8,7 +8,7 @@
 
 import HealthKit
 
-class WorkoutUnit: CustomStringConvertible {
+class WorkoutUnit {
 
 	/// The unit for the default system of units, i.e. `Units.default`.
 	let `default`: HKUnit
@@ -33,12 +33,12 @@ class WorkoutUnit: CustomStringConvertible {
 	}
 
 	/// The unit (metric or imperial) preferred by the user.
-	var unit: HKUnit {
-		return unitsLUT[Preferences.systemOfUnits] ?? self.default
+	func unit(for preferences: Preferences) -> HKUnit {
+		return unitsLUT[preferences.systemOfUnits] ?? self.default
 	}
 
-	var description: String {
-		return unit.description
+	func description(for preferences: Preferences) -> String {
+		return unit(for: preferences).description
 	}
 
 	//MARK: - Predefined Units

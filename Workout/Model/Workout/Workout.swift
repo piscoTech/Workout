@@ -9,17 +9,16 @@
 import Foundation
 import HealthKit
 import MBLibrary
+import SwiftUI
+import Combine
 
-protocol WorkoutDelegate {
-	
-	func dataIsReady()
-	
-}
+class Workout: BindableObject {
 
-class Workout {
-	
-	private(set) var raw: HKWorkout
-	var delegate: WorkoutDelegate?
+	private let preferences: Preferences
+	let raw: HKWorkout
+
+	#warning("Use receive(on:) (Xcode bug)")
+	let didChange = PassthroughSubject<Void, Never>() //.receive(on: RunLoop.main)
 	
 	/// Request required for base data for a quick load.
 	private var baseReq = [WorkoutDataQuery]()
@@ -32,7 +31,11 @@ class Workout {
 			if requestDone == requestToDo {
 				loading = false
 				loaded = true
-				delegate?.dataIsReady()
+
+				#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
+				DispatchQueue.main.async {
+					self.didChange.send(())
+				}
 			}
 		}
 	}
@@ -67,7 +70,7 @@ class Workout {
 		return raw.duration
 	}
 	var totalDistance: Double? {
-		let distance = raw.totalDistance?.doubleValue(for: distanceUnit.unit)
+		let distance = raw.totalDistance?.doubleValue(for: distanceUnit.unit(for: preferences))
 		
 		// Don't expose a 0 distance, give nil instead
 		return distance ?? 0 > 0 ? distance : nil
@@ -78,7 +81,7 @@ class Workout {
 	}
 	///Average pace of the workout in seconds per `paceUnit`.
 	var pace: TimeInterval? {
-		let pUnit = paceUnit.unit
+		let pUnit = paceUnit.unit(for: preferences)
 		guard let dist = raw.totalDistance?.doubleValue(for: pUnit), dist > 0 else {
 			return nil
 		}
@@ -87,7 +90,7 @@ class Workout {
 	}
 	///Average speed of the workout in `speedUnit` per hour.
 	var speed: Double? {
-		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit.unit), dist > 0 else {
+		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit.unit(for: preferences)), dist > 0 else {
 			return nil
 		}
 		
@@ -112,14 +115,13 @@ class Workout {
 	private var rawActiveCalories: Double? {
 		if activeCaloriesData > 0 {
 			return activeCaloriesData
-		} else if let total = raw.totalEnergyBurned?.doubleValue(for: WorkoutUnit.calories.unit), total > 0 {
+		} else if let total = raw.totalEnergyBurned?.doubleValue(for: WorkoutUnit.calories.unit(for: preferences)), total > 0 {
 			return total
 		} else {
 			return nil
 		}
 	}
-	
-	
+
 	private var heartData = [Double]()
 	
 	private var rawStart: TimeInterval {
@@ -130,31 +132,32 @@ class Workout {
 	private let sourcePredicate: NSPredicate!
 	
 	/// Create an instance of the proper `Workout` subclass (if any) for the given workout.
-	class func workoutFor(raw: HKWorkout, delegate: WorkoutDelegate? = nil) -> Workout {
+	class func workoutFor(raw: HKWorkout, basedOn appData: AppData) -> Workout {
 		let wClass: Workout.Type
 		
 		switch raw.workoutActivityType {
-		case .running, .walking:
-			wClass = RunninWorkout.self
-		case .swimming:
-			wClass = SwimmingWorkout.self
+			#warning("Add back")
+//		case .running, .walking:
+//			wClass = RunninWorkout.self
+//		case .swimming:
+//			wClass = SwimmingWorkout.self
 		default:
 			wClass = Workout.self
 		}
 		
-		return wClass.init(raw, delegate: delegate)
+		return wClass.init(raw, basedOn: appData)
 	}
 	
-	required init(_ raw: HKWorkout, delegate del: WorkoutDelegate? = nil) {
+	required init(_ raw: HKWorkout, basedOn appData: AppData) {
+		self.preferences = appData.preferences
 		self.raw = raw
-		self.delegate = del
 		
-		guard HKHealthStore.isHealthDataAvailable() else {
+		guard appData.isHealthDataAvailable else {
+			loaded = true
 			hasError = true
 			workoutPredicate = nil
 			timePredicate = nil
 			sourcePredicate = nil
-			delegate?.dataIsReady()
 			
 			return
 		}
@@ -241,7 +244,7 @@ class Workout {
 	
 	/// Loads required additional data for the workout.
 	/// - parameter quickLoad: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
-	func load(quickLoad: Bool = false) {
+	func load(from healthStore: HKHealthStore, quickly quickLoad: Bool = false) {
 		guard !loading && !loaded else {
 			return
 		}
@@ -254,7 +257,7 @@ class Workout {
 		let req = baseReq + (quickLoad ? [] : requests)
 		requestToDo = req.count
 		for r in req {
-			r.execute(forStart: startDate, usingWorkoutPredicate: workoutPredicate, timePredicate: timePredicate, sourcePredicate: sourcePredicate) { _, data, err  in
+			r.execute(on: healthStore, forStart: startDate, usingWorkoutPredicate: workoutPredicate, timePredicate: timePredicate, sourcePredicate: sourcePredicate) { _, data, err  in
 				defer {
 					// Move to a serial queue to synchronize access to counter
 					DispatchQueue.workout.async {
@@ -279,7 +282,7 @@ class Workout {
 							continue
 						}
 						
-						let val = s.quantity.doubleValue(for: r.unit.unit)
+						let val = s.quantity.doubleValue(for: r.unit.unit(for: self.preferences))
 						
 						switch r.typeID {
 						case .heartRate:
@@ -331,11 +334,11 @@ class Workout {
 		data += "Start\(sep)" + genData[1] + "\n"
 		data += "End\(sep)" + genData[2] + "\n"
 		data += "Duration\(sep)" + genData[3] + "\n"
-		data += "\("Distance \(distanceUnit.description)".toCSV())\(sep)" + genData[4] + "\n"
+		data += "\("Distance \(distanceUnit.description(for: preferences))".toCSV())\(sep)" + genData[4] + "\n"
 		data += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
 		data += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
-		data += "\("Average Pace time/\(paceUnit.description)".toCSV())\(sep)" + genData[7] + "\n"
-		data += "\("Average Speed \(speedUnit.description)/h".toCSV())\(sep)" + genData[8] + "\n"
+		data += "\("Average Pace time/\(paceUnit.description(for: preferences))".toCSV())\(sep)" + genData[7] + "\n"
+		data += "\("Average Speed \(speedUnit.description(for: preferences))/h".toCSV())\(sep)" + genData[8] + "\n"
 		data += "\("Active Energy kcal".toCSV())\(sep)" + genData[9] + "\n"
 		data += "\("Total Energy kcal".toCSV())\(sep)" + genData[10] + "\n"
 		

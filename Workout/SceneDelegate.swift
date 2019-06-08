@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		#warning("Correctly set the accent/tint color for the view (Xcode bug ?)")
 		let view = WorkoutListView()
 			.accentColor(Color("accent"))
-			.environmentObject(WorkoutList())
+			.environmentObject(AppData())
 		window.rootViewController = UIHostingController(rootView: view)
 		self.window = window
 		window.makeKeyAndVisible()

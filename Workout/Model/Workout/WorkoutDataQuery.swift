@@ -55,7 +55,7 @@ class WorkoutDataQuery {
 		}
 	}
 	
-	func execute(forStart start: Date,
+	func execute(on healthStore: HKHealthStore, forStart start: Date,
 				 usingWorkoutPredicate wrktPred: NSPredicate, timePredicate timePred: NSPredicate, sourcePredicate srcPred: NSPredicate,
 				 resultHandler handler: @escaping (HKSampleQuery, [HKSample]?, Error?) -> Void) {
 		let predicate: NSPredicate

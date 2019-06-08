@@ -15,15 +15,6 @@ import StoreKit
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
 	
-	private let batchSize = 40
-	private let filteredLoadMultiplier = 5
-	private var moreToBeLoaded = true
-	private var isLoadingMore = false
-	
-	private var allWorkouts: [Workout]!
-	private var displayWorkouts: [Workout]!
-	private var err: Error?
-	
 	private var standardRightBtns: [UIBarButtonItem]!
 	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
 	private var standardLeftBtn: UIBarButtonItem!
@@ -91,26 +82,6 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		NotificationCenter.default.removeObserver(self)
 	}
 	
-	func authorize() {
-		let req = {
-			healthStore.requestAuthorization(toShare: nil, read: healthReadData) { _, _ in
-				DispatchQueue.main.async {
-					self.refresh(self)
-				}
-			}
-		}
-		
-		if #available(iOS 12.0, *) {
-			healthStore.getRequestStatusForAuthorization(toShare: [], read: healthReadData) { status, _ in
-				if status != .unnecessary {
-					req()
-				}
-			}
-		} else {
-			req()
-		}
-	}
-	
 	func largeTitleChanged(isLarge: Bool) {
 		if !heightFixed {
 			titleLblShouldHide = isLarge
@@ -134,141 +105,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	private weak var loadMoreCell: LoadMoreCell?
 	
 	@IBAction func refresh(_ sender: AnyObject) {
-		allWorkouts = nil
-		displayWorkouts = filter(workouts: allWorkouts)
-		err = nil
-		isLoadingMore = true
 		
-		updateExportModeEnabled()
-		tableView.beginUpdates()
-		tableView.reloadSections([0], with: .automatic)
-		if tableView.numberOfSections > 1 {
-			tableView.deleteSections([1], with: .automatic)
-		}
-		tableView.endUpdates()
-		
-		if HKHealthStore.isHealthDataAvailable() {
-			DispatchQueue.main.asyncAfter(delay: 0.7) {
-				self.loadBatch(targetDisplayCount: self.batchSize)
-			}
-		}
 	}
 	
 	func refreshUnits() {
 		tableView.reloadSections([0], with: .automatic)
-	}
-	
-	private func loadMore() {
-		isLoadingMore = true
-		updateExportModeEnabled()
-		loadBatch(targetDisplayCount: displayWorkouts.count + batchSize)
-	}
-	
-	private func loadBatch(targetDisplayCount target: Int) {
-		let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-		let type = HKObjectType.workoutType()
-		let predicate: NSPredicate?
-		let limit: Int
-		
-		if let last = allWorkouts?.last {
-			predicate = NSPredicate(format: "%K <= %@", HKPredicateKeyPathStartDate, last.startDate as NSDate)
-			let sameDateCount = allWorkouts.count - (allWorkouts.firstIndex { $0.startDate == last.startDate } ?? allWorkouts.count)
-			let missing = target - (displayWorkouts?.count ?? 0)
-			limit = sameDateCount + min(batchSize, isFiltering ? missing * filteredLoadMultiplier : missing)
-		} else {
-			predicate = nil
-			limit = target
-		}
-		
-		let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: limit, sortDescriptors: [sortDescriptor]) { (_, r, err) in
-			// There's no need to call .load() as additional data is not needed here, we just need information about units
-			let res = r as? [HKWorkout]
-			var actions: [() -> Void] = []
-			
-			self.err = err
-			DispatchQueue.workout.async {
-				let addedLineCount: Int?
-				let loadingMore: Bool
-				let wasEmpty: Bool
-				
-				if let res = res {
-					self.moreToBeLoaded = res.count >= limit
-					
-					var wrkts: [Workout] = []
-					do {
-						wrkts.reserveCapacity(res.count)
-						var addAll = false
-						// By searching the reversed collection we reduce comparison as both collections are sorted
-						let revLoaded = (self.allWorkouts ?? []).reversed()
-						for w in res {
-							if addAll || !revLoaded.contains(where: { $0.raw == w }) {
-								// Stop searching already loaded workouts when the first new workout is not present.
-								addAll = true
-								wrkts.append(Workout.workoutFor(raw: w))
-							}
-						}
-					}
-					let disp = self.filter(workouts: wrkts) ?? []
-					addedLineCount = self.allWorkouts == nil ? nil : disp.count
-					
-					wasEmpty = (self.displayWorkouts?.count ?? 0) == 0
-					self.allWorkouts = (self.allWorkouts ?? []) + wrkts
-					self.displayWorkouts = (self.displayWorkouts ?? []) + disp
-					
-					if self.moreToBeLoaded && self.displayWorkouts.count < target {
-						loadingMore = true
-						actions.append {
-							self.loadBatch(targetDisplayCount: target)
-						}
-					} else {
-						loadingMore = false
-						actions.append {
-							self.updateExportModeEnabled()
-						}
-					}
-				} else {
-					self.moreToBeLoaded = false
-					addedLineCount = nil
-					loadingMore = false
-					wasEmpty = true
-					
-					self.allWorkouts = nil
-					self.displayWorkouts = self.filter(workouts: self.allWorkouts)
-					
-					actions.append(self.updateExportModeEnabled)
-				}
-				
-				actions.insert({
-					self.isLoadingMore = loadingMore
-					self.tableView.beginUpdates()
-					if let added = addedLineCount {
-						if wasEmpty {
-							self.tableView.reloadSections([0], with: .automatic)
-						} else {
-							let oldCount = self.tableView.numberOfRows(inSection: 0)
-							self.tableView.insertRows(at: (oldCount ..< (oldCount + added)).map { IndexPath(row: $0, section: 0) }, with: .automatic)
-						}
-						
-						self.loadMoreCell?.isEnabled = !loadingMore
-					} else {
-						self.tableView.reloadSections([0], with: .automatic)
-					}
-					
-					if self.moreToBeLoaded && self.tableView.numberOfSections == 1 {
-						self.tableView.insertSections([1], with: .automatic)
-					} else if !self.moreToBeLoaded && self.tableView.numberOfSections > 1 {
-						self.tableView.deleteSections([1], with: .automatic)
-					}
-					self.tableView.endUpdates()
-				}, at: 0)
-				
-				for a in actions {
-					DispatchQueue.main.async(execute: a)
-				}
-			}
-		}
-		
-		healthStore.execute(workoutQuery)
 	}
 
     // MARK: - Table view data source
@@ -363,37 +204,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	// MARK: - Filter Workouts
-	
-	private let allFiltersStr = NSLocalizedString("FILTER_ALL", comment: "All")
-	private let manyFiltersStr = NSLocalizedString("FILTERS_MANY", comment: "Many")
-	
-	private func updateFilterLabel() {
-		switch filters.count {
-		case 0:
-			filterLbl.text = allFiltersStr
-		case 1:
-			filterLbl.text = filters.first?.name
-		default:
-			filterLbl.text = String(format: manyFiltersStr, filters.count)
-		}
-	}
-	
+
 	var filters: [HKWorkoutActivityType] = [] {
 		didSet {
-			displayWorkouts = filter(workouts: allWorkouts)
-			tableView.reloadSections([0], with: .automatic)
-			
-			updateFilterLabel()
 			updateExportModeEnabled()
 		}
-	}
-	
-	var isFiltering: Bool {
-		return !filters.isEmpty
-	}
-	
-	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
-		return wrkts?.filter { filters.isEmpty || filters.contains($0.raw.workoutActivityType) }
 	}
 	
 	// MARK: - Export all workouts
