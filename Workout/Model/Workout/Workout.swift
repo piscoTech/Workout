@@ -19,7 +19,7 @@ class Workout: BindableObject {
 
 	#warning("Use receive(on:) (Xcode bug)")
 	let didChange = PassthroughSubject<Void, Never>() //.receive(on: RunLoop.main)
-	
+
 	/// Request required for base data for a quick load.
 	private var baseReq = [WorkoutDataQuery]()
 	/// Request for additional details and a full load.
@@ -39,10 +39,10 @@ class Workout: BindableObject {
 			}
 		}
 	}
-	
+
 	private var additionalProcessors = [AdditionalDataProcessor]()
 	private(set) var additionalProviders = [AdditionalDataProvider]()
-	
+
 	private var loading = false
 	private(set) var loaded = false
 	private(set) var hasError = false
@@ -56,7 +56,7 @@ class Workout: BindableObject {
 
 	/// Max acceptable pace, if any, in time per unit length.
 	private(set) var maxPace: HKQuantity?
-	
+
 	var type: HKWorkoutActivityType {
 		return raw.workoutActivityType
 	}
@@ -79,9 +79,7 @@ class Workout: BindableObject {
 		}
 	}
 	private(set) var maxHeart: HKQuantity? = nil
-	private(set) var avgHeart: HKQuantity?/* {
-		return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
-	}*/
+	private(set) var avgHeart: HKQuantity?
 	/// Average pace of the workout in time per unit length, see `paceUnit` for the desired unit for presentation.
 	var pace: HKQuantity? {
 		guard let dist = totalDistance else {
@@ -138,18 +136,18 @@ class Workout: BindableObject {
 
 	/// Heart rate samples.
 	private var heartData = [HKQuantity]()
-	
+
 	private var rawStart: TimeInterval {
 		return raw.startDate.timeIntervalSince1970
 	}
 	private let workoutPredicate: NSPredicate!
 	private let timePredicate: NSPredicate!
 	private let sourcePredicate: NSPredicate!
-	
+
 	/// Create an instance of the proper `Workout` subclass (if any) for the given workout.
 	class func workoutFor(raw: HKWorkout, basedOn appData: AppData) -> Workout {
 		let wClass: Workout.Type
-		
+
 		switch raw.workoutActivityType {
 			#warning("Add back")
 //		case .running, .walking:
@@ -159,28 +157,28 @@ class Workout: BindableObject {
 		default:
 			wClass = Workout.self
 		}
-		
+
 		return wClass.init(raw, basedOn: appData)
 	}
-	
+
 	required init(_ raw: HKWorkout, basedOn appData: AppData) {
 		self.healthStore = appData.healthStore
 		self.raw = raw
-		
+
 		guard appData.isHealthDataAvailable else {
 			loaded = true
 			hasError = true
 			workoutPredicate = nil
 			timePredicate = nil
 			sourcePredicate = nil
-			
+
 			return
 		}
-		
+
 		workoutPredicate = HKQuery.predicateForObjects(from: raw)
 		timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
 		sourcePredicate = HKQuery.predicateForObjects(from: raw.sourceRevision.source)
-		
+
 		if let heart = WorkoutDataQuery(typeID: .heartRate, withUnit: .heartRate, andTimeType: .instant, searchingBy: .time) {
 			self.addQuery(heart, isBase: true)
 		}
@@ -191,7 +189,7 @@ class Workout: BindableObject {
 			self.addQuery(baseCal, isBase: true)
 		}
 	}
-	
+
 	func setLengthUnitsFor(distance dUnit: WorkoutUnit, speed sUnit: WorkoutUnit, pace pUnit: WorkoutUnit) {
 		guard !loading && !loaded else {
 			return
@@ -214,64 +212,64 @@ class Workout: BindableObject {
 			self.maxPace = nil
 		}
 	}
-	
+
 	// MARK: - Set and load other data
-	
+
 	/// Add a query to load data for the workout.
 	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`.
 	private func addQuery(_ q: WorkoutDataQuery, isBase: Bool) {
 		guard !loading && !loaded else {
 			return
 		}
-		
+
 		if isBase {
 			baseReq.append(q)
 		} else {
 			requests.append(q)
 		}
 	}
-	
+
 	/// Add a query to load data for the workout.
 	func addQuery(_ q: WorkoutDataQuery) {
 		self.addQuery(q, isBase: false)
 	}
-	
+
 	func addAdditionalDataProcessors(_ dp: AdditionalDataProcessor...) {
 		guard !loading && !loaded else {
 			return
 		}
-		
+
 		self.additionalProcessors += dp
 	}
-	
+
 	func addAdditionalDataProviders(_ dp: AdditionalDataProvider...) {
 		guard !loading && !loaded else {
 			return
 		}
-		
+
 		self.additionalProviders += dp
 	}
-	
+
 	func addAdditionalDataProcessorsAndProviders(_ dp: (AdditionalDataProcessor & AdditionalDataProvider)...) {
 		guard !loading && !loaded else {
 			return
 		}
-		
+
 		self.additionalProcessors += dp as [AdditionalDataProcessor]
 		self.additionalProviders += dp as [AdditionalDataProvider]
 	}
-	
+
 	/// Loads required additional data for the workout.
 	/// - parameter quickly: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
 	func load(quickly quickLoad: Bool = false) {
 		guard !loading && !loaded else {
 			return
 		}
-		
+
 		for dp in additionalProcessors {
 			dp.set(workout: self)
 		}
-		
+
 		loading = true
 		let req = baseReq + (quickLoad ? [] : requests)
 		requestToDo = req.count
@@ -283,18 +281,18 @@ class Workout: BindableObject {
 						self.requestDone += 1
 					}
 				}
-				
+
 				guard err == nil, let res = data as? [HKQuantitySample] else {
 					self.hasError = true
 					return
 				}
-				
+
 				for dp in self.additionalProcessors {
 					if dp.wantData(for: r.typeID) {
 						dp.process(data: res, for: r)
 					}
 				}
-				
+
 				if [HKQuantityTypeIdentifier.heartRate, .activeEnergyBurned, .basalEnergyBurned].contains(r.typeID) {
 					for s in res {
 						if r.typeID == .heartRate {
@@ -313,11 +311,16 @@ class Workout: BindableObject {
 							}
 						}
 					}
+
+					#warning("Compute average heart rate")
+					/* {
+						return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
+					}*/
 				}
 			}
 		}
 	}
-	
+
 	// MARK: - Export
 
 	#warning("Add back")
@@ -337,15 +340,15 @@ class Workout: BindableObject {
 			totalCalories?.toCSV() ?? ""
 		]
 	}
-	
+
 	func exportGeneralData() -> String {
 		return generalData.joined(separator: CSVSeparator)
 	}
-	
+
 	func export() -> [URL]? {
 		let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
 		var res = [general]
-		
+
 		let genData = generalData
 		let sep = CSVSeparator
 		var data = "Field\(sep)Value\n"
@@ -360,21 +363,21 @@ class Workout: BindableObject {
 		data += "\("Average Speed \(speedUnit.description(for: preferences))/h".toCSV())\(sep)" + genData[8] + "\n"
 		data += "\("Active Energy kcal".toCSV())\(sep)" + genData[9] + "\n"
 		data += "\("Total Energy kcal".toCSV())\(sep)" + genData[10] + "\n"
-		
+
 		do {
 			try data.write(to: general, atomically: true, encoding: .utf8)
 		} catch _ {
 			return nil
 		}
-		
+
 		for dp in additionalProviders {
 			guard let files = dp.export() else {
 				return nil
 			}
-			
+
 			res += files
 		}
-		
+
 		return res
 	}
 	*/

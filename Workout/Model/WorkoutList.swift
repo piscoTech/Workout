@@ -46,7 +46,6 @@ class WorkoutList {
 	private let filteredLoadMultiplier = 5
 
 	private func updateFilteredList() {
-		#warning("Implement me")
 		workouts = filter(workouts: allWorkouts)
 
 		didChange()

@@ -13,10 +13,10 @@ class WorkoutUnit {
 	/// The unit for the default system of units, i.e. `Units.default`.
 	let `default`: HKUnit
 	/// The units for other system of units.
-	let unitsLUT: [Units: HKUnit]
+	let unitsLUT: [SystemOfUnits: HKUnit]
 
 	/// Create a set of units using the provided ones, system of units with no specified unit default to the one provided for  the default system of units i.e. `Units.default`.
-	init(units: [Units: HKUnit]) {
+	init(units: [SystemOfUnits: HKUnit]) {
 		guard let def = units[.default] else {
 			preconditionFailure("Unit for the default system of units not provided")
 		}
@@ -41,11 +41,29 @@ class WorkoutUnit {
 		return unit(for: preferences).description
 	}
 
+	//MARK: - Unit Combination
+
+	private func combine(with unit: WorkoutUnit, using combinator: (HKUnit, HKUnit) -> HKUnit) -> WorkoutUnit {
+		return WorkoutUnit(units: Dictionary(uniqueKeysWithValues: zip(SystemOfUnits.allCases, SystemOfUnits.allCases.map {
+			combinator(self.unitsLUT[$0] ?? self.default, unit.unitsLUT[$0] ?? unit.default)
+		})))
+	}
+
+	func divided(by unit: HKUnit) -> WorkoutUnit {
+		return divided(by: WorkoutUnit(unit))
+	}
+	func divided(by unit: WorkoutUnit) -> WorkoutUnit {
+		return combine(with: unit) { $0.unitDivided(by: $1) }
+	}
+
 	//MARK: - Predefined Units
 
 	static let meter = WorkoutUnit(.meter())
 	static let meterAndYard = WorkoutUnit(units: [.metric: .meter(), .imperial: .yard()])
 	static let kilometerAndMile = WorkoutUnit(units: [.metric: .meterUnit(with: .kilo), .imperial: .mile()])
+
+	static let kilometerAndMilePerHour = kilometerAndMile.divided(by: HKUnit.hour())
+	static let secondsPerKilometerAndMile = WorkoutUnit(.second()).divided(by: kilometerAndMile)
 
 	static let calories = WorkoutUnit(.kilocalorie())
 

@@ -11,41 +11,33 @@ import HealthKit
 
 extension TimeInterval {
 
-	///- parameter forLengthUnit: The unit to use to represent the distance component
-	///- returns: The formatted value, considered in time per `forLengthUnit`.
-	func getFormattedPace(forLengthUnit unit: HKUnit) -> String {
-		return getDuration() + "/\(unit.description)"
+	///- returns: The formatted value.
+	func getFormattedPace(withUnit unit: HKUnit) -> String {
+		let sep = "/"
+		return getLocalizedDuration() + "\(sep)\(unit.description.components(separatedBy: sep)[1])"
 	}
 
 }
 
 extension Double {
 
-	///- returns: The formatted value, considered in the passed unit.
+	///- returns: The formatted value.
 	func getFormattedDistance(withUnit unit: HKUnit) -> String {
 		return distanceF.string(from: NSNumber(value: self))! + " \(unit.description)"
 	}
 
-	///- parameter forLengthUnit: The unit to use to represent the distance component
-	///- returns: The formatted value, considered in `forLengthUnit` per hour.
-	func getFormattedSpeed(forLengthUnit unit: HKUnit) -> String {
-		return speedF.string(from: NSNumber(value: self))! + " \(unit.description)/h"
+	///- returns: The formatted value.
+	func getFormattedSpeed(withUnit unit: HKUnit) -> String {
+		return speedF.string(from: NSNumber(value: self))! + " \(unit.description)"
 	}
 
-	///- returns: The formatted value, considered in kilocalories.
-	func getFormattedCalories() -> String {
-		return integerF.string(from: NSNumber(value: self))! + " kcal"
+	///- returns: The formatted value.
+	func getFormattedEnergy(withUnit unit: HKUnit) -> String {
+		return integerF.string(from: NSNumber(value: self))! + " \(unit.description)"
 	}
 
 	func getFormattedHeartRate() -> String {
 		return integerF.string(from: NSNumber(value: self))! + " bpm"
-	}
-
-	func convertFrom(_ un1: HKUnit, to un2: HKUnit) -> Double {
-		let quant = HKQuantity(unit: un1, doubleValue: self)
-		precondition(quant.is(compatibleWith: un2), "Units are not compatible")
-
-		return quant.doubleValue(for: un2)
 	}
 
 }

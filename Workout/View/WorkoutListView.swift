@@ -9,6 +9,7 @@
 import SwiftUI
 import MBHealth
 import HealthKit
+import MBLibrary
 
 struct WorkoutListView : View {
 
@@ -21,11 +22,11 @@ struct WorkoutListView : View {
 
 	var body: some View {
 		NavigationView {
-			Content(presentingStatus: $presenting)
+			Content(presenting: $presenting)
 				.navigationBarTitle(Text("WRKT_LIST_TITLE"))
 				.navigationBarItems(leading: Button(action: { self.presenting = .settings }) {
 					Image(systemName: "gear")
-				}.imageScale(.large), trailing: HStack {
+					}.imageScale(.large), trailing: HStack {
 					Button(action: { print("Export...") }) {
 						Image(systemName: "square.and.arrow.up")
 					}.disabled(true)
@@ -52,19 +53,7 @@ struct WorkoutListView : View {
 
 private struct Content: View {
 	@EnvironmentObject private var appData: AppData
-	private let presentingStatus: Binding<WorkoutListView.Presenting>
-	private var presenting: WorkoutListView.Presenting {
-		get {
-			return presentingStatus.value
-		}
-		nonmutating set {
-			presentingStatus.value = newValue
-		}
-	}
-
-	init(presentingStatus: Binding<WorkoutListView.Presenting>) {
-		self.presentingStatus = presentingStatus
-	}
+	@Binding fileprivate var presenting: WorkoutListView.Presenting
 
 	var body: some View {
 		List {
@@ -72,8 +61,8 @@ private struct Content: View {
 			Button(action: {
 				self.presenting = .filterSelector
 			}) {
-				FilterStatusView()
-			}
+				FilterStatusCell()
+			}.disabled(appData.workoutList.isLoading || appData.workoutList.error != nil)
 
 			if appData.workoutList.workouts == nil {
 				// Errors
@@ -82,13 +71,13 @@ private struct Content: View {
 				} else if appData.workoutList.error != nil {
 					MessageCell("WRKT_LIST_ERR_LOADING")
 				} else {
-					MessageCell("WRKT_LIST_LOADING")
+					MessageCell("WRKT_LIST_LOADING", withActivityIndicator: true)
 				}
 			} else {
 				// Workouts
 				ForEach(appData.workoutList.workouts ?? []) { w in
 					NavigationButton(destination: WorkoutView()) {
-						Text(w.type.name)
+						WorkoutCell(workout: w)
 					}
 				}
 
@@ -111,7 +100,7 @@ private struct Content: View {
 
 }
 
-private struct FilterStatusView: View {
+private struct FilterStatusCell: View {
 	@EnvironmentObject private var appData: AppData
 
 	var body: some View {
@@ -125,7 +114,7 @@ private struct FilterStatusView: View {
 				} else {
 					HStack(alignment: .firstTextBaseline) {
 						Text("\(appData.workoutList.filters.count)_WRKT_FILTERS")
-						Text("–")
+						Text(textSeparator)
 						Text(appData.workoutList.filters.map { $0.name }.joined(separator: ", "))
 					}
 				}
@@ -136,7 +125,6 @@ private struct FilterStatusView: View {
 
 private struct MessageCell: View {
 	let text: LocalizedStringKey
-	#warning("Implement")
 	let hasActivityIndicator: Bool
 
 	init(_ text: LocalizedStringKey, withActivityIndicator: Bool = false) {
@@ -147,9 +135,33 @@ private struct MessageCell: View {
 	var body: some View {
 		HStack {
 			if hasActivityIndicator {
-				Circle().fill().frame(width: 20, height: 20)
+				ActivityIndicator(style: .medium, animating: Binding.constant(true))
 			}
 			Text(text)
+		}
+	}
+}
+
+private struct WorkoutCell: View {
+	@EnvironmentObject private var appData: AppData
+	let workout: Workout
+
+	private var distanceUnit: HKUnit {
+		workout.distanceUnit.unit(for: appData.preferences)
+	}
+
+	var body: some View {
+		VStack(alignment: .leading) {
+			Text(workout.type.name)
+			HStack {
+				Text(workout.startDate.getFormattedDate())
+				Text(textSeparator)
+				Text(workout.duration.getLocalizedDuration())
+				if workout.totalDistance != nil {
+					Text(textSeparator)
+					Text(workout.totalDistance!.doubleValue(for: distanceUnit).getFormattedDistance(withUnit: distanceUnit))
+				}
+			}.font(.caption)
 		}
 	}
 }

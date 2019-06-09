@@ -1,5 +1,5 @@
 //
-//  Units.swift
+//  SystemOfUnits.swift
 //  Workout
 //
 //  Created by Marco Boschi on 08/06/2019.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum Units: Int, CaseIterable {
+enum SystemOfUnits: Int, CaseIterable {
 	case metric = 0, imperial
 
 	var displayName: String {
@@ -16,6 +16,6 @@ enum Units: Int, CaseIterable {
 	}
 
 	/// The default system of units, the metric one.
-	static let `default` = Units.metric
+	static let `default` = SystemOfUnits.metric
 
 }

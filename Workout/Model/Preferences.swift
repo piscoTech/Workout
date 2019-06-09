@@ -11,6 +11,6 @@ import Foundation
 class Preferences {
 
 	#warning("Add the whole stuff")
-	let systemOfUnits = Units.metric
+	let systemOfUnits = SystemOfUnits.metric
 
 }
