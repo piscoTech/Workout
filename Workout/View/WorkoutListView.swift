@@ -12,7 +12,7 @@ import HealthKit
 
 struct WorkoutListView : View {
 
-	enum Presenting {
+	fileprivate enum Presenting {
 		case none, settings, filterSelector
 	}
 
@@ -21,33 +21,27 @@ struct WorkoutListView : View {
 
 	var body: some View {
 		NavigationView {
-			List {
-				Button(action: {
-					self.presenting = .filterSelector
-				}) {
-					FilterStatusView()
-				}
-
-				ForEach(0 ..< 5) { index in
-					NavigationButton(destination: WorkoutView()) {
-						Text("Test \(index)")
-					}
-				}
-			}
-			.navigationBarTitle(Text("WRKT_LIST_TITLE"))
+			Content(presentingStatus: $presenting)
+				.navigationBarTitle(Text("WRKT_LIST_TITLE"))
 				.navigationBarItems(leading: Button(action: { self.presenting = .settings }) {
 					Image(systemName: "gear")
-						.imageScale(.large)
-				})
-			.presentation(presenting == .filterSelector
-				? Modal(Text("Example")) {
-					self.presenting = .none
+				}.imageScale(.large), trailing: HStack {
+					Button(action: { print("Export...") }) {
+						Image(systemName: "square.and.arrow.up")
+					}.disabled(true)
+					Button(action: { self.appData.workoutList.reload() }) {
+						Image(systemName: "arrow.clockwise")
+					}
+				}.imageScale(.large))
+				.presentation(presenting == .filterSelector
+					? Modal(Text("Filters")) {
+						self.presenting = .none
+					}
+					: nil)
+				.onAppear {
+					self.appData.authorizeHealthKitAccess()
+					self.appData.workoutList.reload()
 				}
-				: nil)
-			.onAppear {
-				self.appData.authorizeHealthKitAccess()
-				self.appData.workoutList.reloadWorkouts()
-			}
 		}.presentation(presenting == .settings
 			? Modal(SettingsView()) {
 				self.presenting = .none
@@ -56,7 +50,68 @@ struct WorkoutListView : View {
 	}
 }
 
-struct FilterStatusView: View {
+private struct Content: View {
+	@EnvironmentObject private var appData: AppData
+	private let presentingStatus: Binding<WorkoutListView.Presenting>
+	private var presenting: WorkoutListView.Presenting {
+		get {
+			return presentingStatus.value
+		}
+		nonmutating set {
+			presentingStatus.value = newValue
+		}
+	}
+
+	init(presentingStatus: Binding<WorkoutListView.Presenting>) {
+		self.presentingStatus = presentingStatus
+	}
+
+	var body: some View {
+		List {
+			// List controls
+			Button(action: {
+				self.presenting = .filterSelector
+			}) {
+				FilterStatusView()
+			}
+
+			if appData.workoutList.workouts == nil {
+				// Errors
+				if (appData.workoutList.error as? WorkoutList.Error) == .missingHealth {
+					MessageCell("WRKT_LIST_ERR_NO_HEALTH")
+				} else if appData.workoutList.error != nil {
+					MessageCell("WRKT_LIST_ERR_LOADING")
+				} else {
+					MessageCell("WRKT_LIST_LOADING")
+				}
+			} else {
+				// Workouts
+				ForEach(appData.workoutList.workouts ?? []) { w in
+					NavigationButton(destination: WorkoutView()) {
+						Text(w.type.name)
+					}
+				}
+
+				if (appData.workoutList.workouts ?? []).isEmpty {
+					Text("WRKT_LIST_ERR_NO_WORKOUT")
+				}
+			}
+
+			// Load more
+			if appData.workoutList.workouts != nil && appData.workoutList.canLoadMore { // && !inExportMode
+				Button(action: {
+					withAnimation { self.appData.workoutList.loadMore() }
+				}) {
+					MessageCell("WRKT_LIST_MORE", withActivityIndicator: appData.workoutList.isLoading)
+						.foregroundColor(.accentColor)
+					}.disabled(appData.workoutList.isLoading)
+			}
+		}
+	}
+
+}
+
+private struct FilterStatusView: View {
 	@EnvironmentObject private var appData: AppData
 
 	var body: some View {
@@ -75,6 +130,26 @@ struct FilterStatusView: View {
 					}
 				}
 			}.font(.caption).foregroundColor(.secondary)
+		}
+	}
+}
+
+private struct MessageCell: View {
+	let text: LocalizedStringKey
+	#warning("Implement")
+	let hasActivityIndicator: Bool
+
+	init(_ text: LocalizedStringKey, withActivityIndicator: Bool = false) {
+		self.text = text
+		self.hasActivityIndicator = withActivityIndicator
+	}
+
+	var body: some View {
+		HStack {
+			if hasActivityIndicator {
+				Circle().fill().frame(width: 20, height: 20)
+			}
+			Text(text)
 		}
 	}
 }

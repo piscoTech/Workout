@@ -13,6 +13,10 @@ typealias WorkoutListFilter = Set<HKWorkoutActivityType>
 
 class WorkoutList {
 
+	enum Error: Swift.Error {
+		case missingHealth
+	}
+
 	weak var appData: AppData!
 
 	private func didChange() {
@@ -31,9 +35,10 @@ class WorkoutList {
 		return !filters.isEmpty
 	}
 
+	/// The workout list, if `nil` either there's an error or the initial loading is being performed or it's waiting to be performed.
 	private(set) var workouts: [Workout]?
 	private(set) var isLoading = false
-	private(set) var error: Error?
+	private(set) var error: Swift.Error?
 	private(set) var canLoadMore = true
 
 	private var allWorkouts: [Workout]?
@@ -48,18 +53,22 @@ class WorkoutList {
 	}
 
 	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
-		return wrkts?.filter { filters.isEmpty || filters.contains($0.raw.workoutActivityType) }
+		return wrkts?.filter { filters.isEmpty || filters.contains($0.type) }
 	}
 
-	func reloadWorkouts() {
+	func reload() {
 		allWorkouts = nil
-		error = nil
-		isLoading = true
 
 		if appData.isHealthDataAvailable {
-			DispatchQueue.main.asyncAfter(delay: 0.7) {
+			error = nil
+			isLoading = true
+
+			DispatchQueue.main.asyncAfter(delay: 0.5) {
 				self.loadBatch(targetDisplayCount: self.batchSize)
 			}
+		} else {
+			isLoading = false
+			error = WorkoutList.Error.missingHealth
 		}
 
 		updateFilteredList()
@@ -67,7 +76,11 @@ class WorkoutList {
 
 	func loadMore() {
 		isLoading = true
-		loadBatch(targetDisplayCount: (workouts?.count ?? 0) + batchSize)
+		didChange()
+
+		DispatchQueue.main.async {
+			self.loadBatch(targetDisplayCount: (self.workouts?.count ?? 0) + self.batchSize)
+		}
 	}
 
 	private func loadBatch(targetDisplayCount target: Int) {
@@ -120,8 +133,12 @@ class WorkoutList {
 						DispatchQueue.main.async {
 							self.loadBatch(targetDisplayCount: target)
 						}
+					} else {
+						self.isLoading = false
+						self.didChange()
 					}
 				} else {
+					self.isLoading = false
 					self.canLoadMore = false
 
 					self.allWorkouts = nil
@@ -129,30 +146,6 @@ class WorkoutList {
 					self.updateFilteredList()
 				}
 			}
-
-//				actions.insert({
-//					self.isLoadingMore = loadingMore
-//					self.tableView.beginUpdates()
-//					if let added = addedLineCount {
-//						if wasEmpty {
-//							self.tableView.reloadSections([0], with: .automatic)
-//						} else {
-//							let oldCount = self.tableView.numberOfRows(inSection: 0)
-//							self.tableView.insertRows(at: (oldCount ..< (oldCount + added)).map { IndexPath(row: $0, section: 0) }, with: .automatic)
-//						}
-//
-//						self.loadMoreCell?.isEnabled = !loadingMore
-//					} else {
-//						self.tableView.reloadSections([0], with: .automatic)
-//					}
-//
-//					if self.moreToBeLoaded && self.tableView.numberOfSections == 1 {
-//						self.tableView.insertSections([1], with: .automatic)
-//					} else if !self.moreToBeLoaded && self.tableView.numberOfSections > 1 {
-//						self.tableView.deleteSections([1], with: .automatic)
-//					}
-//					self.tableView.endUpdates()
-//				}, at: 0)
 		}
 
 		appData.healthStore.execute(workoutQuery)

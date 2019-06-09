@@ -17,19 +17,6 @@ extension TimeInterval {
 		return getDuration() + "/\(unit.description)"
 	}
 
-	///- parameter withLengthUnit: The unit used to express the pace.
-	///- parameter andMaxPace: The max acceptable pace, if any, in time per kilometer.
-	func filterAsPace(withLengthUnit unit: HKUnit, andMaxPace: TimeInterval?) -> Double? {
-		guard let maxPace = andMaxPace else {
-			return self
-		}
-
-		let timeKm = HKUnit.second().unitDivided(by: .meterUnit(with: .kilo))
-		let timeUnit = HKUnit.second().unitDivided(by: unit)
-
-		return self.convertFrom(timeUnit, to: timeKm) > maxPace ? nil : self
-	}
-
 }
 
 extension Double {
@@ -78,10 +65,30 @@ extension HKQuantityTypeIdentifier {
 
 }
 
-extension HKQuantity {
+extension HKQuantity: Comparable {
+
+	public static func < (lhs: HKQuantity, rhs: HKQuantity) -> Bool {
+		return lhs.compare(rhs) == .orderedAscending
+	}
 
 	func `is`(compatibleWith unit: WorkoutUnit) -> Bool {
 		return self.is(compatibleWith: unit.default)
 	}
+
+	///- parameter withMaximum: The max acceptable pace, if any, in time per unit length..
+	func filterAsPace(withMaximum maxPace: HKQuantity?) -> HKQuantity? {
+		if let mp = maxPace, self <= mp {
+			return self
+		} else {
+			return nil
+		}
+	}
+
+}
+
+extension HKUnit {
+
+	static let meterPerSecond = HKUnit.meter().unitDivided(by: .second())
+	static let secondPerMeter = HKUnit.second().unitDivided(by: .meter())
 
 }

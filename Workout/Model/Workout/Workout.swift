@@ -14,7 +14,7 @@ import Combine
 
 class Workout: BindableObject {
 
-	private let preferences: Preferences
+	private let healthStore: HKHealthStore
 	let raw: HKWorkout
 
 	#warning("Use receive(on:) (Xcode bug)")
@@ -54,8 +54,8 @@ class Workout: BindableObject {
 	/// The length unit to use in calculating speed.
 	private(set) var speedUnit = WorkoutUnit.kilometerAndMile
 
-	/// Max acceptable pace, if any, in time per kilometer.
-	private(set) var maxPace: TimeInterval?
+	/// Max acceptable pace, if any, in time per unit length.
+	private(set) var maxPace: HKQuantity?
 	
 	var type: HKWorkoutActivityType {
 		return raw.workoutActivityType
@@ -69,60 +69,75 @@ class Workout: BindableObject {
 	var duration: TimeInterval {
 		return raw.duration
 	}
-	var totalDistance: Double? {
-		let distance = raw.totalDistance?.doubleValue(for: distanceUnit.unit(for: preferences))
-		
+	/// The total distance of the workout, see `distanceUnit` for the desired unit for presentation.
+	var totalDistance: HKQuantity? {
 		// Don't expose a 0 distance, give nil instead
-		return distance ?? 0 > 0 ? distance : nil
+		if let dist = raw.totalDistance, dist > HKQuantity(unit: .meter(), doubleValue: 0) {
+			return dist
+		} else {
+			return nil
+		}
 	}
-	var maxHeart: Double? = nil
-	var avgHeart: Double? {
+	private(set) var maxHeart: HKQuantity? = nil
+	private(set) var avgHeart: HKQuantity?/* {
 		return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
-	}
-	///Average pace of the workout in seconds per `paceUnit`.
-	var pace: TimeInterval? {
-		let pUnit = paceUnit.unit(for: preferences)
-		guard let dist = raw.totalDistance?.doubleValue(for: pUnit), dist > 0 else {
+	}*/
+	/// Average pace of the workout in time per unit length, see `paceUnit` for the desired unit for presentation.
+	var pace: HKQuantity? {
+		guard let dist = totalDistance else {
 			return nil
 		}
-		
-		return (duration / dist).filterAsPace(withLengthUnit: pUnit, andMaxPace: maxPace)
+
+		return HKQuantity(unit: .secondPerMeter, doubleValue: duration / dist.doubleValue(for: .meter()))
+			.filterAsPace(withMaximum: maxPace)
 	}
-	///Average speed of the workout in `speedUnit` per hour.
-	var speed: Double? {
-		guard let dist = raw.totalDistance?.doubleValue(for: speedUnit.unit(for: preferences)), dist > 0 else {
+	///Average speed of the workout in distance per unit time, , see `speedUnit` for the desired unit for presentation.
+	var speed: HKQuantity? {
+		guard let dist = totalDistance else {
 			return nil
 		}
-		
-		return dist / (duration / 3600)
+
+		return HKQuantity(unit: .meterPerSecond, doubleValue: dist.doubleValue(for: .meter()) / duration)
 	}
-	///Total energy burned in kilocalories.
-	var totalCalories: Double? {
-		return rawTotalCalories ?? rawActiveCalories
-	}
-	///Active energy burned in kilocalories.
-	var activeCalories: Double? {
-		return rawTotalCalories != nil ? rawActiveCalories : nil
-	}
-	
+
+	/// Active energy burned during the workout, in kilocalories.
 	private var activeCaloriesData = 0.0
+	/// Basal energy burned during the workout, in kilocalories.
 	private var restingCaloriesData = 0.0
-	
+	/// Intermediate step to compute the total energy burned during the workout, in kilocalories.
 	private var rawTotalCalories: Double? {
 		let total = (rawActiveCalories ?? 0) + restingCaloriesData
 		return total > 0 ? total : nil
 	}
+	/// Intermediate step to compute the active energy burned during the workout, in kilocalories.
 	private var rawActiveCalories: Double? {
 		if activeCaloriesData > 0 {
 			return activeCaloriesData
-		} else if let total = raw.totalEnergyBurned?.doubleValue(for: WorkoutUnit.calories.unit(for: preferences)), total > 0 {
+		} else if let total = raw.totalEnergyBurned?.doubleValue(for: .kilocalorie()), total > 0 {
 			return total
 		} else {
 			return nil
 		}
 	}
+	///Total energy burned.
+	var totalCalories: HKQuantity? {
+		if let kcal = rawTotalCalories ?? rawActiveCalories {
+			return HKQuantity(unit: .kilocalorie(), doubleValue: kcal)
+		} else {
+			return nil
+		}
+	}
+	///Active energy burned.
+	var activeCalories: HKQuantity? {
+		if rawTotalCalories != nil, let kcal = rawActiveCalories {
+			return HKQuantity(unit: .kilocalorie(), doubleValue: kcal)
+		} else {
+			return nil
+		}
+	}
 
-	private var heartData = [Double]()
+	/// Heart rate samples.
+	private var heartData = [HKQuantity]()
 	
 	private var rawStart: TimeInterval {
 		return raw.startDate.timeIntervalSince1970
@@ -149,7 +164,7 @@ class Workout: BindableObject {
 	}
 	
 	required init(_ raw: HKWorkout, basedOn appData: AppData) {
-		self.preferences = appData.preferences
+		self.healthStore = appData.healthStore
 		self.raw = raw
 		
 		guard appData.isHealthDataAvailable else {
@@ -187,13 +202,17 @@ class Workout: BindableObject {
 		paceUnit = pUnit
 	}
 
-	/// Sets the max acceptable pace, if any, in time per kilometer.
-	func set(maxPace: TimeInterval?) {
+	/// Sets the max acceptable pace, if any, in time per unit length.
+	func set(maxPace: HKQuantity?) {
 		guard !loading && !loaded else {
 			return
 		}
 
-		self.maxPace = maxPace ?? 0 > 0 ? maxPace : nil
+		if let mp = maxPace, mp > HKQuantity(unit: .secondPerMeter, doubleValue: 0) {
+			self.maxPace = mp
+		} else {
+			self.maxPace = nil
+		}
 	}
 	
 	// MARK: - Set and load other data
@@ -243,8 +262,8 @@ class Workout: BindableObject {
 	}
 	
 	/// Loads required additional data for the workout.
-	/// - parameter quickLoad: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
-	func load(from healthStore: HKHealthStore, quickly quickLoad: Bool = false) {
+	/// - parameter quickly: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
+	func load(quickly quickLoad: Bool = false) {
 		guard !loading && !loaded else {
 			return
 		}
@@ -278,22 +297,20 @@ class Workout: BindableObject {
 				
 				if [HKQuantityTypeIdentifier.heartRate, .activeEnergyBurned, .basalEnergyBurned].contains(r.typeID) {
 					for s in res {
-						guard s.quantity.is(compatibleWith: r.unit) else {
-							continue
-						}
-						
-						let val = s.quantity.doubleValue(for: r.unit.unit(for: self.preferences))
-						
-						switch r.typeID {
-						case .heartRate:
-							self.maxHeart = max(self.maxHeart ?? 0, val)
-							self.heartData.append(val)
-						case .activeEnergyBurned:
-							self.activeCaloriesData += val
-						case .basalEnergyBurned:
-							self.restingCaloriesData += val
-						default:
-							break
+						if r.typeID == .heartRate {
+							if let mh = self.maxHeart {
+								self.maxHeart = max(mh, s.quantity)
+							} else {
+								self.maxHeart = s.quantity
+							}
+							self.heartData.append(s.quantity)
+						} else {
+							let kcal = s.quantity.doubleValue(for: .kilocalorie())
+							if r.typeID == .activeEnergyBurned {
+								self.activeCaloriesData += kcal
+							} else if r.typeID == .basalEnergyBurned {
+								self.restingCaloriesData += kcal
+							}
 						}
 					}
 				}
@@ -302,7 +319,9 @@ class Workout: BindableObject {
 	}
 	
 	// MARK: - Export
-	
+
+	#warning("Add back")
+	/*
 	private var generalData: [String] {
 		return [
 			type.name.toCSV(),
@@ -358,5 +377,5 @@ class Workout: BindableObject {
 		
 		return res
 	}
-	
+	*/
 }

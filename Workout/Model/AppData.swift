@@ -46,7 +46,7 @@ class AppData: BindableObject {
 		healthStore.getRequestStatusForAuthorization(toShare: [], read: healthReadData) { status, _ in
 			if status != .unnecessary {
 				self.healthStore.requestAuthorization(toShare: nil, read: self.healthReadData) { _, _ in
-					self.workoutList.reloadWorkouts()
+					self.workoutList.reload()
 				}
 			}
 		}
