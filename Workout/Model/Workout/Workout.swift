@@ -29,7 +29,7 @@ class Workout: BindableObject {
 	private var requestDone = 0 {
 		didSet {
 			if requestDone == requestToDo {
-				loading = false
+				isLoading = false
 				loaded = true
 
 				#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
@@ -43,7 +43,7 @@ class Workout: BindableObject {
 	private var additionalProcessors = [AdditionalDataProcessor]()
 	private(set) var additionalProviders = [AdditionalDataProvider]()
 
-	private var loading = false
+	private(set) var isLoading = false
 	private(set) var loaded = false
 	private(set) var hasError = false
 
@@ -118,7 +118,7 @@ class Workout: BindableObject {
 		}
 	}
 	///Total energy burned.
-	var totalCalories: HKQuantity? {
+	var totalEnergy: HKQuantity? {
 		if let kcal = rawTotalCalories ?? rawActiveCalories {
 			return HKQuantity(unit: .kilocalorie(), doubleValue: kcal)
 		} else {
@@ -126,7 +126,7 @@ class Workout: BindableObject {
 		}
 	}
 	///Active energy burned.
-	var activeCalories: HKQuantity? {
+	var activeEnergy: HKQuantity? {
 		if rawTotalCalories != nil, let kcal = rawActiveCalories {
 			return HKQuantity(unit: .kilocalorie(), doubleValue: kcal)
 		} else {
@@ -192,7 +192,7 @@ class Workout: BindableObject {
 	/// - parameter sUnit: The unit used for speed, a length unit divided by a time unit.
 	/// - parameter pUnit: The unit used for pace. By definition should be a time unit divided by a length unit but as times are always reported as `TimeInterval`, i.e. secods, just a length unit must be provided.
 	func setUnitsFor(distance dUnit: WorkoutUnit, speed sUnit: WorkoutUnit, andPace pUnit: WorkoutUnit) {
-		guard !loading && !loaded else {
+		guard !isLoading && !loaded else {
 			return
 		}
 
@@ -207,7 +207,7 @@ class Workout: BindableObject {
 
 	/// Sets the max acceptable pace, if any, in time per unit length.
 	func set(maxPace: HKQuantity?) {
-		guard !loading && !loaded else {
+		guard !isLoading && !loaded else {
 			return
 		}
 
@@ -223,7 +223,7 @@ class Workout: BindableObject {
 	/// Add a query to load data for the workout.
 	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`.
 	private func addQuery(_ q: WorkoutDataQuery, isBase: Bool) {
-		guard !loading && !loaded else {
+		guard !isLoading && !loaded else {
 			return
 		}
 
@@ -240,7 +240,7 @@ class Workout: BindableObject {
 	}
 
 	func addAdditionalDataProcessors(_ dp: AdditionalDataProcessor...) {
-		guard !loading && !loaded else {
+		guard !isLoading && !loaded else {
 			return
 		}
 
@@ -248,7 +248,7 @@ class Workout: BindableObject {
 	}
 
 	func addAdditionalDataProviders(_ dp: AdditionalDataProvider...) {
-		guard !loading && !loaded else {
+		guard !isLoading && !loaded else {
 			return
 		}
 
@@ -256,7 +256,7 @@ class Workout: BindableObject {
 	}
 
 	func addAdditionalDataProcessorsAndProviders(_ dp: (AdditionalDataProcessor & AdditionalDataProvider)...) {
-		guard !loading && !loaded else {
+		guard !isLoading && !loaded else {
 			return
 		}
 
@@ -267,7 +267,7 @@ class Workout: BindableObject {
 	/// Loads required additional data for the workout.
 	/// - parameter quickLoad: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
 	func load(quickly quickLoad: Bool = false) {
-		guard !loading && !loaded else {
+		guard !isLoading && !loaded else {
 			return
 		}
 
@@ -275,7 +275,7 @@ class Workout: BindableObject {
 			dp.set(workout: self)
 		}
 
-		loading = true
+		isLoading = true
 		let req = baseReq + (quickLoad ? [] : requests)
 		requestToDo = req.count
 		for r in req {

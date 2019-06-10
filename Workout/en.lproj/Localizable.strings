@@ -10,22 +10,23 @@
 "UNITS_NAME_0" = "Metric";
 "UNITS_NAME_1" = "Imperial";
 
-// MARK: - Workout List
+// MARK: - Errors
+
+"WRKT_ERR_LOADING" = "Unable to load workout data";
+"WRKT_ERR_NO_HEALTH" = "Health data is not available";
+
+// MARK: - Workout List View
 "WRKT_LIST_TITLE" = "Workouts";
 
 "WRKT_FILTER" = "Filter";
 "WRKT_FILTER_ALL" = "All workouts";
-"FILTER_COUNT" = "%d/%d Workout";
-"FILTERS_COUNT" = "%d/%d Workouts";
 
 "WRKT_LIST_MORE" = "Load More";
 
-"WRKT_LIST_ERR_LOADING" = "Unable to load workout data";
 "WRKT_LIST_LOADING" = "Loading from Health app...";
 "WRKT_LIST_ERR_NO_WORKOUT" = "No workout";
-"WRKT_LIST_ERR_NO_HEALTH" = "Health data is not available";
 
-// MARK: - Workout
+// MARK: - Workout View
 "WRKT_TITLE" = "Workout Details";
 
 "WRKT_TYPE" = "Type";
@@ -38,6 +39,8 @@
 "WRKT_AVG_PACE" = "Average Pace";
 "WRKT_AVG_SPEED" = "Average Speed";
 "WRKT_CALORIES" = "Calories";
+
+"WRKT_SPLIT_CAL_%@_TOTAL_%@" = "%@ (%@ total)";
 
 // MARK: - Settings
 
@@ -58,7 +61,6 @@
 "DETAILS_TITLE" = "Details";
 "STEPS" = "steps";
 "STROKES" = "strokes";
-"CAL_SPLIT" = "%@ (%@ total)";
 "PAUSE_TIME" = "Pause for %@";
 
 "CANNOT_EXPORT" = "Cannot export workout data";

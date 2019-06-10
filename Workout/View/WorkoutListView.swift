@@ -74,9 +74,9 @@ private struct Content: View {
 			if appData.workoutList.workouts == nil {
 				// Errors
 				if (appData.workoutList.error as? WorkoutList.Error) == .missingHealth {
-					MessageCell("WRKT_LIST_ERR_NO_HEALTH")
+					MessageCell("WRKT_ERR_NO_HEALTH")
 				} else if appData.workoutList.error != nil {
-					MessageCell("WRKT_LIST_ERR_LOADING")
+					MessageCell("WRKT_ERR_LOADING")
 				} else {
 					MessageCell("WRKT_LIST_LOADING", withActivityIndicator: true)
 				}
@@ -126,25 +126,6 @@ private struct FilterStatusCell: View {
 					}
 				}
 			}.font(.caption).foregroundColor(.secondary)
-		}
-	}
-}
-
-private struct MessageCell: View {
-	let text: LocalizedStringKey
-	let hasActivityIndicator: Bool
-
-	init(_ text: LocalizedStringKey, withActivityIndicator: Bool = false) {
-		self.text = text
-		self.hasActivityIndicator = withActivityIndicator
-	}
-
-	var body: some View {
-		HStack {
-			if hasActivityIndicator {
-				ActivityIndicator(style: .medium, animating: Binding.constant(true))
-			}
-			Text(text)
 		}
 	}
 }
