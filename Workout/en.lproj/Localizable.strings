@@ -25,6 +25,20 @@
 "WRKT_LIST_ERR_NO_WORKOUT" = "No workout";
 "WRKT_LIST_ERR_NO_HEALTH" = "Health data is not available";
 
+// MARK: - Workout
+"WRKT_TITLE" = "Workout Details";
+
+"WRKT_TYPE" = "Type";
+"WRKT_START" = "Start";
+"WRKT_END" = "End";
+"WRKT_DURATION" = "Duration";
+"WRKT_DISTANCE" = "Distance";
+"WRKT_AVG_HEART" = "Average Heart Rate";
+"WRKT_MAX_HEART" = "Max Heart Rate";
+"WRKT_AVG_PACE" = "Average Pace";
+"WRKT_AVG_SPEED" = "Average Speed";
+"WRKT_CALORIES" = "Calories";
+
 // MARK: - Settings
 
 // MARK: - Unclassified
@@ -33,17 +47,6 @@
 "REMOVE_ADS" = "Remove Ads";
 "MANAGE_CONSENT" = "Manage Ads Consent";
 "MANAGE_CONSENT_ERR" = "Unable to update ads consent";
-
-"TYPE" = "Type";
-"START" = "Start";
-"END" = "End";
-"DURATION" = "Duration";
-"DISTANCE" = "Distance";
-"AVG_HEART" = "Average Heart Rate";
-"MAX_HEART" = "Max Heart Rate";
-"AVG_PACE" = "Average Pace";
-"AVG_SPEED" = "Average Speed";
-"CALORIES" = "Calories";
 
 "HEART_ZONES_TITLE" = "Heart Zones";
 "HEART_ZONES_FOOTER" = "It is possible that the sum of time in each heart zone does not add up to the total duration of the workout as in some parts heart data is not available or the heart rate is below the threshold for Zone 1.";

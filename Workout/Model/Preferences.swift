@@ -13,4 +13,7 @@ class Preferences {
 	#warning("Add the whole stuff")
 	let systemOfUnits = SystemOfUnits.metric
 
+	let reviewRequestThreshold = 3
+	let reviewRequestCounter = 5
+
 }

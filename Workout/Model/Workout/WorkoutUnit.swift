@@ -32,13 +32,21 @@ class WorkoutUnit {
 		self.init(units: [.default: unit])
 	}
 
-	/// The unit (metric or imperial) preferred by the user.
-	func unit(for preferences: Preferences) -> HKUnit {
-		return unitsLUT[preferences.systemOfUnits] ?? self.default
+	func `is`(compatibleWith unit: HKUnit) -> Bool {
+		return HKQuantity(unit: self.default, doubleValue: 1).is(compatibleWith: unit)
 	}
 
-	func description(for preferences: Preferences) -> String {
-		return unit(for: preferences).description
+	func `is`(compatibleWith unit: WorkoutUnit) -> Bool {
+		return self.is(compatibleWith: unit.default)
+	}
+
+	/// The unit (metric or imperial) preferred by the user.
+	func unit(for systemOfUnits: SystemOfUnits) -> HKUnit {
+		return unitsLUT[systemOfUnits] ?? self.default
+	}
+
+	func description(for systemOfUnits: SystemOfUnits) -> String {
+		return unit(for: systemOfUnits).description
 	}
 
 	//MARK: - Unit Combination
@@ -63,7 +71,6 @@ class WorkoutUnit {
 	static let kilometerAndMile = WorkoutUnit(units: [.metric: .meterUnit(with: .kilo), .imperial: .mile()])
 
 	static let kilometerAndMilePerHour = kilometerAndMile.divided(by: HKUnit.hour())
-	static let secondsPerKilometerAndMile = WorkoutUnit(.second()).divided(by: kilometerAndMile)
 
 	static let calories = WorkoutUnit(.kilocalorie())
 

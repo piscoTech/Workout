@@ -47,12 +47,12 @@ class Workout: BindableObject {
 	private(set) var loaded = false
 	private(set) var hasError = false
 
-	/// The length unit to represent the distance.
+	/// The unit to represent distances.
 	private(set) var distanceUnit = WorkoutUnit.kilometerAndMile
-	/// The length unit to use in calculating pace.
+	/// The unit to represent paces, the time must be expressed in seconds.
 	private(set) var paceUnit = WorkoutUnit.kilometerAndMile
-	/// The length unit to use in calculating speed.
-	private(set) var speedUnit = WorkoutUnit.kilometerAndMile
+	/// The unit to represent speeds.
+	private(set) var speedUnit = WorkoutUnit.kilometerAndMilePerHour
 
 	/// Max acceptable pace, if any, in time per unit length.
 	private(set) var maxPace: HKQuantity?
@@ -134,9 +134,6 @@ class Workout: BindableObject {
 		}
 	}
 
-	/// Heart rate samples.
-	private var heartData = [HKQuantity]()
-
 	private var rawStart: TimeInterval {
 		return raw.startDate.timeIntervalSince1970
 	}
@@ -190,10 +187,18 @@ class Workout: BindableObject {
 		}
 	}
 
-	func setLengthUnitsFor(distance dUnit: WorkoutUnit, speed sUnit: WorkoutUnit, pace pUnit: WorkoutUnit) {
+	/// Set the units the specific workout requires for distance, speed and pace.
+	/// - parameter dUnit: The unit used for distances, a length unit.
+	/// - parameter sUnit: The unit used for speed, a length unit divided by a time unit.
+	/// - parameter pUnit: The unit used for pace. By definition should be a time unit divided by a length unit but as times are always reported as `TimeInterval`, i.e. secods, just a length unit must be provided.
+	func setUnitsFor(distance dUnit: WorkoutUnit, speed sUnit: WorkoutUnit, andPace pUnit: WorkoutUnit) {
 		guard !loading && !loaded else {
 			return
 		}
+
+		precondition(distanceUnit.is(compatibleWith: dUnit), "Distance unit not valid, provide a length unit")
+		precondition(speedUnit.is(compatibleWith: sUnit), "Speed unit not valid, provide a speed unit")
+		precondition(paceUnit.is(compatibleWith: pUnit), "Pace unit not valid, provide a length unit")
 
 		distanceUnit = dUnit
 		speedUnit = sUnit
@@ -260,7 +265,7 @@ class Workout: BindableObject {
 	}
 
 	/// Loads required additional data for the workout.
-	/// - parameter quickly: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
+	/// - parameter quickLoad: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
 	func load(quickly quickLoad: Bool = false) {
 		guard !loading && !loaded else {
 			return
@@ -294,6 +299,9 @@ class Workout: BindableObject {
 				}
 
 				if [HKQuantityTypeIdentifier.heartRate, .activeEnergyBurned, .basalEnergyBurned].contains(r.typeID) {
+					let hrUnit = WorkoutUnit.heartRate.default
+					var avgHeart = 0.0
+
 					for s in res {
 						if r.typeID == .heartRate {
 							if let mh = self.maxHeart {
@@ -301,7 +309,7 @@ class Workout: BindableObject {
 							} else {
 								self.maxHeart = s.quantity
 							}
-							self.heartData.append(s.quantity)
+							avgHeart += s.quantity.doubleValue(for: hrUnit)
 						} else {
 							let kcal = s.quantity.doubleValue(for: .kilocalorie())
 							if r.typeID == .activeEnergyBurned {
@@ -312,10 +320,9 @@ class Workout: BindableObject {
 						}
 					}
 
-					#warning("Compute average heart rate")
-					/* {
-						return heartData.count > 0 ? heartData.reduce(0) { $0 + $1 } / Double(heartData.count) : nil
-					}*/
+					if r.typeID == .heartRate {
+						self.avgHeart = res.isEmpty ? nil : HKQuantity(unit: hrUnit, doubleValue: avgHeart / Double(res.count))
+					}
 				}
 			}
 		}

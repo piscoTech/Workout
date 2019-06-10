@@ -10,6 +10,7 @@ import SwiftUI
 import MBHealth
 import HealthKit
 import MBLibrary
+import StoreKit
 
 struct WorkoutListView : View {
 
@@ -42,6 +43,12 @@ struct WorkoutListView : View {
 				.onAppear {
 					self.appData.authorizeHealthKitAccess()
 					self.appData.workoutList.reload()
+
+					#if !DEBUG
+					if self.appData.preferences.reviewRequestCounter >= self.appData.preferences.reviewRequestThreshold {
+						SKStoreReviewController.requestReview()
+					}
+					#endif
 				}
 		}.presentation(presenting == .settings
 			? Modal(SettingsView()) {
@@ -76,7 +83,7 @@ private struct Content: View {
 			} else {
 				// Workouts
 				ForEach(appData.workoutList.workouts ?? []) { w in
-					NavigationButton(destination: WorkoutView()) {
+					NavigationButton(destination: WorkoutView().environmentObject(Workout.workoutFor(raw: w.raw, basedOn: self.appData))) {
 						WorkoutCell(workout: w)
 					}
 				}
@@ -146,10 +153,7 @@ private struct WorkoutCell: View {
 	@EnvironmentObject private var appData: AppData
 	let workout: Workout
 
-	private var distanceUnit: HKUnit {
-		workout.distanceUnit.unit(for: appData.preferences)
-	}
-
+	#warning("The if shout be an if-let")
 	var body: some View {
 		VStack(alignment: .leading) {
 			Text(workout.type.name)
@@ -159,7 +163,7 @@ private struct WorkoutCell: View {
 				Text(workout.duration.getLocalizedDuration())
 				if workout.totalDistance != nil {
 					Text(textSeparator)
-					Text(workout.totalDistance!.doubleValue(for: distanceUnit).getFormattedDistance(withUnit: distanceUnit))
+					Text(workout.totalDistance!.formatAsDistance(withUnit: workout.distanceUnit.unit(for: appData.preferences.systemOfUnits)))
 				}
 			}.font(.caption)
 		}

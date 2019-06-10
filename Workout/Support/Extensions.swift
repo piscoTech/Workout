@@ -9,42 +9,9 @@
 import Foundation
 import HealthKit
 
-extension TimeInterval {
-
-	///- returns: The formatted value.
-	func getFormattedPace(withUnit unit: HKUnit) -> String {
-		let sep = "/"
-		return getLocalizedDuration() + "\(sep)\(unit.description.components(separatedBy: sep)[1])"
-	}
-
-}
-
-extension Double {
-
-	///- returns: The formatted value.
-	func getFormattedDistance(withUnit unit: HKUnit) -> String {
-		return distanceF.string(from: NSNumber(value: self))! + " \(unit.description)"
-	}
-
-	///- returns: The formatted value.
-	func getFormattedSpeed(withUnit unit: HKUnit) -> String {
-		return speedF.string(from: NSNumber(value: self))! + " \(unit.description)"
-	}
-
-	///- returns: The formatted value.
-	func getFormattedEnergy(withUnit unit: HKUnit) -> String {
-		return integerF.string(from: NSNumber(value: self))! + " \(unit.description)"
-	}
-
-	func getFormattedHeartRate() -> String {
-		return integerF.string(from: NSNumber(value: self))! + " bpm"
-	}
-
-}
-
 extension DispatchQueue {
 
-	///Serial queue to synchronize access to counters and data when loading and exporting workouts.
+	/// Serial queue to synchronize access to counters and data when loading and exporting workouts.
 	static let workout = DispatchQueue(label: "Marco-Boschi.ios.Workout.loadExport")
 
 }
@@ -69,11 +36,47 @@ extension HKQuantity: Comparable {
 
 	///- parameter withMaximum: The max acceptable pace, if any, in time per unit length..
 	func filterAsPace(withMaximum maxPace: HKQuantity?) -> HKQuantity? {
-		if let mp = maxPace, self <= mp {
-			return self
+		if let mp = maxPace {
+			return self <= mp ? self : nil
 		} else {
-			return nil
+			return self
 		}
+	}
+
+	/// Considers the receiver a distance and formats it accordingly.
+	/// - parameter unit: The length unit to use in formatting.
+	/// - returns: The formatted value.
+	func formatAsDistance(withUnit unit: HKUnit) -> String {
+		return distanceF.string(from: NSNumber(value: self.doubleValue(for: unit)))! + " \(unit.description)"
+	}
+
+	/// Considers the receiver a pace and formats it accordingly.
+	/// - parameter unit: The reference length unit to use in formatting.
+	/// - returns: The formatted value.
+	func formatAsPace(withReferenceLength lUnit: HKUnit) -> String {
+		let unit = HKUnit.second().unitDivided(by: lUnit)
+		return self.doubleValue(for: unit).getLocalizedDuration() + "/\(lUnit.description)"
+	}
+
+	/// Considers the receiver a heart rate and formats it accordingly.
+	/// - parameter unit: The heart rate unit to use in formatting.
+	/// - returns: The formatted value.
+	func formatAsHeartRate(withUnit unit: HKUnit) -> String {
+		return integerF.string(from: NSNumber(value: self.doubleValue(for: unit)))! + " bpm"
+	}
+
+	/// Considers the receiver a speed and formats it accordingly.
+	/// - parameter unit: The speed unit to use in formatting.
+	/// - returns: The formatted value.
+	func formatAsSpeed(withUnit unit: HKUnit) -> String {
+		return speedF.string(from: NSNumber(value: self.doubleValue(for: unit)))! + " \(unit.description)"
+	}
+
+	/// Considers the receiver an energy and formats it accordingly.
+	/// - parameter unit: The energy unit to use in formatting.
+	/// - returns: The formatted value.
+	func formatAsEnergy(withUnit unit: HKUnit) -> String {
+		return integerF.string(from: NSNumber(value: self.doubleValue(for: unit)))! + " \(unit.description)"
 	}
 
 }

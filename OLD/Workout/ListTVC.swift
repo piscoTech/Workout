@@ -11,7 +11,6 @@ import HealthKit
 import MBLibrary
 import GoogleMobileAds
 import PersonalizedAdConsent
-import StoreKit
 
 class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
 	
@@ -90,23 +89,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 	}
 	
-	func checkRequestReview() {
-		if #available(iOS 10.3, *) {
-			guard Preferences.reviewRequestCounter >= Preferences.reviewRequestThreshold else {
-				return
-			}
-			
-			SKStoreReviewController.requestReview()
-		}
-	}
-	
 	// MARK: - Data Loading
-	
-	private weak var loadMoreCell: LoadMoreCell?
-	
-	@IBAction func refresh(_ sender: AnyObject) {
-		
-	}
 	
 	func refreshUnits() {
 		tableView.reloadSections([0], with: .automatic)
@@ -122,53 +105,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if section == 0 {
-        	return max(displayWorkouts?.count ?? 1, 1)
-		} else {
-			return 1
-		}
-    }
-
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		if indexPath.section == 1 {
-			let res = tableView.dequeueReusableCell(withIdentifier: "loadMore", for: indexPath) as! LoadMoreCell
-			res.isEnabled = !self.isLoadingMore
-			loadMoreCell = res
-			
-			return res
-		}
-		
-		if displayWorkouts?.count ?? 0 == 0 {
-			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
-			let msg: String
-			if HKHealthStore.isHealthDataAvailable() {
-				if err != nil {
-					msg = "ERR_LOADING"
-				} else if displayWorkouts != nil {
-					msg = "ERR_NO_WORKOUT"
-				} else {
-					msg = "LOADING"
-				}
-			} else {
-				msg = "ERR_NO_HEALTH"
-			}
-			res.textLabel?.text = NSLocalizedString(msg, comment: "Loading/Error")
-			
-			return res
-		}
-
-		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
-		let w = displayWorkouts[indexPath.row]
-		
-		cell.textLabel?.text = w.type.name
-		
-		var detail = [w.startDate.getFormattedDateTime(), w.duration.getDuration() ]
-		if let dist = w.totalDistance?.getFormattedDistance(withUnit: w.distanceUnit.unit) {
-			detail.append(dist)
-		}
-		cell.detailTextLabel?.text = detail.joined(separator: " – ")
-		
 		if inExportMode {
 			cell.accessoryType = exportSelection[indexPath.row] ? .checkmark : .none
 		} else {
@@ -179,12 +116,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
     }
 	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		if indexPath.section == 1 {
-			if loadMoreCell?.isEnabled ?? false {
-				loadMoreCell?.isEnabled = false
-				loadMore()
-			}
-		} else {
+		{
 			if inExportMode {
 				let newSel = !exportSelection[indexPath.row]
 				exportSelection[indexPath.row] = newSel
@@ -195,8 +127,6 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				
 				updateToggleExportAllText()
 				updateExportCommitButton()
-			} else {
-				performSegue(withIdentifier: "showWorkout", sender: self)
 			}
 		}
 		
