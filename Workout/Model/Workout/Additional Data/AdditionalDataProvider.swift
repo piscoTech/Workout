@@ -6,17 +6,21 @@
 //  Copyright © 2018 Marco Boschi. All rights reserved.
 //
 
-import UIKit
+import SwiftUI
 
-protocol AdditionalDataProvider {
-	
-	var sectionHeader: String? { get }
-	var sectionFooter: String? { get }
-	var numberOfRows: Int { get }
-	func cellForRowAt(_ indexPath: IndexPath, for tableView: UITableView) -> UITableViewCell
-	
+class AdditionalDataProvider: Identifiable {
+
+	let id = UUID()
+
+	/// The section to be inserted into the workout view, the view must be a `Section`.
+	var section: AnyView {
+		fatalError("Must provide the section")
+	}
+
 	/// Export the data in CSV file(s).
 	/// - returns: An array of `URL`s for the files that contains the data or `nil` if an error occured. If no data should be exported an empty array is returned.
-	func export() -> [URL]?
+	func export() -> [URL]? {
+		return []
+	}
 	
 }

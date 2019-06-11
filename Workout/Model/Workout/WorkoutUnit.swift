@@ -10,12 +10,12 @@ import HealthKit
 
 class WorkoutUnit {
 
-	/// The unit for the default system of units, i.e. `Units.default`.
+	/// The unit for the default system of units, i.e. `SystemOfUnits.default`.
 	let `default`: HKUnit
 	/// The units for other system of units.
 	let unitsLUT: [SystemOfUnits: HKUnit]
 
-	/// Create a set of units using the provided ones, system of units with no specified unit default to the one provided for  the default system of units i.e. `Units.default`.
+	/// Create a set of units using the provided ones, systems of units with no specified unit default to the one provided for the default system of units i.e. `SystemOfUnits.default`.
 	init(units: [SystemOfUnits: HKUnit]) {
 		guard let def = units[.default] else {
 			preconditionFailure("Unit for the default system of units not provided")

@@ -7,10 +7,13 @@
 //
 
 import Foundation
+import SwiftUI
 import HealthKit
 import MBLibrary
 
-class WorkoutSegment {
+class WorkoutSegment: Identifiable {
+
+	let id = UUID()
 
 	/// Start date of the segment.
 	let start: Date
@@ -37,7 +40,7 @@ class WorkoutSegment {
 		
 		minutes = (0 ... e).map { WorkoutMinute(minute: $0 + minuteStart, start: $0, owner: owner) }
 		minutes.last?.endTime = end.timeIntervalSince1970 - s
-		if let d = minutes.last?.duration, d == 0 {
+		if let d = minutes.last?.duration, d <= 0 {
 			_ = minutes.popLast()
 		}
 	}
@@ -45,7 +48,10 @@ class WorkoutSegment {
 	/// Process the samples, assumed to be sorted by time, by adding them to the appropriate minutes.
 	/// - returns: Samples with parts belonging to minutes _after_ this segment.
 	func process(data res: [HKQuantitySample], for request: WorkoutDataQuery) -> [HKQuantitySample] {
-		var searchDetail = self.minutes
+		var searchDetail = self.minutes.map { m -> WorkoutMinute in
+			m.set(unit: request.unit.default, for: request.typeID)
+			return m
+		}
 		let rawStart = start.timeIntervalSince1970
 		
 		for (sIndex, s) in res.enumerated() {
@@ -53,16 +59,14 @@ class WorkoutSegment {
 				continue
 			}
 			
-			let val = s.quantity.doubleValue(for: request.unit.unit)
-			
 			let start = s.startDate.timeIntervalSince1970 - rawStart
 			let data: DataPoint
 			switch request.timeType {
 			case .instant:
-				data = InstantDataPoint(time: start, value: val)
+				data = InstantDataPoint(time: start, value: s.quantity)
 			case .ranged:
 				let end = s.endDate.timeIntervalSince1970 - rawStart
-				data = RangedDataPoint(start: start, end: end, value: val)
+				data = RangedDataPoint(start: start, end: end, value: s.quantity)
 			}
 			
 			// Add the sample to as many minutes as needed
@@ -83,16 +87,18 @@ class WorkoutSegment {
 	/// - parameter details: The details to export for each minute, non-empty with at least two details.
 	/// - returns: A CSV string containing a row for each minute, each line is `\n`-terminated.
 	func export(details: [WorkoutDetail]) -> String {
-		precondition(details.count >= 2, "Details for the workout don't make any sense")
-		
-		let sep = CSVSeparator
-		var res = minutes.map { d in details.map { $0.export(val: d) }.joined(separator: sep) }.joined(separator: "\n") + "\n"
-		
-		if let pause = pauseTime {
-			res += "\(pause.getDuration().toCSV())\(sep)Pause" + [String](repeating: sep, count: details.count - 2).joined() + "\n"
-		}
-		
-		return res
+		#warning("Add back")
+		return ""
+//		precondition(details.count >= 2, "Details for the workout don't make any sense")
+//
+//		let sep = CSVSeparator
+//		var res = minutes.map { d in details.map { $0.export(val: d) }.joined(separator: sep) }.joined(separator: "\n") + "\n"
+//
+//		if let pause = pauseTime {
+//			res += "\(pause.getDuration().toCSV())\(sep)Pause" + [String](repeating: sep, count: details.count - 2).joined() + "\n"
+//		}
+//
+//		return res
 	}
 	
 }

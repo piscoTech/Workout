@@ -89,9 +89,9 @@ class Workout: BindableObject {
 		return HKQuantity(unit: .secondPerMeter, doubleValue: duration / dist.doubleValue(for: .meter()))
 			.filterAsPace(withMaximum: maxPace)
 	}
-	///Average speed of the workout in distance per unit time, , see `speedUnit` for the desired unit for presentation.
+	///Average speed of the workout in distance per unit time, see `speedUnit` for the desired unit for presentation.
 	var speed: HKQuantity? {
-		guard let dist = totalDistance else {
+		guard let dist = totalDistance, duration > 0 else {
 			return nil
 		}
 
@@ -146,9 +146,9 @@ class Workout: BindableObject {
 		let wClass: Workout.Type
 
 		switch raw.workoutActivityType {
+		case .running, .walking:
+			wClass = RunninWorkout.self
 			#warning("Add back")
-//		case .running, .walking:
-//			wClass = RunninWorkout.self
 //		case .swimming:
 //			wClass = SwimmingWorkout.self
 		default:

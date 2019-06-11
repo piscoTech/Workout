@@ -60,7 +60,7 @@ struct WorkoutListView : View {
 
 private struct Content: View {
 	@EnvironmentObject private var appData: AppData
-	@Binding fileprivate var presenting: WorkoutListView.Presenting
+	@Binding var presenting: WorkoutListView.Presenting
 
 	var body: some View {
 		List {

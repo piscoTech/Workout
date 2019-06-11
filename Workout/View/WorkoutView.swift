@@ -49,6 +49,11 @@ struct WorkoutView : View {
 						BasicDetailCell("WRKT_CALORIES")
 					}
 				}
+
+				// Additional Data
+				ForEach(workout.additionalProviders) { p in
+					p.section
+				}
 			}
 		}.listStyle(.grouped)
 			.navigationBarTitle(Text("WRKT_TITLE"), displayMode: .inline)

@@ -84,6 +84,8 @@ extension HKQuantity: Comparable {
 extension HKUnit {
 
 	static let meterPerSecond = HKUnit.meter().unitDivided(by: .second())
+
 	static let secondPerMeter = HKUnit.second().unitDivided(by: .meter())
+	static let secondPerKilometer = HKUnit.second().unitDivided(by: .meterUnit(with: .kilo))
 
 }

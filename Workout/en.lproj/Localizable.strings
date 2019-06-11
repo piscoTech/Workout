@@ -42,6 +42,10 @@
 
 "WRKT_SPLIT_CAL_%@_TOTAL_%@" = "%@ (%@ total)";
 
+// MARK: - Data Providers
+"MINBYMIN_TITLE" = "Details";
+"MINBYMIN_%@_PAUSE" = "Pause for %@";
+
 // MARK: - Settings
 
 // MARK: - Unclassified
@@ -58,10 +62,8 @@
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
 "HEART_ZONES_MAX_RATE" = "Max %@";
 
-"DETAILS_TITLE" = "Details";
 "STEPS" = "steps";
 "STROKES" = "strokes";
-"PAUSE_TIME" = "Pause for %@";
 
 "CANNOT_EXPORT" = "Cannot export workout data";
 "SEL_EXPORT_ALL" = "Select All";

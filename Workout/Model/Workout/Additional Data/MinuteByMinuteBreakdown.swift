@@ -6,7 +6,7 @@
 //  Copyright © 2018 Marco Boschi. All rights reserved.
 //
 
-import UIKit
+import SwiftUI
 import HealthKit
 import MBLibrary
 import MBHealth
@@ -55,64 +55,77 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 	}
 	
 	// MARK: - Display Data
-	
-	let sectionHeader: String? = NSLocalizedString("DETAILS_TITLE", comment: "Details")
-	let sectionFooter: String? = nil
-	
-	var numberOfRows: Int {
-		return segments?.reduce(0) { $0 + $1.partCount } ?? 0
+
+	override var section: AnyView {
+		AnyView(Section(header: Text("MINBYMIN_TITLE")) {
+			if self.segments != nil {
+				ForEach(self.segments!) { s in
+					ForEach(s.minutes) { m in
+						WorkoutMinuteCell(workoutMinute: .constant(m), details: self.displayDetail)
+					}
+
+					if s.pauseTime != nil {
+						MessageCell("MINBYMIN_\(s.pauseTime!.getLocalizedDuration())_PAUSE")
+					}
+				}
+			} else {
+				MessageCell("WRKT_ERR_LOADING")
+			}
+		})
 	}
 	
-	func cellForRowAt(_ indexPath: IndexPath, for tableView: UITableView) -> UITableViewCell {
-		guard let seg = self.segments else {
-			preconditionFailure("Workout not set up")
-		}
-		
-		var sum = 0
-		for s in seg {
-			let n = s.partCount
-			if indexPath.row >= sum && indexPath.row < sum + n {
-				let i = indexPath.row - sum
-				if i < s.minutes.count {
-					let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutMinuteTableViewCell
-					let d = s.minutes[i]
-					cell.update(for: displayDetail, withData: d)
-					
-					return cell
-				} else if let p = s.pauseTime {
-					let cell = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
-					let text = NSLocalizedString("PAUSE_TIME", comment: "Pause for mm:ss")
-					cell.textLabel?.text = String(format: text, p.getDuration(hideHours: true))
-					
-					return cell
-				} else {
-					preconditionFailure("Given index path cannot be rendered")
+	override func export() -> [URL]? {
+		return []
+		#warning("Add back")
+//		guard let seg = self.segments else {
+//			return []
+//		}
+//
+//		let export = [WorkoutDetail.time] + self.displayDetail
+//		let sep = CSVSeparator
+//		let data = export.map { $0.getNameAndUnit(for: owner).toCSV() }.joined(separator: sep) + "\n" + seg.map { $0.export(details: export) }.joined()
+//
+//		do {
+//			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
+//			try data.write(to: detFile, atomically: true, encoding: .utf8)
+//
+//			return [detFile]
+//		} catch {
+//			return nil
+//		}
+	}
+	
+}
+
+private struct WorkoutMinuteCell: View {
+	@EnvironmentObject private var appData: AppData
+	@Binding var workoutMinute: WorkoutMinute
+	let details: [WorkoutDetail]
+
+	var body: some View {
+		HStack {
+			ForEach([.time] + details) { d in
+				Text(d.display(self.workoutMinute, withSystemOfUnits: self.appData.preferences.systemOfUnits))
+					.color(d.color)
+
+				if d !== self.details.last {
+					Spacer()
 				}
 			}
-			
-			sum += n
-		}
-		
-		preconditionFailure("Given index path cannot be rendered")
-	}
-	
-	func export() -> [URL]? {
-		guard let seg = self.segments else {
-			return []
-		}
-		
-		let export = [.time] + self.displayDetail
-		let sep = CSVSeparator
-		let data = export.map { $0.getNameAndUnit(for: owner).toCSV() }.joined(separator: sep) + "\n" + seg.map { $0.export(details: export) }.joined()
-		
-		do {
-			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
-			try data.write(to: detFile, atomically: true, encoding: .utf8)
-			
-			return [detFile]
-		} catch {
-			return nil
 		}
 	}
-	
+
+//	func update(for details: , withData data: WorkoutMinute) {
+//		for v in stack.arrangedSubviews {
+//			v.removeFromSuperview()
+//		}
+//
+//		for d in [.time] + details {
+//			let view = d.newView()
+//			d.update(view: view, with: data)
+//
+//			stack.addArrangedSubview(view)
+//		}
+//	}
+
 }
