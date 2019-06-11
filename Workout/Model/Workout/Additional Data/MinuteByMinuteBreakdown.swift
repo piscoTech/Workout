@@ -61,7 +61,7 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 			if self.segments != nil {
 				ForEach(self.segments!) { s in
 					ForEach(s.minutes) { m in
-						WorkoutMinuteCell(workoutMinute: .constant(m), details: self.displayDetail)
+						WorkoutMinuteCell(workoutMinute: m, details: self.displayDetail)
 					}
 
 					if s.pauseTime != nil {
@@ -98,14 +98,15 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 }
 
 private struct WorkoutMinuteCell: View {
-	@EnvironmentObject private var appData: AppData
-	@Binding var workoutMinute: WorkoutMinute
+	@EnvironmentObject private var preferences: Preferences
+
+	let workoutMinute: WorkoutMinute
 	let details: [WorkoutDetail]
 
 	var body: some View {
 		HStack {
 			ForEach([.time] + details) { d in
-				Text(d.display(self.workoutMinute, withSystemOfUnits: self.appData.preferences.systemOfUnits))
+				Text(d.display(self.workoutMinute, withSystemOfUnits: self.preferences.systemOfUnits))
 					.color(d.color)
 
 				if d !== self.details.last {
@@ -114,18 +115,5 @@ private struct WorkoutMinuteCell: View {
 			}
 		}
 	}
-
-//	func update(for details: , withData data: WorkoutMinute) {
-//		for v in stack.arrangedSubviews {
-//			v.removeFromSuperview()
-//		}
-//
-//		for d in [.time] + details {
-//			let view = d.newView()
-//			d.update(view: view, with: data)
-//
-//			stack.addArrangedSubview(view)
-//		}
-//	}
 
 }

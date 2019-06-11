@@ -11,18 +11,20 @@ import MBLibrary
 import MBHealth
 
 struct WorkoutView : View {
-	@EnvironmentObject private var appData: AppData
+	@EnvironmentObject private var healthData: Health
+	@EnvironmentObject private var preferences: Preferences
 	@EnvironmentObject private var workout: Workout
 
+	#warning("Use a variable inside body instead")
 	private var systemOfUnits: SystemOfUnits {
-		appData.preferences.systemOfUnits
+		preferences.systemOfUnits
 	}
 
 	#warning("Use if-let")
     var body: some View {
 		List {
 			if workout.hasError {
-				if !appData.isHealthDataAvailable {
+				if !healthData.isHealthDataAvailable {
 					MessageCell("WRKT_ERR_NO_HEALTH")
 				} else {
 					MessageCell("WRKT_ERR_LOADING")
@@ -62,7 +64,13 @@ struct WorkoutView : View {
 			.navigationBarItems(trailing: Group {
 				if workout.loaded && !workout.hasError {
 					Button(action: {
-						self.appData.preferences.systemOfUnits = self.appData.preferences.systemOfUnits == .metric ? .imperial : .metric
+						#warning("Testing...")
+						let newValue = self.preferences.stepSourceFilter == .iPhone ? .watch : .iPhone
+						self.preferences.stepSourceFilter = newValue
+						DispatchQueue.main.asyncAfter(delay: 5) {
+							// Test removing duplicates
+							self.preferences.stepSourceFilter = newValue
+						}
 					}) {
 						Image(systemName: "square.and.arrow.up")
 					}

@@ -8,7 +8,8 @@
 
 import HealthKit
 
-enum StepSource: CustomStringConvertible {
+enum StepSource: CustomStringConvertible, Equatable {
+
 	private static let phoneStr = "iphone"
 	private static let watchStr = "watch"
 

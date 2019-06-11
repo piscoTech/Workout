@@ -6,11 +6,12 @@
 //  Copyright © 2019 Marco Boschi. All rights reserved.
 //
 
-import SwiftUI
-import MBHealth
 import HealthKit
-import MBLibrary
+import Combine
+import SwiftUI
 import StoreKit
+import MBLibrary
+import MBHealth
 
 struct WorkoutListView : View {
 
@@ -18,7 +19,10 @@ struct WorkoutListView : View {
 		case none, settings, filterSelector
 	}
 
-	@EnvironmentObject private var appData: AppData
+	@EnvironmentObject private var healthData: Health
+	@EnvironmentObject private var preferences: Preferences
+	@EnvironmentObject private var workoutList: WorkoutList
+	
 	@State private var presenting = Presenting.none
 
 	var body: some View {
@@ -27,11 +31,13 @@ struct WorkoutListView : View {
 				.navigationBarTitle(Text("WRKT_LIST_TITLE"))
 				.navigationBarItems(leading: Button(action: { self.presenting = .settings }) {
 					Image(systemName: "gear")
-					}.imageScale(.large), trailing: HStack {
-					Button(action: { print("Export...") }) {
+				}.imageScale(.large), trailing: HStack {
+					Button(action: {
+						print("Exporting...")
+					}) {
 						Image(systemName: "square.and.arrow.up")
-					}.disabled(true)
-					Button(action: { self.appData.workoutList.reload() }) {
+					}
+					Button(action: { self.workoutList.reload() }) {
 						Image(systemName: "arrow.clockwise")
 					}
 				}.imageScale(.large))
@@ -41,11 +47,13 @@ struct WorkoutListView : View {
 					}
 					: nil)
 				.onAppear {
-					self.appData.authorizeHealthKitAccess()
-					self.appData.workoutList.reload()
+					self.healthData.authorizeHealthKitAccess {
+						self.workoutList.reload()
+					}
+					self.workoutList.reload()
 
 					#if !DEBUG
-					if self.appData.preferences.reviewRequestCounter >= self.appData.preferences.reviewRequestThreshold {
+					if self.preferences.reviewRequestCounter >= self.preferences.reviewRequestThreshold {
 						SKStoreReviewController.requestReview()
 					}
 					#endif
@@ -59,7 +67,9 @@ struct WorkoutListView : View {
 }
 
 private struct Content: View {
-	@EnvironmentObject private var appData: AppData
+	@EnvironmentObject private var healthData: Health
+	@EnvironmentObject private var workoutList: WorkoutList
+
 	@Binding var presenting: WorkoutListView.Presenting
 
 	var body: some View {
@@ -69,38 +79,38 @@ private struct Content: View {
 				self.presenting = .filterSelector
 			}) {
 				FilterStatusCell()
-			}.disabled(appData.workoutList.isLoading || appData.workoutList.error != nil)
+			}.disabled(workoutList.isLoading || workoutList.error != nil)
 
-			if appData.workoutList.workouts == nil {
+			if workoutList.workouts == nil {
 				// Errors
-				if (appData.workoutList.error as? WorkoutList.Error) == .missingHealth {
+				if (workoutList.error as? WorkoutList.Error) == .missingHealth {
 					MessageCell("WRKT_ERR_NO_HEALTH")
-				} else if appData.workoutList.error != nil {
+				} else if workoutList.error != nil {
 					MessageCell("WRKT_ERR_LOADING")
 				} else {
 					MessageCell("WRKT_LIST_LOADING", withActivityIndicator: true)
 				}
 			} else {
 				// Workouts
-				ForEach(appData.workoutList.workouts ?? []) { w in
-					NavigationButton(destination: WorkoutView().environmentObject(Workout.workoutFor(raw: w.raw, basedOn: self.appData))) {
+				ForEach(workoutList.workouts ?? []) { w in
+					NavigationButton(destination: WorkoutView().environmentObject(Workout.workoutFor(raw: w.raw, from: self.healthData))) {
 						WorkoutCell(workout: w)
 					}
 				}
 
-				if (appData.workoutList.workouts ?? []).isEmpty {
+				if (workoutList.workouts ?? []).isEmpty {
 					Text("WRKT_LIST_ERR_NO_WORKOUT")
 				}
 			}
 
 			// Load more
-			if appData.workoutList.workouts != nil && appData.workoutList.canLoadMore { // && !inExportMode
+			if workoutList.workouts != nil && workoutList.canLoadMore { // && !inExportMode
 				Button(action: {
-					withAnimation { self.appData.workoutList.loadMore() }
+					withAnimation { self.workoutList.loadMore() }
 				}) {
-					MessageCell("WRKT_LIST_MORE", withActivityIndicator: appData.workoutList.isLoading)
+					MessageCell("WRKT_LIST_MORE", withActivityIndicator: workoutList.isLoading)
 						.foregroundColor(.accentColor)
-					}.disabled(appData.workoutList.isLoading)
+				}.disabled(workoutList.isLoading)
 			}
 		}
 	}
@@ -108,7 +118,7 @@ private struct Content: View {
 }
 
 private struct FilterStatusCell: View {
-	@EnvironmentObject private var appData: AppData
+	@EnvironmentObject private var workoutList: WorkoutList
 
 	var body: some View {
 		VStack(alignment: .leading) {
@@ -116,13 +126,13 @@ private struct FilterStatusCell: View {
 				.foregroundColor(.accentColor)
 
 			Group {
-				if appData.workoutList.filters.isEmpty {
+				if workoutList.filters.isEmpty {
 					Text("WRKT_FILTER_ALL")
 				} else {
 					HStack(alignment: .firstTextBaseline) {
-						Text("\(appData.workoutList.filters.count)_WRKT_FILTERS")
+						Text("\(workoutList.filters.count)_WRKT_FILTERS")
 						Text(textSeparator)
-						Text(appData.workoutList.filters.map { $0.name }.joined(separator: ", "))
+						Text(workoutList.filters.map { $0.name }.joined(separator: ", "))
 					}
 				}
 			}.font(.caption).foregroundColor(.secondary)
@@ -131,7 +141,8 @@ private struct FilterStatusCell: View {
 }
 
 private struct WorkoutCell: View {
-	@EnvironmentObject private var appData: AppData
+	@EnvironmentObject private var preferences: Preferences
+
 	let workout: Workout
 
 	#warning("The if shout be an if-let")
@@ -144,7 +155,7 @@ private struct WorkoutCell: View {
 				Text(workout.duration.getLocalizedDuration())
 				if workout.totalDistance != nil {
 					Text(textSeparator)
-					Text(workout.totalDistance!.formatAsDistance(withUnit: workout.distanceUnit.unit(for: appData.preferences.systemOfUnits)))
+					Text(workout.totalDistance!.formatAsDistance(withUnit: workout.distanceUnit.unit(for: preferences.systemOfUnits)))
 				}
 			}.font(.caption)
 		}

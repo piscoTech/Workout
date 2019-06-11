@@ -8,23 +8,20 @@
 
 import HealthKit
 import Combine
+import SwiftUI
 
 typealias WorkoutListFilter = Set<HKWorkoutActivityType>
 
-class WorkoutList {
+class WorkoutList: BindableObject {
 
 	enum Error: Swift.Error {
 		case missingHealth
 	}
 
-	weak var appData: AppData!
+	private let healthData: Health
 
-	private func didChange() {
-		#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
-		DispatchQueue.main.async {
-			self.appData.didChange.send(())
-		}
-	}
+	#warning("Use receive(on:) (Xcode bug)")
+	let didChange = PassthroughSubject<Void, Never>() //.receive(on: RunLoop.main
 
 	var filters: WorkoutListFilter = [] {
 		didSet {
@@ -45,10 +42,17 @@ class WorkoutList {
 	private let batchSize = 40
 	private let filteredLoadMultiplier = 5
 
+	init(healthData: Health) {
+		self.healthData = healthData
+	}
+
 	private func updateFilteredList() {
 		workouts = filter(workouts: allWorkouts)
 
-		didChange()
+		#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
+		DispatchQueue.main.async {
+			self.didChange.send(())
+		}
 	}
 
 	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
@@ -58,7 +62,7 @@ class WorkoutList {
 	func reload() {
 		allWorkouts = nil
 
-		if appData.isHealthDataAvailable {
+		if healthData.isHealthDataAvailable {
 			error = nil
 			isLoading = true
 
@@ -75,7 +79,10 @@ class WorkoutList {
 
 	func loadMore() {
 		isLoading = true
-		didChange()
+		#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
+		DispatchQueue.main.async {
+			self.didChange.send(())
+		}
 
 		DispatchQueue.main.async {
 			self.loadBatch(targetDisplayCount: (self.workouts?.count ?? 0) + self.batchSize)
@@ -118,7 +125,7 @@ class WorkoutList {
 							if addAll || !revLoaded.contains(where: { $0.raw == w }) {
 								// Stop searching already loaded workouts when the first new workout is not present.
 								addAll = true
-								wrkts.append(Workout.workoutFor(raw: w, basedOn: self.appData))
+								wrkts.append(Workout.workoutFor(raw: w, from: self.healthData))
 							}
 						}
 					}
@@ -128,13 +135,19 @@ class WorkoutList {
 					self.workouts = (self.workouts ?? []) + disp
 
 					if self.canLoadMore && (self.workouts?.count ?? 0) < target {
-						self.didChange()
+						#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
+						DispatchQueue.main.async {
+							self.didChange.send(())
+						}
 						DispatchQueue.main.async {
 							self.loadBatch(targetDisplayCount: target)
 						}
 					} else {
 						self.isLoading = false
-						self.didChange()
+						#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
+						DispatchQueue.main.async {
+							self.didChange.send(())
+						}
 					}
 				} else {
 					self.isLoading = false
@@ -147,7 +160,7 @@ class WorkoutList {
 			}
 		}
 
-		appData.healthStore.execute(workoutQuery)
+		healthData.store.execute(workoutQuery)
 	}
 
 }

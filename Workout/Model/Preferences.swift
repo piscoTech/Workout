@@ -6,10 +6,11 @@
 //  Copyright © 2016 Marco Boschi. All rights reserved.
 //
 
-import Foundation
+import Combine
+import SwiftUI
 import MBLibrary
 
-enum PreferenceKeys: String, KeyValueStoreKey {
+private enum PreferenceKeys: String, KeyValueStoreKey {
 
 	case systemOfUnits = "systemOfUnits"
 	case stepSource = "stepSource"
@@ -24,16 +25,18 @@ enum PreferenceKeys: String, KeyValueStoreKey {
 
 }
 
-class Preferences {
+class Preferences: BindableObject {
 
-	weak var appData: AppData!
 	let local = KeyValueStore(userDefaults: UserDefaults.standard)
 
-	private func didChange() {
+	#warning("Use receive(on:) (Xcode bug)")
+	let didChange = PassthroughSubject<Preferences, Never>() //.receive(on: RunLoop.main)
+
+	private func saveChanges() {
 		local.synchronize()
 		#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
 		DispatchQueue.main.async {
-			self.appData.didChange.send(())
+			self.didChange.send(self)
 		}
 	}
 
@@ -44,7 +47,7 @@ class Preferences {
 		}
 		set {
 			local.set(newValue, forKey: PreferenceKeys.reviewRequestCounter)
-			didChange()
+			saveChanges()
 		}
 	}
 
@@ -55,7 +58,7 @@ class Preferences {
 		}
 		set {
 			local.set(newValue.description, forKey: PreferenceKeys.stepSource)
-			didChange()
+			saveChanges()
 		}
 	}
 
@@ -73,7 +76,7 @@ class Preferences {
 			} else {
 				local.removeObject(forKey: PreferenceKeys.maxHeartRate)
 			}
-			didChange()
+			saveChanges()
 		}
 	}
 
@@ -90,7 +93,7 @@ class Preferences {
 			} else {
 				local.removeObject(forKey: PreferenceKeys.runningHeartZones)
 			}
-			didChange()
+			saveChanges()
 		}
 	}
 
@@ -101,7 +104,7 @@ class Preferences {
 		}
 		set {
 			local.set(newValue.rawValue, forKey: PreferenceKeys.systemOfUnits)
-			didChange()
+			saveChanges()
 		}
 	}
 

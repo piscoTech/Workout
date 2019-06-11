@@ -28,9 +28,11 @@ class Workout: BindableObject {
 	private var requestToDo = 0
 	private var requestDone = 0 {
 		didSet {
-			if requestDone == requestToDo {
+			if requestDone == requestToDo, requestToDo > 0 {
 				isLoading = false
 				loaded = true
+				requestToDo = 0
+				requestDone = 0
 
 				#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
 				DispatchQueue.main.async {
@@ -142,7 +144,7 @@ class Workout: BindableObject {
 	private let sourcePredicate: NSPredicate!
 
 	/// Create an instance of the proper `Workout` subclass (if any) for the given workout.
-	class func workoutFor(raw: HKWorkout, basedOn appData: AppData) -> Workout {
+	class func workoutFor(raw: HKWorkout, from healthData: Health) -> Workout {
 		let wClass: Workout.Type
 
 		switch raw.workoutActivityType {
@@ -155,14 +157,14 @@ class Workout: BindableObject {
 			wClass = Workout.self
 		}
 
-		return wClass.init(raw, basedOn: appData)
+		return wClass.init(raw, from: healthData)
 	}
 
-	required init(_ raw: HKWorkout, basedOn appData: AppData) {
-		self.healthStore = appData.healthStore
+	required init(_ raw: HKWorkout, from healthData: Health) {
+		self.healthStore = healthData.store
 		self.raw = raw
 
-		guard appData.isHealthDataAvailable else {
+		guard healthData.isHealthDataAvailable else {
 			loaded = true
 			hasError = true
 			workoutPredicate = nil
@@ -284,7 +286,6 @@ class Workout: BindableObject {
 				defer {
 					// Move to a serial queue to synchronize access to counter
 					DispatchQueue.workout.async {
-						let type = r.typeID
 						self.requestDone += 1
 					}
 				}
@@ -328,6 +329,23 @@ class Workout: BindableObject {
 				}
 			}
 		}
+	}
+
+	/// Execute again a query when the query itself requires it.
+	///
+	/// This method is designed to work for additional queries, not the base one, i.e. those added by custom workouts for `AdditionalDataProcessor`s.
+	private func reaload(request: WorkoutDataQuery) {
+		guard loaded, !hasError else {
+			return
+		}
+
+		DispatchQueue.workout.async {
+			// Increase request pending by one. This way if there's another reloading in progress only when both end the workout will signal an update.
+			// The request pending count will automatically reset to 0 when all are loaded.
+			self.requestToDo += 1
+		}
+
+		#warning("Do the exact same thing load() does but signal the data provider to drop data for the identifier")
 	}
 
 	// MARK: - Export

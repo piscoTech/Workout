@@ -1,5 +1,5 @@
 //
-//  AppData.swift
+//  Health.swift
 //  Workout
 //
 //  Created by Marco Boschi on 08/06/2019.
@@ -10,17 +10,15 @@ import HealthKit
 import Combine
 import SwiftUI
 
-class AppData: BindableObject {
+class Health: BindableObject {
 
 	#warning("Use receive(on:) (Xcode bug)")
 	let didChange = PassthroughSubject<Void, Never>() //.receive(on: RunLoop.main)
 
-	let healthStore: HKHealthStore
-	let preferences: Preferences
-	private(set) var workoutList: WorkoutList
+	let store = HKHealthStore()
 
 	/// List of health data to require access to.
-	private let healthReadData: Set<HKObjectType> = [
+	private let readData: Set<HKObjectType> = [
 		.workoutType(),
 		.quantityType(forIdentifier: .heartRate)!,
 
@@ -34,20 +32,11 @@ class AppData: BindableObject {
 		.quantityType(forIdentifier: .swimmingStrokeCount)!
 	]
 
-	init() {
-		healthStore = HKHealthStore()
-		preferences = Preferences()
-		workoutList = WorkoutList()
-
-		preferences.appData = self
-		workoutList.appData = self
-	}
-
-	func authorizeHealthKitAccess() {
-		healthStore.getRequestStatusForAuthorization(toShare: [], read: healthReadData) { status, _ in
+	func authorizeHealthKitAccess(_ callback: @escaping () -> Void) {
+		store.getRequestStatusForAuthorization(toShare: [], read: readData) { status, _ in
 			if status != .unnecessary {
-				self.healthStore.requestAuthorization(toShare: nil, read: self.healthReadData) { _, _ in
-					self.workoutList.reload()
+				self.store.requestAuthorization(toShare: nil, read: self.readData) { _, _ in
+					callback()
 				}
 			}
 		}

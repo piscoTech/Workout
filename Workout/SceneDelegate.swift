@@ -18,12 +18,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		// If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
 		// This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
+		let healthData = Health()
+		let preferences = Preferences()
+		let workoutList = WorkoutList(healthData: healthData)
+
 		// Use a UIHostingController as window root view controller
 		let window = UIWindow(frame: UIScreen.main.bounds)
 		#warning("Correctly set the accent/tint color for the view (Xcode bug ?)")
 		let view = WorkoutListView()
 			.accentColor(Color("accent"))
-			.environmentObject(AppData())
+			.environmentObject(healthData)
+			.environmentObject(preferences)
+			.environmentObject(workoutList)
 		window.rootViewController = UIHostingController(rootView: view)
 		self.window = window
 		window.makeKeyAndVisible()
