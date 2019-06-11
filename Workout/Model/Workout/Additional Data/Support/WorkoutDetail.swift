@@ -64,7 +64,7 @@ class WorkoutDetail: Identifiable {
 		return (TimeInterval(m.minute) * 60).getRawDuration().toCSV()
 	}, color: .primary)
 	
-	///Provides the average pace in seconds per kilometer.
+	/// Provides the average pace.
 	static let pace = WorkoutDetail(name: "Pace", unitFormatter: { "time/\($0.paceUnit.unit(for: $1))" }, valueFormatter: { (m, s) in
 		guard let pace = m.pace else {
 			return nil
@@ -80,40 +80,62 @@ class WorkoutDetail: Identifiable {
 		return pace.doubleValue(for: unit).getRawDuration().toCSV()
 	})
 
-//	///Provides the average speed in the specified `speedUnit` per hour.
-//	static let speed = WorkoutDetail(name: "Speed", unitFormatter: { "\($0.speedUnit.description)/h" }, valueFormatter: { (m) in
-//		return m.speed?.getFormattedSpeed(forLengthUnit: m.owner.speedUnit.unit)
-//	}, exportFormatter: { (m) in
-//		return m.speed?.toCSV()
-//	})
-//
-//	///Provides the average heart rate.
-//	static let heart = WorkoutDetail(name: "Heart Rate", valueFormatter: { (m) in
-//		return m.bpm?.getFormattedHeartRate()
-//	}, exportFormatter: { (m) in
-//		return m.bpm?.toCSV()
-//	})
-//
-//	///Provides the number of steps.
-//	static let steps = WorkoutDetail(name: "Steps", valueFormatter: { (m) in
-//		guard let count = m.getTotal(for: .stepCount), let txt = integerF.string(from: NSNumber(value: count)) else {
-//			return nil
-//		}
-//
-//		return txt + " " + NSLocalizedString("STEPS", comment: "steps")
-//	}, exportFormatter: { (m) in
-//		return m.getTotal(for: .stepCount)?.toCSV()
-//	})
-//
-//	///Provides the number of strokes.
-//	static let strokes = WorkoutDetail(name: "Strokes", valueFormatter: { (m) in
-//		guard let count = m.getTotal(for: .swimmingStrokeCount), let txt = integerF.string(from: NSNumber(value: count)) else {
-//			return nil
-//		}
-//
-//		return txt + " " + NSLocalizedString("STROKES", comment: "strokes")
-//	}, exportFormatter: { (m) in
-//		return m.getTotal(for: .swimmingStrokeCount)?.toCSV()
-//	})
+	/// Provides the average speed.
+	static let speed = WorkoutDetail(name: "Speed", unitFormatter: { $0.speedUnit.unit(for: $1).description }, valueFormatter: { (m, s) in
+		guard let speed = m.speed else {
+			return nil
+		}
+
+		return LocalizedStringKey(speed.formatAsSpeed(withUnit: m.owner.speedUnit.unit(for: s)))
+	}, exportFormatter: { (m, s) in
+		guard let speed = m.speed else {
+			return nil
+		}
+
+		return speed.doubleValue(for: m.owner.speedUnit.unit(for: s)).toCSV()
+	})
+
+	/// Provides the average heart rate.
+	static let heart = WorkoutDetail(name: "Heart Rate", valueFormatter: { (m, s) in
+		guard let bpm = m.heartRate else {
+			return nil
+		}
+
+		return LocalizedStringKey(bpm.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: s)))
+	}, exportFormatter: { (m, s) in
+		return m.heartRate?.doubleValue(for: WorkoutUnit.heartRate.unit(for: s)).toCSV()
+	})
+
+//	"STROKES" = "strokes";
+
+	///Provides the number of steps.
+	static let steps = WorkoutDetail(name: "Steps", valueFormatter: { (m, s) in
+		guard let steps = m.getTotal(for: .stepCount)?.doubleValue(for: WorkoutUnit.steps.unit(for: s)), round(steps) > 0 else {
+			return nil
+		}
+
+		return LocalizedStringKey("\(Int(round(steps)))_STEPS")
+	}, exportFormatter: { (m, s) in
+		guard let steps = m.getTotal(for: .stepCount)?.doubleValue(for: WorkoutUnit.steps.unit(for: s)), steps > 0 else {
+			return nil
+		}
+
+		return steps.toCSV()
+	})
+
+	///Provides the number of strokes.
+	static let strokes = WorkoutDetail(name: "Strokes", valueFormatter: { (m, s) in
+		guard let strokes = m.getTotal(for: .swimmingStrokeCount)?.doubleValue(for: WorkoutUnit.strokes.unit(for: s)), round(strokes) > 0 else {
+			return nil
+		}
+
+		return LocalizedStringKey("\(Int(round(strokes)))_STROKES")
+	}, exportFormatter: { (m, s) in
+		guard let strokes = m.getTotal(for: .swimmingStrokeCount)?.doubleValue(for: WorkoutUnit.strokes.unit(for: s)), strokes > 0 else {
+			return nil
+		}
+
+		return strokes.toCSV()
+	})
 	
 }

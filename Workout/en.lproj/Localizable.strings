@@ -62,9 +62,6 @@
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
 "HEART_ZONES_MAX_RATE" = "Max %@";
 
-"STEPS" = "steps";
-"STROKES" = "strokes";
-
 "CANNOT_EXPORT" = "Cannot export workout data";
 "SEL_EXPORT_ALL" = "Select All";
 "SEL_EXPORT_NONE" = "Select None";

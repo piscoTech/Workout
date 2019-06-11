@@ -49,7 +49,7 @@ class WorkoutSegment: Identifiable {
 	/// - returns: Samples with parts belonging to minutes _after_ this segment.
 	func process(data res: [HKQuantitySample], for request: WorkoutDataQuery) -> [HKQuantitySample] {
 		var searchDetail = self.minutes.map { m -> WorkoutMinute in
-			m.set(unit: request.unit.default, for: request.typeID)
+			m.set(unit: request.unit, for: request.typeID)
 			return m
 		}
 		let rawStart = start.timeIntervalSince1970

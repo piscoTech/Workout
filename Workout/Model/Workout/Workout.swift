@@ -49,7 +49,7 @@ class Workout: BindableObject {
 
 	/// The unit to represent distances.
 	private(set) var distanceUnit = WorkoutUnit.kilometerAndMile
-	/// The unit to represent paces, the time must be expressed in seconds.
+	/// The length unit to represent paces, time will be added automatically.
 	private(set) var paceUnit = WorkoutUnit.kilometerAndMile
 	/// The unit to represent speeds.
 	private(set) var speedUnit = WorkoutUnit.kilometerAndMilePerHour
@@ -176,13 +176,13 @@ class Workout: BindableObject {
 		timePredicate = NSPredicate(format: "%K >= %@ AND %K < %@", HKPredicateKeyPathEndDate, raw.startDate as NSDate, HKPredicateKeyPathStartDate, raw.endDate as NSDate)
 		sourcePredicate = HKQuery.predicateForObjects(from: raw.sourceRevision.source)
 
-		if let heart = WorkoutDataQuery(typeID: .heartRate, withUnit: .heartRate, andTimeType: .instant, searchingBy: .time) {
+		if let heart = WorkoutDataQuery(typeID: .heartRate, withUnit: WorkoutUnit.heartRate.default, andTimeType: .instant, searchingBy: .time) {
 			self.addQuery(heart, isBase: true)
 		}
-		if let activeCal = WorkoutDataQuery(typeID: .activeEnergyBurned, withUnit: .calories, andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
+		if let activeCal = WorkoutDataQuery(typeID: .activeEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(activeCal, isBase: true)
 		}
-		if let baseCal = WorkoutDataQuery(typeID: .basalEnergyBurned, withUnit: .calories, andTimeType: .ranged, searchingBy: .time) {
+		if let baseCal = WorkoutDataQuery(typeID: .basalEnergyBurned, withUnit: .kilocalorie(), andTimeType: .ranged, searchingBy: .time) {
 			self.addQuery(baseCal, isBase: true)
 		}
 	}
@@ -278,11 +278,13 @@ class Workout: BindableObject {
 		isLoading = true
 		let req = baseReq + (quickLoad ? [] : requests)
 		requestToDo = req.count
+		requestDone = 0
 		for r in req {
 			r.execute(on: healthStore, forStart: startDate, usingWorkoutPredicate: workoutPredicate, timePredicate: timePredicate, sourcePredicate: sourcePredicate) { _, data, err  in
 				defer {
 					// Move to a serial queue to synchronize access to counter
 					DispatchQueue.workout.async {
+						let type = r.typeID
 						self.requestDone += 1
 					}
 				}

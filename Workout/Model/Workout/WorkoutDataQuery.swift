@@ -20,7 +20,7 @@ class WorkoutDataQuery {
 	
 	let typeID: HKQuantityTypeIdentifier
 	let type: HKQuantityType
-	let unit: WorkoutUnit
+	let unit: HKUnit
 	let timeType: DataPointType
 	let searchType: SearchType
 	private let additionalPredicateProvider: AdditionalPredicateProvider?
@@ -31,7 +31,7 @@ class WorkoutDataQuery {
 	/// Prepare all data required for creating the query.
 	///
 	/// The creation fails if the given type identifier does not correspond to a concrete type.
-	init?(typeID: HKQuantityTypeIdentifier, withUnit unit: WorkoutUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: AdditionalPredicateProvider? = nil) {
+	init?(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: AdditionalPredicateProvider? = nil) {
 		guard let type = typeID.getType() else {
 			return nil
 		}
@@ -47,7 +47,7 @@ class WorkoutDataQuery {
 	/// Prepare all data required for creating the query.
 	///
 	/// The creation fails if the given type identifier does not correspond to a concrete type.
-	convenience init?(typeID: HKQuantityTypeIdentifier, withUnit unit: WorkoutUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: NSPredicate) {
+	convenience init?(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: NSPredicate) {
 		self.init(typeID: typeID, withUnit: unit, andTimeType: tType, searchingBy: sType) { c in
 			c(additionalPredicate)
 		}

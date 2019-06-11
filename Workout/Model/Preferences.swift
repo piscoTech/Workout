@@ -26,7 +26,16 @@ enum PreferenceKeys: String, KeyValueStoreKey {
 
 class Preferences {
 
+	weak var appData: AppData!
 	let local = KeyValueStore(userDefaults: UserDefaults.standard)
+
+	private func didChange() {
+		local.synchronize()
+		#warning("Force receive on main thread until receive(on:) is not available (Xcode bug)")
+		DispatchQueue.main.async {
+			self.appData.didChange.send(())
+		}
+	}
 
 	let reviewRequestThreshold = 3
 	var reviewRequestCounter: Int {
@@ -35,7 +44,7 @@ class Preferences {
 		}
 		set {
 			local.set(newValue, forKey: PreferenceKeys.reviewRequestCounter)
-			local.synchronize()
+			didChange()
 		}
 	}
 
@@ -46,7 +55,7 @@ class Preferences {
 		}
 		set {
 			local.set(newValue.description, forKey: PreferenceKeys.stepSource)
-			local.synchronize()
+			didChange()
 		}
 	}
 
@@ -64,7 +73,7 @@ class Preferences {
 			} else {
 				local.removeObject(forKey: PreferenceKeys.maxHeartRate)
 			}
-			local.synchronize()
+			didChange()
 		}
 	}
 
@@ -81,7 +90,7 @@ class Preferences {
 			} else {
 				local.removeObject(forKey: PreferenceKeys.runningHeartZones)
 			}
-			local.synchronize()
+			didChange()
 		}
 	}
 
@@ -92,7 +101,7 @@ class Preferences {
 		}
 		set {
 			local.set(newValue.rawValue, forKey: PreferenceKeys.systemOfUnits)
-			local.synchronize()
+			didChange()
 		}
 	}
 

@@ -50,16 +50,20 @@ struct WorkoutView : View {
 					}
 				}
 
-				// Additional Data
-				ForEach(workout.additionalProviders) { p in
-					p.section
+				if workout.loaded {
+					// Additional Data
+					ForEach(workout.additionalProviders) { p in
+						p.section
+					}
 				}
 			}
 		}.listStyle(.grouped)
 			.navigationBarTitle(Text("WRKT_TITLE"), displayMode: .inline)
 			.navigationBarItems(trailing: Group {
 				if workout.loaded && !workout.hasError {
-					Button(action: { print("Export...") }) {
+					Button(action: {
+						self.appData.preferences.systemOfUnits = self.appData.preferences.systemOfUnits == .metric ? .imperial : .metric
+					}) {
 						Image(systemName: "square.and.arrow.up")
 					}
 				} else if workout.isLoading {

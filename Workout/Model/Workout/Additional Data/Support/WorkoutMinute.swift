@@ -12,10 +12,9 @@ import Combine
 import MBLibrary
 
 ///Describe workout data in time range `startTime ..< endTime`.
-class WorkoutMinute: CustomStringConvertible, BindableObject {
+class WorkoutMinute: CustomStringConvertible, Identifiable {
 
-	let didChange = PassthroughSubject<Void, Never>()
-	
+	let id = UUID()
 	private(set) weak var owner: Workout!
 	let minute: UInt
 	let startTime: TimeInterval

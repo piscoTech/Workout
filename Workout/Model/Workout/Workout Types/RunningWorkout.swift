@@ -22,18 +22,18 @@ class RunninWorkout: Workout {
 //			self.addAdditionalDataProcessorsAndProviders(heartZone)
 		}
 		
-		let details = MinuteByMinuteBreakdown(details: [.pace])//, .heart, .steps])
+		let details = MinuteByMinuteBreakdown(details: [.pace, .heart, .steps])
 		self.addAdditionalDataProcessorsAndProviders(details)
 		
-		if let distance = WorkoutDataQuery(typeID: .distanceWalkingRunning, withUnit: .meter, andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
+		if let distance = WorkoutDataQuery(typeID: .distanceWalkingRunning, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(distance)
 		}
-		if let steps = WorkoutDataQuery(typeID: .stepCount, withUnit: .steps, andTimeType: .ranged, searchingBy: .time, predicate: { p in appData.preferences.stepSourceFilter.getPredicate(for: appData.healthStore, p)
-		}) {
+		if let steps = WorkoutDataQuery(typeID: .stepCount, withUnit: WorkoutUnit.steps.default, andTimeType: .ranged, searchingBy: .time) {//, predicate: { p in appData.preferences.stepSourceFilter.getPredicate(for: appData.healthStore, p)
+//		}) {
 			#warning("Actually bind on the preference value")
 			self.addQuery(steps)
 		}
-		
+
 	}
 	
 }

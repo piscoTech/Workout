@@ -39,6 +39,7 @@ class AppData: BindableObject {
 		preferences = Preferences()
 		workoutList = WorkoutList()
 
+		preferences.appData = self
 		workoutList.appData = self
 	}
 
