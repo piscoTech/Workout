@@ -11,10 +11,10 @@ import HealthKit
 import MBLibrary
 import SwiftUI
 
-class RunninWorkout: Workout {
+class RunningWorkout: Workout {
 	
-	required init(_ raw: HKWorkout, from healthData: Health) {
-		super.init(raw, from: healthData)
+	required init(_ raw: HKWorkout, from healthData: Health, and preferences: Preferences) {
+		super.init(raw, from: healthData, and: preferences)
 		self.set(maxPace: HKQuantity(unit: .secondPerKilometer, doubleValue: 30 * 60))
 		
 		if raw.workoutActivityType == .running {
@@ -29,19 +29,11 @@ class RunninWorkout: Workout {
 		if let distance = WorkoutDataQuery(typeID: .distanceWalkingRunning, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(distance)
 		}
-		if let steps = WorkoutDataQuery(typeID: .stepCount, withUnit: WorkoutUnit.steps.default, andTimeType: .ranged, searchingBy: .time) {//, predicate: { p in appData.preferences.stepSourceFilter.getPredicate(for: appData.healthStore, p)
-//		}) {
-			// TODO: WorkoutDataQuery shoudl have a Publisher<Any,Never>? that when it publish a message triggers Workout.reload(). Workout should bind to it inside `addQuery` iff the query is not base.
-			//			preferences.didChange.map { $0.stepSourceFilter }.removeDuplicates().map { s in
-//			print("New step source \(s)")
-//			return s
-//		}
-			// Workout should do
-//			query.sink {
-//				reload(query)
-//			}
-			// Remember to store the result of sink to keep the subscription
-			#warning("Actually bind on the preference value")
+		if let steps = WorkoutDataQuery(typeID: .stepCount, withUnit: WorkoutUnit.steps.default,
+										andTimeType: .ranged, searchingBy: .time,
+										dataChanged: preferences.didChange.map { $0.stepSourceFilter }.removeDuplicates(),
+										predicate: { p in preferences.stepSourceFilter.getPredicate(for: healthData.store, p)
+		}) {
 			self.addQuery(steps)
 		}
 	}

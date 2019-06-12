@@ -19,6 +19,7 @@ class WorkoutList: BindableObject {
 	}
 
 	private let healthData: Health
+	private let preferences: Preferences
 
 	#warning("Use receive(on:) (Xcode bug)")
 	let didChange = PassthroughSubject<Void, Never>() //.receive(on: RunLoop.main
@@ -42,8 +43,9 @@ class WorkoutList: BindableObject {
 	private let batchSize = 40
 	private let filteredLoadMultiplier = 5
 
-	init(healthData: Health) {
+	init(healthData: Health, preferences: Preferences) {
 		self.healthData = healthData
+		self.preferences = preferences
 	}
 
 	private func updateFilteredList() {
@@ -125,7 +127,7 @@ class WorkoutList: BindableObject {
 							if addAll || !revLoaded.contains(where: { $0.raw == w }) {
 								// Stop searching already loaded workouts when the first new workout is not present.
 								addAll = true
-								wrkts.append(Workout.workoutFor(raw: w, from: self.healthData))
+								wrkts.append(Workout.workoutFor(raw: w, from: self.healthData, and: self.preferences))
 							}
 						}
 					}

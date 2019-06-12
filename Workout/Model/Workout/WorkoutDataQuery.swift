@@ -8,6 +8,7 @@
 
 import Foundation
 import HealthKit
+import Combine
 
 /// Manage the delayed and lazy creation of a `HKSampleQuery` required for loading data of a workout.
 class WorkoutDataQuery {
@@ -16,13 +17,15 @@ class WorkoutDataQuery {
 		case time, workout(fallbackToTime: Bool)
 	}
 	
-	typealias AdditionalPredicateProvider = (@escaping (NSPredicate) -> Void) -> Void
+	typealias AdditionalPredicateProvider = (@escaping (NSPredicate?) -> Void) -> Void
+	typealias DataChangedPublisher = AnyPublisher<Any, Never>?
 	
 	let typeID: HKQuantityTypeIdentifier
 	let type: HKQuantityType
 	let unit: HKUnit
 	let timeType: DataPointType
 	let searchType: SearchType
+	let dataChanged: DataChangedPublisher?
 	private let additionalPredicateProvider: AdditionalPredicateProvider?
 	
 	private static let queryNoLimit = HKObjectQueryNoLimit
@@ -31,7 +34,7 @@ class WorkoutDataQuery {
 	/// Prepare all data required for creating the query.
 	///
 	/// The creation fails if the given type identifier does not correspond to a concrete type.
-	init?(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: AdditionalPredicateProvider? = nil) {
+	init?<P>(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, dataChanged: P?, predicate additionalPredicate: AdditionalPredicateProvider? = nil) where P: Publisher, P.Output: Any, P.Failure == Never {
 		guard let type = typeID.getType() else {
 			return nil
 		}
@@ -41,16 +44,35 @@ class WorkoutDataQuery {
 		self.unit = unit
 		self.timeType = tType
 		self.searchType = sType
+		if let dc = dataChanged {
+			self.dataChanged = AnyPublisher(dc.map { $0 as Any })
+		} else {
+			self.dataChanged = nil
+		}
 		self.additionalPredicateProvider = additionalPredicate
+	}
+
+	/// Prepare all data required for creating the query.
+	///
+	/// The creation fails if the given type identifier does not correspond to a concrete type.
+	convenience init?(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: AdditionalPredicateProvider? = nil) {
+		self.init(typeID: typeID, withUnit: unit, andTimeType: tType, searchingBy: sType, dataChanged: nil as AnyPublisher<Any,Never>?, predicate: additionalPredicate)
 	}
 	
 	/// Prepare all data required for creating the query.
 	///
 	/// The creation fails if the given type identifier does not correspond to a concrete type.
-	convenience init?(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: NSPredicate) {
-		self.init(typeID: typeID, withUnit: unit, andTimeType: tType, searchingBy: sType) { c in
+	convenience init?<P>(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, dataChanged: P?, predicate additionalPredicate: NSPredicate) where P: Publisher, P.Output: Any, P.Failure == Never {
+		self.init(typeID: typeID, withUnit: unit, andTimeType: tType, searchingBy: sType, dataChanged: dataChanged) { c in
 			c(additionalPredicate)
 		}
+	}
+
+	/// Prepare all data required for creating the query.
+	///
+	/// The creation fails if the given type identifier does not correspond to a concrete type.
+	convenience init?(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, predicate additionalPredicate: NSPredicate) {
+		self.init(typeID: typeID, withUnit: unit, andTimeType: tType, searchingBy: sType, dataChanged: nil as AnyPublisher<Any,Never>?, predicate: additionalPredicate)
 	}
 	
 	func execute(on healthStore: HKHealthStore, forStart start: Date,

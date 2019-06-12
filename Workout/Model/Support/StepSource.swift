@@ -13,11 +13,13 @@ enum StepSource: CustomStringConvertible, Equatable {
 	private static let phoneStr = "iphone"
 	private static let watchStr = "watch"
 
-	case iPhone, watch
+	case all, iPhone, watch
 	case custom(String)
 
 	var description: String {
 		switch self {
+		case .all:
+			return ""
 		case .iPhone:
 			return StepSource.phoneStr
 		case .watch:
@@ -29,6 +31,8 @@ enum StepSource: CustomStringConvertible, Equatable {
 
 	var displayName: String {
 		switch self {
+		case .all:
+			return "All"
 		case .iPhone:
 			return "iPhone"
 		case .watch:
@@ -41,7 +45,7 @@ enum StepSource: CustomStringConvertible, Equatable {
 	static func getSource(for str: String) -> StepSource {
 		switch str.lowercased() {
 		case "":
-			fallthrough
+			return .all
 		case phoneStr:
 			return .iPhone
 		case watchStr:
@@ -51,13 +55,15 @@ enum StepSource: CustomStringConvertible, Equatable {
 		}
 	}
 
-	private static var predicateCache = [String: NSPredicate]()
-	private static var predicateRequestCache = [String: [(NSPredicate) -> Void]]()
+	private static var predicateCache = [String: NSPredicate?]()
+	private static var predicateRequestCache = [String: [(NSPredicate?) -> Void]]()
 
 	/// Fetch the predicate to load only those step data point for the relevant source(s).
-	func getPredicate(for healthStore: HKHealthStore, _ callback: @escaping (NSPredicate) -> Void) {
+	func getPredicate(for healthStore: HKHealthStore, _ callback: @escaping (NSPredicate?) -> Void) {
 		DispatchQueue.workout.async {
-			if StepSource.predicateRequestCache.keys.contains(self.description) {
+			if self == .all {
+				callback(nil)
+			} else if StepSource.predicateRequestCache.keys.contains(self.description) {
 				// A request for the same predicate is ongoing, wait for it
 				StepSource.predicateRequestCache[self.description]?.append(callback)
 			} else if let cached = StepSource.predicateCache[self.description] {

@@ -6,11 +6,10 @@
 //  Copyright © 2016 Marco Boschi. All rights reserved.
 //
 
-import Foundation
 import HealthKit
-import MBLibrary
-import SwiftUI
 import Combine
+import SwiftUI
+import MBLibrary
 
 class Workout: BindableObject {
 
@@ -24,13 +23,16 @@ class Workout: BindableObject {
 	private var baseReq = [WorkoutDataQuery]()
 	/// Request for additional details and a full load.
 	private var requests = [WorkoutDataQuery]()
+
+	private var cancellables = [Cancellable]()
+
 	//Set when .load() is called
 	private var requestToDo = 0
 	private var requestDone = 0 {
 		didSet {
 			if requestDone == requestToDo, requestToDo > 0 {
-				isLoading = false
-				loaded = true
+				loadedFully = loadingFully
+				loadingFully = nil
 				requestToDo = 0
 				requestDone = 0
 
@@ -45,8 +47,21 @@ class Workout: BindableObject {
 	private var additionalProcessors = [AdditionalDataProcessor]()
 	private(set) var additionalProviders = [AdditionalDataProvider]()
 
-	private(set) var isLoading = false
-	private(set) var loaded = false
+	var isLoading: Bool {
+		loadingFully != nil
+	}
+	/// The loading status. A non-`nil` value represents loading and `true` that the loading is full.
+	private var loadingFully: Bool? = nil
+
+	var loaded: Bool {
+		loadedFully != nil
+	}
+	var fullyLoaded: Bool {
+		loadedFully == true
+	}
+	/// The loaded status. A non-`nil` value represents that the workout has been loaded and `true` that it has been fully loaded.
+	private var loadedFully: Bool? = nil
+
 	private(set) var hasError = false
 
 	/// The unit to represent distances.
@@ -144,12 +159,12 @@ class Workout: BindableObject {
 	private let sourcePredicate: NSPredicate!
 
 	/// Create an instance of the proper `Workout` subclass (if any) for the given workout.
-	class func workoutFor(raw: HKWorkout, from healthData: Health) -> Workout {
+	class func workoutFor(raw: HKWorkout, from healthData: Health, and preferences: Preferences) -> Workout {
 		let wClass: Workout.Type
 
 		switch raw.workoutActivityType {
 		case .running, .walking:
-			wClass = RunninWorkout.self
+			wClass = RunningWorkout.self
 			#warning("Add back")
 //		case .swimming:
 //			wClass = SwimmingWorkout.self
@@ -157,15 +172,15 @@ class Workout: BindableObject {
 			wClass = Workout.self
 		}
 
-		return wClass.init(raw, from: healthData)
+		return wClass.init(raw, from: healthData, and: preferences)
 	}
 
-	required init(_ raw: HKWorkout, from healthData: Health) {
+	required init(_ raw: HKWorkout, from healthData: Health, and _: Preferences) {
 		self.healthStore = healthData.store
 		self.raw = raw
 
 		guard healthData.isHealthDataAvailable else {
-			loaded = true
+			loadedFully = false
 			hasError = true
 			workoutPredicate = nil
 			timePredicate = nil
@@ -233,6 +248,12 @@ class Workout: BindableObject {
 			baseReq.append(q)
 		} else {
 			requests.append(q)
+
+			if let changePublisher = q.dataChanged {
+				cancellables.append(changePublisher.sink { [weak self] v in
+					self?.reload(request: q)
+				})
+			}
 		}
 	}
 
@@ -269,6 +290,7 @@ class Workout: BindableObject {
 	/// Loads required additional data for the workout.
 	/// - parameter quickLoad: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
 	func load(quickly quickLoad: Bool = false) {
+		#warning("If requesting a full load when only quick loaded, then run only additional queries")
 		guard !isLoading && !loaded else {
 			return
 		}
@@ -277,7 +299,7 @@ class Workout: BindableObject {
 			dp.set(workout: self)
 		}
 
-		isLoading = true
+		loadingFully = !quickLoad
 		let req = baseReq + (quickLoad ? [] : requests)
 		requestToDo = req.count
 		requestDone = 0
@@ -333,19 +355,31 @@ class Workout: BindableObject {
 
 	/// Execute again a query when the query itself requires it.
 	///
-	/// This method is designed to work for additional queries, not the base one, i.e. those added by custom workouts for `AdditionalDataProcessor`s.
-	private func reaload(request: WorkoutDataQuery) {
-		guard loaded, !hasError else {
+	/// This method is designed to work for additional queries, not the base one, i.e. those added by custom workouts for `AdditionalDataProcessor`s, so it works only when the workout has already been fully loaded.
+	private func reload(request: WorkoutDataQuery) {
+		guard loadedFully == true, !hasError else {
 			return
 		}
 
+		print("Reloading \(request)–\(request.typeID)")
+		return;
+
 		DispatchQueue.workout.async {
+			self.loadingFully = true
 			// Increase request pending by one. This way if there's another reloading in progress only when both end the workout will signal an update.
 			// The request pending count will automatically reset to 0 when all are loaded.
 			self.requestToDo += 1
 		}
 
 		#warning("Do the exact same thing load() does but signal the data provider to drop data for the identifier")
+	}
+
+	// MARK: - Destroy
+
+	func destroy() {
+		for c in cancellables {
+			c.cancel()
+		}
 	}
 
 	// MARK: - Export

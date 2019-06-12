@@ -67,11 +67,11 @@ struct WorkoutListView : View {
 }
 
 private struct Content: View {
-	@EnvironmentObject private var healthData: Health
 	@EnvironmentObject private var workoutList: WorkoutList
 
 	@Binding var presenting: WorkoutListView.Presenting
 
+	#warning("The Workout objects created for viewing the details are leaking if the WorkoutView is opened (it seems to be the use of List there) and then the WorkoutList reloaded.")
 	var body: some View {
 		List {
 			// List controls
@@ -93,7 +93,9 @@ private struct Content: View {
 			} else {
 				// Workouts
 				ForEach(workoutList.workouts ?? []) { w in
-					NavigationButton(destination: WorkoutView().environmentObject(Workout.workoutFor(raw: w.raw, from: self.healthData))) {
+					NavigationButton(destination: WorkoutView()
+						.environmentObject(w)
+					) {
 						WorkoutCell(workout: w)
 					}
 				}

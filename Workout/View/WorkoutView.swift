@@ -52,7 +52,7 @@ struct WorkoutView : View {
 					}
 				}
 
-				if workout.loaded {
+				if workout.fullyLoaded {
 					// Additional Data
 					ForEach(workout.additionalProviders) { p in
 						p.section
@@ -65,12 +65,8 @@ struct WorkoutView : View {
 				if workout.loaded && !workout.hasError {
 					Button(action: {
 						#warning("Testing...")
-						let newValue = self.preferences.stepSourceFilter == .iPhone ? .watch : .iPhone
+						let newValue: StepSource = self.preferences.stepSourceFilter == .iPhone ? .all : .iPhone
 						self.preferences.stepSourceFilter = newValue
-						DispatchQueue.main.asyncAfter(delay: 5) {
-							// Test removing duplicates
-							self.preferences.stepSourceFilter = newValue
-						}
 					}) {
 						Image(systemName: "square.and.arrow.up")
 					}
@@ -105,7 +101,7 @@ private struct BasicDetailCell: View {
 
 	#warning("The if shout be an if-let")
 	var body: some View {
-		HStack(alignment: .firstTextBaseline) {
+		HStack {
 			Text(header)
 			Spacer()
 			Group {

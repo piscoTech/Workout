@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 		let healthData = Health()
 		let preferences = Preferences()
-		let workoutList = WorkoutList(healthData: healthData)
+		let workoutList = WorkoutList(healthData: healthData, preferences: preferences)
 
 		// Use a UIHostingController as window root view controller
 		let window = UIWindow(frame: UIScreen.main.bounds)
