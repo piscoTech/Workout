@@ -71,7 +71,7 @@ private struct Content: View {
 
 	@Binding var presenting: WorkoutListView.Presenting
 
-	#warning("The Workout objects created for viewing the details are leaking if the WorkoutView is opened (it seems to be the use of List there) and then the WorkoutList reloaded.")
+	#warning("The Workout objects created for viewing the details are leaking if the WorkoutView is opened (it seems to be the use of List there) and then the WorkoutList reloaded. Revert to separate obbjects when this bug is fixed.")
 	var body: some View {
 		List {
 			// List controls

@@ -81,9 +81,9 @@ class WorkoutMinute: CustomStringConvertible, Identifiable {
 
 	// MARK: - Setter
 
-	func set(unit: HKUnit, for type: HKQuantityTypeIdentifier) {
+	func set(unit: HKUnit, for type: HKQuantityTypeIdentifier, reloaded: Bool) {
 		DispatchQueue.workout.async {
-			guard self.data[type] == nil else {
+			guard self.data[type] == nil || reloaded else {
 				return
 			}
 

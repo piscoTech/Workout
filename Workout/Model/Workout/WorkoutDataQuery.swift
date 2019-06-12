@@ -18,7 +18,7 @@ class WorkoutDataQuery {
 	}
 	
 	typealias AdditionalPredicateProvider = (@escaping (NSPredicate?) -> Void) -> Void
-	typealias DataChangedPublisher = AnyPublisher<Any, Never>?
+	typealias DataChangedPublisher = AnyPublisher<Any, Never>
 	
 	let typeID: HKQuantityTypeIdentifier
 	let type: HKQuantityType
@@ -34,6 +34,7 @@ class WorkoutDataQuery {
 	/// Prepare all data required for creating the query.
 	///
 	/// The creation fails if the given type identifier does not correspond to a concrete type.
+	/// - parameter dataChanged: The workout using this query will subscribe to events from this publisher, when something is received the query is evaluated again.
 	init?<P>(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, dataChanged: P?, predicate additionalPredicate: AdditionalPredicateProvider? = nil) where P: Publisher, P.Output: Any, P.Failure == Never {
 		guard let type = typeID.getType() else {
 			return nil
@@ -62,6 +63,7 @@ class WorkoutDataQuery {
 	/// Prepare all data required for creating the query.
 	///
 	/// The creation fails if the given type identifier does not correspond to a concrete type.
+	/// - parameter dataChanged: The workout using this query will subscribe to events from this publisher, when something is received the query is evaluated again.
 	convenience init?<P>(typeID: HKQuantityTypeIdentifier, withUnit unit: HKUnit, andTimeType tType: DataPointType, searchingBy sType: SearchType, dataChanged: P?, predicate additionalPredicate: NSPredicate) where P: Publisher, P.Output: Any, P.Failure == Never {
 		self.init(typeID: typeID, withUnit: unit, andTimeType: tType, searchingBy: sType, dataChanged: dataChanged) { c in
 			c(additionalPredicate)

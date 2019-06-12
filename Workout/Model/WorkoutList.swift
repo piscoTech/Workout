@@ -62,6 +62,11 @@ class WorkoutList: BindableObject {
 	}
 
 	func reload() {
+		#warning("This should not be required when SwiftUI correctly drop references to environment objects")
+		for w in allWorkouts ?? [] {
+			w.destroy()
+		}
+		
 		allWorkouts = nil
 
 		if healthData.isHealthDataAvailable {

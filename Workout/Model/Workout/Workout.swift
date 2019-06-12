@@ -290,7 +290,7 @@ class Workout: BindableObject {
 	/// Loads required additional data for the workout.
 	/// - parameter quickLoad: If enabled only base queries, i.e. heart data and calories, will be executed and not custom ones defined by specific workouts.
 	func load(quickly quickLoad: Bool = false) {
-		#warning("If requesting a full load when only quick loaded, then run only additional queries")
+		#warning("If requesting a full load when only quick loaded, then run only additional queries. Required for bulk exporting when workouts are shared between the list and the detail view")
 		guard !isLoading && !loaded else {
 			return
 		}
@@ -301,55 +301,13 @@ class Workout: BindableObject {
 
 		loadingFully = !quickLoad
 		let req = baseReq + (quickLoad ? [] : requests)
-		requestToDo = req.count
-		requestDone = 0
+		DispatchQueue.workout.async {
+			self.requestToDo = req.count
+			self.requestDone = 0
+		}
+
 		for r in req {
-			r.execute(on: healthStore, forStart: startDate, usingWorkoutPredicate: workoutPredicate, timePredicate: timePredicate, sourcePredicate: sourcePredicate) { _, data, err  in
-				defer {
-					// Move to a serial queue to synchronize access to counter
-					DispatchQueue.workout.async {
-						self.requestDone += 1
-					}
-				}
-
-				guard err == nil, let res = data as? [HKQuantitySample] else {
-					self.hasError = true
-					return
-				}
-
-				for dp in self.additionalProcessors {
-					if dp.wantData(for: r.typeID) {
-						dp.process(data: res, for: r)
-					}
-				}
-
-				if [HKQuantityTypeIdentifier.heartRate, .activeEnergyBurned, .basalEnergyBurned].contains(r.typeID) {
-					let hrUnit = WorkoutUnit.heartRate.default
-					var avgHeart = 0.0
-
-					for s in res {
-						if r.typeID == .heartRate {
-							if let mh = self.maxHeart {
-								self.maxHeart = max(mh, s.quantity)
-							} else {
-								self.maxHeart = s.quantity
-							}
-							avgHeart += s.quantity.doubleValue(for: hrUnit)
-						} else {
-							let kcal = s.quantity.doubleValue(for: .kilocalorie())
-							if r.typeID == .activeEnergyBurned {
-								self.activeCaloriesData += kcal
-							} else if r.typeID == .basalEnergyBurned {
-								self.restingCaloriesData += kcal
-							}
-						}
-					}
-
-					if r.typeID == .heartRate {
-						self.avgHeart = res.isEmpty ? nil : HKQuantity(unit: hrUnit, doubleValue: avgHeart / Double(res.count))
-					}
-				}
-			}
+			self.execute(query: r)
 		}
 	}
 
@@ -361,9 +319,6 @@ class Workout: BindableObject {
 			return
 		}
 
-		print("Reloading \(request)–\(request.typeID)")
-		return;
-
 		DispatchQueue.workout.async {
 			self.loadingFully = true
 			// Increase request pending by one. This way if there's another reloading in progress only when both end the workout will signal an update.
@@ -371,12 +326,64 @@ class Workout: BindableObject {
 			self.requestToDo += 1
 		}
 
-		#warning("Do the exact same thing load() does but signal the data provider to drop data for the identifier")
+		self.execute(query: request)
+	}
+
+	/// This method should be called only by `load(quickly:)` and `reload(request:)`.
+	private func execute(query: WorkoutDataQuery) {
+		let reloading = fullyLoaded
+		query.execute(on: healthStore, forStart: startDate, usingWorkoutPredicate: workoutPredicate, timePredicate: timePredicate, sourcePredicate: sourcePredicate) { _, data, err  in
+			defer {
+				// Move to a serial queue to synchronize access to counter
+				DispatchQueue.workout.async {
+					self.requestDone += 1
+				}
+			}
+
+			guard err == nil, let res = data as? [HKQuantitySample] else {
+				self.hasError = true
+				return
+			}
+
+			for dp in self.additionalProcessors {
+				if dp.wantData(for: query.typeID) {
+					dp.process(data: res, for: query, reloaded: reloading)
+				}
+			}
+
+			if [HKQuantityTypeIdentifier.heartRate, .activeEnergyBurned, .basalEnergyBurned].contains(query.typeID) {
+				let hrUnit = WorkoutUnit.heartRate.default
+				var avgHeart = 0.0
+
+				for s in res {
+					if query.typeID == .heartRate {
+						if let mh = self.maxHeart {
+							self.maxHeart = max(mh, s.quantity)
+						} else {
+							self.maxHeart = s.quantity
+						}
+						avgHeart += s.quantity.doubleValue(for: hrUnit)
+					} else {
+						let kcal = s.quantity.doubleValue(for: .kilocalorie())
+						if query.typeID == .activeEnergyBurned {
+							self.activeCaloriesData += kcal
+						} else if query.typeID == .basalEnergyBurned {
+							self.restingCaloriesData += kcal
+						}
+					}
+				}
+
+				if query.typeID == .heartRate {
+					self.avgHeart = res.isEmpty ? nil : HKQuantity(unit: hrUnit, doubleValue: avgHeart / Double(res.count))
+				}
+			}
+		}
 	}
 
 	// MARK: - Destroy
 
 	func destroy() {
+		#warning("This should not be required when SwiftUI correctly drop references to environment objects")
 		for c in cancellables {
 			c.cancel()
 		}

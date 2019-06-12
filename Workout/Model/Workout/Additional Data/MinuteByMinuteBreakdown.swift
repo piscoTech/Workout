@@ -50,8 +50,8 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 		return true
 	}
 	
-	func process(data: [HKQuantitySample], for request: WorkoutDataQuery) {
-		_ = self.segments?.reduce(data) { $1.process(data: $0, for: request) }
+	func process(data: [HKQuantitySample], for request: WorkoutDataQuery, reloaded: Bool) {
+		_ = self.segments?.reduce(data) { $1.process(data: $0, for: request, reloaded: reloaded) }
 	}
 	
 	// MARK: - Display Data
