@@ -1,0 +1,71 @@
+/* 
+  Localizable.strings
+  Workout
+
+  Created by Marco Boschi on 12/08/16.
+  Copyright © 2016 Marco Boschi. All rights reserved.
+*/
+
+// MARK: - Model
+"UNITS_NAME_0" = "Metric";
+"UNITS_NAME_1" = "Imperial";
+
+// MARK: - Errors
+
+"WRKT_ERR_LOADING" = "Unable to load workout data";
+"WRKT_ERR_NO_HEALTH" = "Health data is not available";
+
+// MARK: - Workout List View
+"WRKT_LIST_TITLE" = "Workouts";
+
+"WRKT_FILTER" = "Filter";
+"WRKT_FILTER_ALL" = "All workouts";
+
+"WRKT_LIST_MORE" = "Load More";
+
+"WRKT_LIST_LOADING" = "Loading from Health app...";
+"WRKT_LIST_ERR_NO_WORKOUT" = "No workout";
+
+// MARK: - Workout View
+"WRKT_TITLE" = "Workout Details";
+
+"WRKT_TYPE" = "Type";
+"WRKT_START" = "Start";
+"WRKT_END" = "End";
+"WRKT_DURATION" = "Duration";
+"WRKT_DISTANCE" = "Distance";
+"WRKT_AVG_HEART" = "Average Heart Rate";
+"WRKT_MAX_HEART" = "Max Heart Rate";
+"WRKT_AVG_PACE" = "Average Pace";
+"WRKT_AVG_SPEED" = "Average Speed";
+"WRKT_CALORIES" = "Calories";
+
+"WRKT_SPLIT_CAL_%@_TOTAL_%@" = "%@ (%@ total)";
+
+// MARK: - Data Providers
+"MINBYMIN_TITLE" = "Details";
+"MINBYMIN_%@_PAUSE" = "Pause for %@";
+
+"HEART_ZONES_TITLE" = "Heart Zones";
+"HEART_ZONES_FOOTER" = "It is possible that the sum of time in each heart zone does not add up to the total duration of the workout as in some parts heart data is not available or the heart rate is below the threshold for Zone 1.";
+"HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
+"HEART_ZONES_ZONE" = "Zone %d";
+
+// MARK: - Settings
+
+// MARK: - Unclassified
+
+"REPORT_TEXT" = "Report any problem also on Twitter @piscoTech or at GitHub tapping Source Code.";
+"REMOVE_ADS" = "Remove Ads";
+"MANAGE_CONSENT" = "Manage Ads Consent";
+"MANAGE_CONSENT_ERR" = "Unable to update ads consent";
+
+
+
+"HEART_ZONES_EXPLANATION" = "Heart zones are ranges of your heart rates in terms of percentage of your max heart rate. Spending certain amouts of time in each zone will help you train in a certain way, customize the zones to better suit your needs.";
+
+"HEART_ZONES_MAX_RATE" = "Max %@";
+
+"CANNOT_EXPORT" = "Cannot export workout data";
+"SEL_EXPORT_ALL" = "Select All";
+"SEL_EXPORT_NONE" = "Select None";
