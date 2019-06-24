@@ -22,5 +22,8 @@ class AdditionalDataProvider: Identifiable {
 	func export() -> [URL]? {
 		return []
 	}
+
+	/// Called when the workout is no longer in use, data and subrscription should be released. The default implementation does nothing.
+	func cancel() {}
 	
 }

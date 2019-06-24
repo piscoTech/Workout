@@ -18,9 +18,8 @@ class RunningWorkout: Workout {
 		self.set(maxPace: HKQuantity(unit: .secondPerKilometer, doubleValue: 30 * 60))
 		
 		if raw.workoutActivityType == .running {
-			#warning("Add back and actually bind to the preference value")
-//			let heartZone = RunningHeartZones()
-//			self.addAdditionalDataProcessorsAndProviders(heartZone)
+			let heartZone = RunningHeartZones(with: preferences)
+			self.addAdditionalDataProcessorsAndProviders(heartZone)
 		}
 		
 		let details = MinuteByMinuteBreakdown(details: [.pace, .heart, .steps])

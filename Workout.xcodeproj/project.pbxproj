@@ -26,6 +26,7 @@
 		7A4C951422ABB105008DA2D0 /* MBHealth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A4C950B22ABB0EB008DA2D0 /* MBHealth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A4C951822ABBD6E008DA2D0 /* WorkoutList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4C951722ABBD6D008DA2D0 /* WorkoutList.swift */; };
 		7A716BA322AD9F8F0083C4F4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A716BA222AD9F8F0083C4F4 /* Constants.swift */; };
+		7A82263222B22411007FD00E /* RunningHeartZones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A82262B22B22410007FD00E /* RunningHeartZones.swift */; };
 		7AB2F0FC22AC2932000108B8 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2F0FB22AC2932000108B8 /* Extensions.swift */; };
 		7AB2F10422AC2A25000108B8 /* AdditionalDataProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2F10222AC2A25000108B8 /* AdditionalDataProcessor.swift */; };
 		7AB2F10522AC2A25000108B8 /* AdditionalDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB2F10322AC2A25000108B8 /* AdditionalDataProvider.swift */; };
@@ -124,6 +125,7 @@
 		7A4C94FB22ABB0E9008DA2D0 /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = ../MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
 		7A4C951722ABBD6D008DA2D0 /* WorkoutList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutList.swift; sourceTree = "<group>"; };
 		7A716BA222AD9F8F0083C4F4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		7A82262B22B22410007FD00E /* RunningHeartZones.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RunningHeartZones.swift; sourceTree = "<group>"; };
 		7AB2F0FB22AC2932000108B8 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		7AB2F10222AC2A25000108B8 /* AdditionalDataProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalDataProcessor.swift; sourceTree = "<group>"; };
 		7AB2F10322AC2A25000108B8 /* AdditionalDataProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalDataProvider.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				7AB2F10222AC2A25000108B8 /* AdditionalDataProcessor.swift */,
 				7AB2F10322AC2A25000108B8 /* AdditionalDataProvider.swift */,
 				7AD7F89122AEB55C00EE9845 /* MinuteByMinuteBreakdown.swift */,
+				7A82262B22B22410007FD00E /* RunningHeartZones.swift */,
 			);
 			path = "Additional Data";
 			sourceTree = "<group>";
@@ -464,6 +467,7 @@
 				7AB2F10922AC2A8E000108B8 /* WorkoutUnit.swift in Sources */,
 				7AB2F10F22AC3D97000108B8 /* SystemOfUnits.swift in Sources */,
 				7A4C951822ABBD6E008DA2D0 /* WorkoutList.swift in Sources */,
+				7A82263222B22411007FD00E /* RunningHeartZones.swift in Sources */,
 				7A25A36322AAF0DB003AB833 /* WorkoutListView.swift in Sources */,
 				7AD7F89622AEB56500EE9845 /* WorkoutMinute.swift in Sources */,
 				7A25A36822AAFA3D003AB833 /* WorkoutView.swift in Sources */,

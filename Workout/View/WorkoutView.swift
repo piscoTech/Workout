@@ -65,8 +65,7 @@ struct WorkoutView : View {
 				if workout.loaded && !workout.hasError {
 					Button(action: {
 						#warning("Testing...")
-						let newValue: StepSource = self.preferences.stepSourceFilter == .iPhone ? .all : .iPhone
-						self.preferences.stepSourceFilter = newValue
+						self.preferences.maxHeartRate = self.preferences.maxHeartRate != nil ? nil : 180
 					}) {
 						Image(systemName: "square.and.arrow.up")
 					}

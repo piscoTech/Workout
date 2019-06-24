@@ -15,11 +15,14 @@ protocol AdditionalDataProcessor {
 	func set(workout: Workout)
 	func wantData(for typeIdentifier: HKQuantityTypeIdentifier) -> Bool
 	func process(data: [HKQuantitySample], for request: WorkoutDataQuery, reloaded: Bool)
+	/// Called when the workout is no longer in use, data and subrscription should be released. The default implementation does nothing.
+	func cancel()
 	
 }
 
 extension AdditionalDataProcessor {
 	
 	func set(workout: Workout) {}
+	func cancel() {}
 	
 }

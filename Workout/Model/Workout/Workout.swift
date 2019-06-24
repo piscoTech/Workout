@@ -387,6 +387,19 @@ class Workout: BindableObject {
 		for c in cancellables {
 			c.cancel()
 		}
+		for dproc in additionalProcessors {
+			dproc.cancel()
+		}
+		for dprov in additionalProviders {
+			dprov.cancel()
+		}
+
+		baseReq = []
+		requests = []
+		cancellables = []
+		additionalProviders = []
+		additionalProcessors = []
+		hasError = true
 	}
 
 	// MARK: - Export
