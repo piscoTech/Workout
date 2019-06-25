@@ -45,12 +45,24 @@ class WorkoutSegment {
 	/// Process the samples, assumed to be sorted by time, by adding them to the appropriate minutes.
 	/// - returns: Samples with parts belonging to minutes _after_ this segment.
 	func process(data res: [HKQuantitySample], for request: WorkoutDataQuery) -> [HKQuantitySample] {
-		var searchDetail = self.minutes
 		let rawStart = start.timeIntervalSince1970
-		
-		for (sIndex, s) in res.enumerated() {
+
+		var processFurther: [HKQuantitySample] = []
+		var searchDetail: [WorkoutMinute] = []
+		var previous: HKQuantitySample?
+		for s in res {
 			guard s.quantity.is(compatibleWith: request.unit) else {
 				continue
+			}
+
+			defer {
+				previous = s
+			}
+			// If the previosly processed sample had an end date after the start of the current one we must start searching again
+			if let prev = previous, prev.endDate > s.startDate {
+				searchDetail = self.minutes
+			} else if previous == nil {
+				searchDetail = self.minutes
 			}
 			
 			let val = s.quantity.doubleValue(for: request.unit.unit)
@@ -61,7 +73,7 @@ class WorkoutSegment {
 			case .instant:
 				data = InstantDataPoint(time: start, value: val)
 			case .ranged:
-				let end = s.endDate.timeIntervalSince1970 - rawStart
+				let end = s.endDate.timeIntervalSince1970 == TimeInterval.infinity ? start : s.endDate.timeIntervalSince1970 - rawStart
 				data = RangedDataPoint(start: start, end: end, value: val)
 			}
 			
@@ -71,12 +83,12 @@ class WorkoutSegment {
 			}
 			
 			if searchDetail.isEmpty {
-				// The sample has not been fully processed but no more minutes are available, stop
-				return Array(res[sIndex...])
+				// The sample has not been fully processed but no more minutes are available
+				processFurther.append(s)
 			}
 		}
 		
-		return []
+		return processFurther
 	}
 	
 	/// Exports the minutes to CSV format.

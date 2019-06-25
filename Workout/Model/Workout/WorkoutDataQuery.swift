@@ -16,7 +16,7 @@ class WorkoutDataQuery {
 		case time, workout(fallbackToTime: Bool)
 	}
 	
-	typealias AdditionalPredicateProvider = (@escaping (NSPredicate) -> Void) -> Void
+	typealias AdditionalPredicateProvider = (@escaping (NSPredicate?) -> Void) -> Void
 	
 	let typeID: HKQuantityTypeIdentifier
 	let type: HKQuantityType

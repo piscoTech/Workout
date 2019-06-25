@@ -10,6 +10,8 @@
 "UNITS_NAME_0" = "Metric";
 "UNITS_NAME_1" = "Imperial";
 
+"STEP_SOURCE_ALL" = "All";
+
 // MARK: - Errors
 
 "WRKT_ERR_LOADING" = "Unable to load workout data";
@@ -20,6 +22,7 @@
 
 "WRKT_FILTER" = "Filter";
 "WRKT_FILTER_ALL" = "All workouts";
+"WRKT_FILTER_%lld_OUT_%lld" = "%lld/%lld workouts";
 
 "WRKT_LIST_MORE" = "Load More";
 
@@ -49,7 +52,7 @@
 "HEART_ZONES_TITLE" = "Heart Zones";
 "HEART_ZONES_FOOTER" = "It is possible that the sum of time in each heart zone does not add up to the total duration of the workout as in some parts heart data is not available or the heart rate is below the threshold for Zone 1.";
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
-"HEART_ZONES_ZONE" = "Zone %d";
+"HEART_ZONES_ZONE_%lld" = "Zone %d";
 
 // MARK: - Settings
 

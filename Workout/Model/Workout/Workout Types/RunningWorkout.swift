@@ -27,6 +27,7 @@ class RunninWorkout: Workout {
 		if let distance = WorkoutDataQuery(typeID: .distanceWalkingRunning, withUnit: .meter, andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(distance)
 		}
+		// predicate: { p in preferences.stepSourceFilter.getPredicate(for: healthData.store, p)
 		if let steps = WorkoutDataQuery(typeID: .stepCount, withUnit: .steps, andTimeType: .ranged, searchingBy: .time, predicate: Preferences.stepSourceFilter.getPredicate) {
 			self.addQuery(steps)
 		}

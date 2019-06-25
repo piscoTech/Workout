@@ -303,14 +303,14 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 			let msg: String
 			if HKHealthStore.isHealthDataAvailable() {
 				if err != nil {
-					msg = "ERR_LOADING"
+					msg = "WRKT_ERR_LOADING"
 				} else if displayWorkouts != nil {
-					msg = "ERR_NO_WORKOUT"
+					msg = "WRKT_LIST_ERR_NO_WORKOUT"
 				} else {
-					msg = "LOADING"
+					msg = "WRKT_LIST_LOADING"
 				}
 			} else {
-				msg = "ERR_NO_HEALTH"
+				msg = "WRKT_ERR_NO_HEALTH"
 			}
 			res.textLabel?.text = NSLocalizedString(msg, comment: "Loading/Error")
 			
@@ -364,8 +364,8 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	// MARK: - Filter Workouts
 	
-	private let allFiltersStr = NSLocalizedString("FILTER_ALL", comment: "All")
-	private let manyFiltersStr = NSLocalizedString("FILTERS_MANY", comment: "Many")
+	private let allFiltersStr = NSLocalizedString("WRKT_FILTER_ALL", comment: "All")
+	private let manyFiltersStr = NSLocalizedString("%lld_WRKT_FILTERS", comment: "Many")
 	
 	private func updateFilterLabel() {
 		switch filters.count {

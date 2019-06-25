@@ -3,11 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		6FDD7897C9603553538BAE3D /* Pods_Workout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */; };
+		7A2B0E5122C26A1800F09DA1 /* StepSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2B0E5022C26A1800F09DA1 /* StepSource.swift */; };
+		7A2B0E5322C26A5E00F09DA1 /* SystemOfUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2B0E5222C26A5E00F09DA1 /* SystemOfUnits.swift */; };
 		7A650B0122C1300100059687 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0022C1300100059687 /* AppDelegate.swift */; };
 		7A650B0322C1300100059687 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0222C1300100059687 /* SceneDelegate.swift */; };
 		7A650B0A22C1300500059687 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A650B0922C1300500059687 /* Assets.xcassets */; };
@@ -112,6 +114,8 @@
 		15DCB1062DF12CD614F251B6 /* Pods-Workout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.release.xcconfig"; sourceTree = "<group>"; };
 		36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Workout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D5FDF6B281BD8F3FEE5AC5C /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
+		7A2B0E5022C26A1800F09DA1 /* StepSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepSource.swift; sourceTree = "<group>"; };
+		7A2B0E5222C26A5E00F09DA1 /* SystemOfUnits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemOfUnits.swift; sourceTree = "<group>"; };
 		7A650AFD22C1300100059687 /* Workout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Workout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A650B0022C1300100059687 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A650B0222C1300100059687 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -168,6 +172,103 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7A2B0E4422C268DF00F09DA1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				7A2B0E4F22C269DF00F09DA1 /* Support */,
+				7A2B0E4E22C269D900F09DA1 /* Workout */,
+				7A650B4622C1354000059687 /* HealthKit.swift */,
+				7A650B5222C1354300059687 /* Preferences.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		7A2B0E4B22C268E500F09DA1 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				7A650B4D22C1354200059687 /* ListTVC.swift */,
+				7A650B4B22C1354100059687 /* FilterListTVC.swift */,
+				7A650B4322C1353F00059687 /* WorkoutTVC.swift */,
+				7A2B0E4D22C269AE00F09DA1 /* Settings */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		7A2B0E4C22C268EF00F09DA1 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				7AA121E622C1370D0063E0F3 /* LaunchScreen.storyboard */,
+				7AA121E922C137250063E0F3 /* Main.storyboard */,
+				7A650B5322C1354300059687 /* LoadMoreCell.swift */,
+				7A650B5122C1354300059687 /* WorkoutMinuteTVCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		7A2B0E4D22C269AE00F09DA1 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				7A650B4E22C1354200059687 /* AboutVC.swift */,
+				7A650B4222C1353F00059687 /* UnitsTVC.swift */,
+				7A650B4522C1354000059687 /* StepSourceTVC.swift */,
+				7A650B4422C1354000059687 /* RunningHeartZonesTVC.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		7A2B0E4E22C269D900F09DA1 /* Workout */ = {
+			isa = PBXGroup;
+			children = (
+				7A2B0E5522C26AD300F09DA1 /* Workout Types */,
+				7A2B0E5422C26ACB00F09DA1 /* Additional Data */,
+				7A650B4C22C1354100059687 /* Workout.swift */,
+				7A650B4922C1354100059687 /* WorkoutDataQuery.swift */,
+			);
+			path = Workout;
+			sourceTree = "<group>";
+		};
+		7A2B0E4F22C269DF00F09DA1 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				7A2B0E5022C26A1800F09DA1 /* StepSource.swift */,
+				7A2B0E5222C26A5E00F09DA1 /* SystemOfUnits.swift */,
+				7A650B5722C1354400059687 /* WorkoutUnit.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		7A2B0E5422C26ACB00F09DA1 /* Additional Data */ = {
+			isa = PBXGroup;
+			children = (
+				7A2B0E5622C26AF500F09DA1 /* Support */,
+				7A650B5822C1354500059687 /* AdditionalDataProcessor.swift */,
+				7A650B4F22C1354200059687 /* AdditionalDataProvider.swift */,
+				7A650B5522C1354400059687 /* MinuteByMinuteBreakdown.swift */,
+				7A650B3E22C1353E00059687 /* RunningHeartZones.swift */,
+			);
+			path = "Additional Data";
+			sourceTree = "<group>";
+		};
+		7A2B0E5522C26AD300F09DA1 /* Workout Types */ = {
+			isa = PBXGroup;
+			children = (
+				7A650B4022C1353F00059687 /* RunningWorkout.swift */,
+				7A650B5422C1354300059687 /* SwimmingWorkout.swift */,
+			);
+			path = "Workout Types";
+			sourceTree = "<group>";
+		};
+		7A2B0E5622C26AF500F09DA1 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				7A650B3F22C1353F00059687 /* DataPoint.swift */,
+				7A650B5022C1354200059687 /* WorkoutDetail.swift */,
+				7A650B4722C1354000059687 /* WorkoutMinute.swift */,
+				7A650B4822C1354000059687 /* WorkoutSegment.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
 		7A650AF422C1300000059687 = {
 			isa = PBXGroup;
 			children = (
@@ -190,35 +291,12 @@
 		7A650AFF22C1300100059687 /* Workout */ = {
 			isa = PBXGroup;
 			children = (
+				7A650B4122C1353F00059687 /* Main.swift */,
+				7A2B0E4422C268DF00F09DA1 /* Model */,
+				7A2B0E4B22C268E500F09DA1 /* Controller */,
+				7A2B0E4C22C268EF00F09DA1 /* View */,
 				7AA121EC22C1373B0063E0F3 /* Localizable.strings */,
 				7AA121EE22C1373C0063E0F3 /* Localizable.stringsdict */,
-				7AA121E922C137250063E0F3 /* Main.storyboard */,
-				7AA121E622C1370D0063E0F3 /* LaunchScreen.storyboard */,
-				7A650B4E22C1354200059687 /* AboutVC.swift */,
-				7A650B5822C1354500059687 /* AdditionalDataProcessor.swift */,
-				7A650B4F22C1354200059687 /* AdditionalDataProvider.swift */,
-				7A650B3F22C1353F00059687 /* DataPoint.swift */,
-				7A650B4B22C1354100059687 /* FilterListTVC.swift */,
-				7A650B4622C1354000059687 /* HealthKit.swift */,
-				7A650B4D22C1354200059687 /* ListTVC.swift */,
-				7A650B5322C1354300059687 /* LoadMoreCell.swift */,
-				7A650B4122C1353F00059687 /* Main.swift */,
-				7A650B5522C1354400059687 /* MinuteByMinuteBreakdown.swift */,
-				7A650B5222C1354300059687 /* Preferences.swift */,
-				7A650B3E22C1353E00059687 /* RunningHeartZones.swift */,
-				7A650B4422C1354000059687 /* RunningHeartZonesTVC.swift */,
-				7A650B4022C1353F00059687 /* RunningWorkout.swift */,
-				7A650B4522C1354000059687 /* StepSourceTVC.swift */,
-				7A650B5422C1354300059687 /* SwimmingWorkout.swift */,
-				7A650B4222C1353F00059687 /* UnitsTVC.swift */,
-				7A650B4C22C1354100059687 /* Workout.swift */,
-				7A650B4922C1354100059687 /* WorkoutDataQuery.swift */,
-				7A650B5022C1354200059687 /* WorkoutDetail.swift */,
-				7A650B4722C1354000059687 /* WorkoutMinute.swift */,
-				7A650B5122C1354300059687 /* WorkoutMinuteTVCell.swift */,
-				7A650B4822C1354000059687 /* WorkoutSegment.swift */,
-				7A650B4322C1353F00059687 /* WorkoutTVC.swift */,
-				7A650B5722C1354400059687 /* WorkoutUnit.swift */,
 				7A650B0022C1300100059687 /* AppDelegate.swift */,
 				7A650B0222C1300100059687 /* SceneDelegate.swift */,
 				7A650B0922C1300500059687 /* Assets.xcassets */,
@@ -397,24 +475,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Workout/Pods-Workout-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
-				"${BUILT_PRODUCTS_DIR}/PersonalizedAdConsent/PersonalizedAdConsent.framework",
-				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-Workout/Pods-Workout-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PersonalizedAdConsent.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-Workout/Pods-Workout-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Workout/Pods-Workout-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Workout/Pods-Workout-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E9803F817E234CE4A53DBE16 /* [CP] Check Pods Manifest.lock */ = {
@@ -462,10 +531,12 @@
 				7A650B5E22C1354500059687 /* WorkoutTVC.swift in Sources */,
 				7A650B6122C1354500059687 /* HealthKit.swift in Sources */,
 				7A650B5922C1354500059687 /* RunningHeartZones.swift in Sources */,
+				7A2B0E5322C26A5E00F09DA1 /* SystemOfUnits.swift in Sources */,
 				7A650B6822C1354500059687 /* ListTVC.swift in Sources */,
 				7A650B7322C1354500059687 /* AdditionalDataProcessor.swift in Sources */,
 				7A650B5A22C1354500059687 /* DataPoint.swift in Sources */,
 				7A650B6322C1354500059687 /* WorkoutSegment.swift in Sources */,
+				7A2B0E5122C26A1800F09DA1 /* StepSource.swift in Sources */,
 				7A650B5D22C1354500059687 /* UnitsTVC.swift in Sources */,
 				7A650B6922C1354500059687 /* AboutVC.swift in Sources */,
 				7A650B7022C1354500059687 /* MinuteByMinuteBreakdown.swift in Sources */,

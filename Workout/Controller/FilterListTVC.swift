@@ -47,9 +47,8 @@ class FilterListTableViewController: UITableViewController {
 	
 	@IBOutlet private weak var filtersCountLbl: UILabel!
 	
-	private let allStr = NSLocalizedString("FILTER_ALL", comment: "All wrkt")
-	private let oneStr = NSLocalizedString("FILTER_COUNT", comment: "1/x")
-	private let manyStr = NSLocalizedString("FILTERS_COUNT", comment: "y/x")
+	private let allStr = NSLocalizedString("WRKT_FILTER_ALL", comment: "All wrkt")
+	private let someStr = NSLocalizedString("WRKT_FILTER_%lld_OUT_%lld", comment: "y/x")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,7 +62,7 @@ class FilterListTableViewController: UITableViewController {
 		if selected.isEmpty {
 			filtersCountLbl.text = allStr
 		} else {
-			filtersCountLbl.text = String(format: selected.count > 1 ? manyStr : oneStr, selected.count, filterList.count)
+			filtersCountLbl.text = String(format: someStr, selected.count, filterList.count)
 		}
 	}
 
@@ -81,8 +80,8 @@ class FilterListTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "wrktType", for: indexPath)
 
 		if indexPath.section == 0 {
-			cell.textLabel?.text = NSLocalizedString("FILTER_ALL", comment: "All")
-			cell.accessoryType = selected.count == 0 ? .checkmark : .none
+			cell.textLabel?.text = allStr
+			cell.accessoryType = selected.isEmpty ? .checkmark : .none
 		} else {
 			cell.textLabel?.text = filterList[indexPath.row].name
 			cell.accessoryType = selected.contains(indexPath.row) ? .checkmark : .none

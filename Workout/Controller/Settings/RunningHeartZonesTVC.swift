@@ -245,7 +245,7 @@ class HeartZoneCell: UITableViewCell {
 	@IBOutlet fileprivate private(set) weak var lower: UITextField!
 	@IBOutlet private weak var upper: UILabel!
 	
-	private static let zoneTitle = NSLocalizedString("HEART_ZONE", comment: "Zone x")
+	private static let zoneTitle = NSLocalizedString("HEART_ZONES_ZONE_%lld", comment: "Zone x")
 	
 	var isEnabled: Bool {
 		get {
