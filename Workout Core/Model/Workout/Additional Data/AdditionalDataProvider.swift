@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol AdditionalDataProvider {
+public protocol AdditionalDataProvider {
 	
 	var sectionHeader: String? { get }
 	var sectionFooter: String? { get }

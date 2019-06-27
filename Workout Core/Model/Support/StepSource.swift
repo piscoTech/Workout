@@ -8,7 +8,7 @@
 
 import HealthKit
 
-enum StepSource: CustomStringConvertible, Equatable {
+public enum StepSource: CustomStringConvertible, Equatable {
 
 	private static let phoneStr = "iphone"
 	private static let watchStr = "watch"
@@ -16,7 +16,7 @@ enum StepSource: CustomStringConvertible, Equatable {
 	case all, iPhone, watch
 	case custom(String)
 
-	var description: String {
+	public var description: String {
 		switch self {
 		case .all:
 			return ""
@@ -29,7 +29,7 @@ enum StepSource: CustomStringConvertible, Equatable {
 		}
 	}
 
-	var displayName: String {
+	public var displayName: String {
 		switch self {
 		case .all:
 			return NSLocalizedString("STEP_SOURCE_ALL", comment: "All")
@@ -59,8 +59,7 @@ enum StepSource: CustomStringConvertible, Equatable {
 	private static var predicateRequestCache = [String: [(NSPredicate?) -> Void]]()
 
 	/// Fetch the predicate to load only those step data point for the relevant source(s).
-	#warning("Add as first argument 'for healthStore: HKHealthStore, '")
-	func getPredicate(_ callback: @escaping (NSPredicate?) -> Void) {
+	func getPredicate(for healthStore: HKHealthStore, _ callback: @escaping (NSPredicate?) -> Void) {
 		DispatchQueue.workout.async {
 			if self == .all {
 				callback(nil)

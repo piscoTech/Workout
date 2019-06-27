@@ -8,15 +8,14 @@
 
 import Foundation
 
-#warning("Rename to SystemOfUnits")
-enum Units: Int, CaseIterable {
+public enum SystemOfUnits: Int, CaseIterable {
 	case metric = 0, imperial
 
-	var displayName: String {
+	public var displayName: String {
 		return NSLocalizedString("UNITS_NAME_\(self.rawValue)", comment: "Unit name")
 	}
 
 	/// The default system of units, the metric one.
-	static let `default` = Units.metric
+	public static let `default` = SystemOfUnits.metric
 
 }

@@ -9,38 +9,11 @@
 import UIKit
 import HealthKit
 import MBLibrary
+import WorkoutCore
 
 class FilterListTableViewController: UITableViewController {
 	
-	weak var delegate: ListTableViewController?
-	var availableFilters: [HKWorkoutActivityType]! {
-		didSet {
-			defer {
-				tableView.reloadSections([0, 1], with: .automatic)
-				updateFiltersCount()
-			}
-			
-			guard var unique = availableFilters else {
-				selected = []
-				filterList = []
-				
-				return
-			}
-			unique.removeDuplicates()
-			
-			let oldSel = zip(filterList, 0 ..< filterList.count).filter { selected.contains($0.1) }.map { $0.0.type }
-			filterList = unique.map { ($0, $0.name)}.sorted { $0.1 < $1.1 }
-			selected = zip(filterList, 0 ..< filterList.count).filter { oldSel.contains($0.0.type) }.map { $0.1 }
-			
-			updateFiltersCount()
-		}
-	}
-	var selectedFilters: [HKWorkoutActivityType]! {
-		didSet {
-			selected = zip(filterList, 0 ..< filterList.count).filter { selectedFilters.contains($0.0.type) }.map { $0.1 }
-			updateFiltersCount()
-		}
-	}
+	var workoutList: WorkoutList!
 	
 	private var filterList: [(type: HKWorkoutActivityType, name: String)] = []
 	private var selected: [Int] = []
@@ -52,6 +25,11 @@ class FilterListTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+		filterList = workoutList.availableFilters.map { ($0, $0.name)}.sorted { $0.1 < $1.1 }
+		selected = filterList.enumerated().filter { (_, w) in workoutList.filters.contains(w.type) }.map { (i, _) in i }
+
+		updateFiltersCount()
     }
 	
 	@IBAction func done(_ sender: AnyObject) {
@@ -121,7 +99,7 @@ class FilterListTableViewController: UITableViewController {
 		tableView.deselectRow(at: indexPath, animated: true)
 		updateFiltersCount()
 		
-		delegate?.filters = zip(filterList, 0 ..< filterList.count).filter { selected.contains($0.1) }.map { $0.0.type }
+		workoutList.filters = Set(zip(filterList, 0 ..< filterList.count).filter { selected.contains($0.1) }.map { $0.0.type })
 	}
 
 }

@@ -11,7 +11,10 @@ import HealthKit
 import MBLibrary
 import MBHealth
 
-class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
+class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor, PreferencesDelegate {
+
+	private weak var preferences: Preferences?
+	private var systemOfUnits: SystemOfUnits
 
 	private(set) weak var owner: Workout!
 	/// Segments of the workout, separated by pauses.
@@ -21,10 +24,20 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 	
 	/// Display minute-by-minute details for the workout.
 	/// - parameter details: The details to display, time will be added as the first one automatically.
-	init(details: [WorkoutDetail]) {
+	init(details: [WorkoutDetail], with preferences: Preferences) {
 		precondition(!details.isEmpty, "Adding no details is meaningless")
 		
 		self.displayDetail = details
+		self.preferences = preferences
+		self.systemOfUnits = preferences.systemOfUnits
+
+		preferences.add(delegate: self)
+	}
+
+	func preferredSystemOfUnitsChanged() {
+		if let p = preferences {
+			self.systemOfUnits = p.systemOfUnits
+		}
 	}
 	
 	// MARK: - Process Data
@@ -56,14 +69,16 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 	
 	// MARK: - Display Data
 	
-	let sectionHeader: String? = NSLocalizedString("DETAILS_TITLE", comment: "Details")
-	let sectionFooter: String? = nil
+	public let sectionHeader: String? = NSLocalizedString("DETAILS_TITLE", comment: "Details")
+	public let sectionFooter: String? = nil
+
+	private static let pauseStr = NSLocalizedString("PAUSE_TIME", comment: "Pause for mm:ss")
 	
-	var numberOfRows: Int {
+	public var numberOfRows: Int {
 		return segments?.reduce(0) { $0 + $1.partCount } ?? 0
 	}
 	
-	func cellForRowAt(_ indexPath: IndexPath, for tableView: UITableView) -> UITableViewCell {
+	public func cellForRowAt(_ indexPath: IndexPath, for tableView: UITableView) -> UITableViewCell {
 		guard let seg = self.segments else {
 			preconditionFailure("Workout not set up")
 		}
@@ -76,13 +91,12 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 				if i < s.minutes.count {
 					let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! WorkoutMinuteTableViewCell
 					let d = s.minutes[i]
-					cell.update(for: displayDetail, withData: d)
+					cell.update(for: displayDetail, withData: d, andSystemOfUnits: systemOfUnits)
 					
 					return cell
 				} else if let p = s.pauseTime {
 					let cell = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
-					let text = NSLocalizedString("PAUSE_TIME", comment: "Pause for mm:ss")
-					cell.textLabel?.text = String(format: text, p.getDuration(hideHours: true))
+					cell.textLabel?.text = String(format: MinuteByMinuteBreakdown.pauseStr, p.getFormattedDuration())
 					
 					return cell
 				} else {
@@ -96,23 +110,25 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor {
 		preconditionFailure("Given index path cannot be rendered")
 	}
 	
-	func export() -> [URL]? {
-		guard let seg = self.segments else {
-			return []
-		}
-		
-		let export = [.time] + self.displayDetail
-		let sep = CSVSeparator
-		let data = export.map { $0.getNameAndUnit(for: owner).toCSV() }.joined(separator: sep) + "\n" + seg.map { $0.export(details: export) }.joined()
-		
-		do {
-			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
-			try data.write(to: detFile, atomically: true, encoding: .utf8)
-			
-			return [detFile]
-		} catch {
-			return nil
-		}
+	public func export() -> [URL]? {
+		return []
+		#warning("Add Back")
+//		guard let seg = self.segments else {
+//			return []
+//		}
+//		
+//		let export = [.time] + self.displayDetail
+//		let sep = CSVSeparator
+//		let data = export.map { $0.getNameAndUnit(for: owner).toCSV() }.joined(separator: sep) + "\n" + seg.map { $0.export(details: export) }.joined()
+//		
+//		do {
+//			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
+//			try data.write(to: detFile, atomically: true, encoding: .utf8)
+//			
+//			return [detFile]
+//		} catch {
+//			return nil
+//		}
 	}
 	
 }

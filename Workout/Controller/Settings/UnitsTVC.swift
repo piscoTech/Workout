@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import WorkoutCore
 
 class UnitsTableViewController: UITableViewController {
 	
@@ -33,23 +34,23 @@ class UnitsTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Units.allCases.count
+        return SystemOfUnits.allCases.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "unit", for: indexPath)
-		let unit = Units.allCases[indexPath.row]
+		let unit = SystemOfUnits.allCases[indexPath.row]
 		cell.textLabel?.text = unit.displayName
-		cell.accessoryType = Preferences.systemOfUnits == unit ? .checkmark : .none
+		cell.accessoryType = preferences.systemOfUnits == unit ? .checkmark : .none
 
         return cell
 	}
 	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		Preferences.systemOfUnits = Units.allCases[indexPath.row]
+		preferences.systemOfUnits = SystemOfUnits.allCases[indexPath.row]
 		shouldUpdate = true
 		
-		for i in 0 ..< Units.allCases.count {
+		for i in 0 ..< SystemOfUnits.allCases.count {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
 				cell.accessoryType = i == indexPath.row ? .checkmark : .none
 			}

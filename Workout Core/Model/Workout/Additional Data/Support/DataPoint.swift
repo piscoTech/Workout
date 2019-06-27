@@ -6,42 +6,38 @@
 //  Copyright © 2016 Marco Boschi. All rights reserved.
 //
 
-import Foundation
+import HealthKit
 
 protocol DataPoint {
 
-	var value: Double { get }
+	var value: HKQuantity { get }
 
 }
 
 struct InstantDataPoint: DataPoint {
-	
+
 	let time: TimeInterval
-	let value: Double
-	
+	let value: HKQuantity
+
 }
 
 struct RangedDataPoint: DataPoint {
-	
+
 	let start, end: TimeInterval
-	let value: Double
-	
-	init(start: TimeInterval, end: TimeInterval, value: Double) {
+	let value: HKQuantity
+
+	init(start: TimeInterval, end: TimeInterval, value: HKQuantity) {
 		self.start = min(start, end)
 		self.end = max(start, end)
 		self.value = value
 	}
-	
+
 	var duration: TimeInterval {
 		return end - start
 	}
-	
+
 }
 
 enum DataPointType {
 	case instant, ranged
-}
-
-enum DataType {
-	case cumulative, average
 }

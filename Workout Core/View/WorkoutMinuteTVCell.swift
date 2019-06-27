@@ -12,14 +12,13 @@ class WorkoutMinuteTableViewCell: UITableViewCell {
 
 	@IBOutlet weak var stack: UIStackView!
 	
-	func update(for details: [WorkoutDetail], withData data: WorkoutMinute) {
+	func update(for details: [WorkoutDetail], withData data: WorkoutMinute, andSystemOfUnits sysUnits: SystemOfUnits) {
 		for v in stack.arrangedSubviews {
 			v.removeFromSuperview()
 		}
 		
 		for d in [.time] + details {
-			let view = d.newView()
-			d.update(view: view, with: data)
+			let view = d.display(data, withSystemOfUnits: sysUnits)
 			
 			stack.addArrangedSubview(view)
 		}

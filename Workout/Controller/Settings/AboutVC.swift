@@ -6,8 +6,10 @@
 //  Copyright (c) 2014 Marco Boschi. All rights reserved.
 //
 
+import HealthKit
 import UIKit
 import MBLibrary
+import WorkoutCore
 import PersonalizedAdConsent
 
 class AboutViewController: UITableViewController {
@@ -137,7 +139,6 @@ class AboutViewController: UITableViewController {
 	}
 	
 	func updateUnits() {
-		delegate.refreshUnits()
 		if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: settingsSectionOffset)) {
 			setUnits(in: cell)
 		}
@@ -154,19 +155,21 @@ class AboutViewController: UITableViewController {
 			setMaxHeartRate(in: cell)
 		}
 	}
-	
+
+	#warning("Use preference delegate directly")
 	private func setUnits(in cell: UITableViewCell) {
-		cell.detailTextLabel?.text = Preferences.systemOfUnits.displayName
+		cell.detailTextLabel?.text = preferences.systemOfUnits.displayName
 	}
 	
 	private func setStepSource(in cell: UITableViewCell) {
-		cell.detailTextLabel?.text = Preferences.stepSourceFilter.displayName
+		cell.detailTextLabel?.text = preferences.stepSourceFilter.displayName
 	}
 	
 	private func setMaxHeartRate(in cell: UITableViewCell) {
 		let s: String?
-		if let hr = Preferences.maxHeartRate {
-			s = String(format: maxHeart, Double(hr).getFormattedHeartRate())
+		if let hr = preferences.maxHeartRate {
+			let hrQuantity = HKQuantity(unit: WorkoutUnit.heartRate.default, doubleValue: Double(hr))
+			s = String(format: maxHeart, hrQuantity.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)))
 		} else {
 			s = nil
 		}

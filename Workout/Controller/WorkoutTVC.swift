@@ -9,6 +9,7 @@
 import UIKit
 import HealthKit
 import MBLibrary
+import WorkoutCore
 
 class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	
@@ -25,7 +26,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		loading.startAnimating()
 		navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loading)
 		
-		workout = Workout.workoutFor(raw: rawWorkout, delegate: self)
+		workout = Workout.workoutFor(raw: rawWorkout, from: healthData, and: preferences, delegate: self)
 		workout.load()
     }
 
@@ -34,7 +35,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
         // Dispose of any resources that can be recreated.
     }
 	
-	func dataIsReady() {
+	func workoutLoaded(_ workout: Workout) {
 		DispatchQueue.main.async {
 			self.exportBtn.isEnabled = !self.workout.hasError
 			self.navigationItem.setRightBarButton(self.exportBtn, animated: true)
@@ -55,7 +56,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
     // MARK: - Table view data source
 
 	override func numberOfSections(in tableView: UITableView) -> Int {
-		if workout.hasError || !workout.loaded {
+		if workout.hasError || !workout.isLoaded {
 			return 1
 		}
 		
@@ -120,33 +121,34 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 				cell.detailTextLabel?.text = workout.endDate.getFormattedDateTime()
 			case 3:
 				title = "DURATION"
-				cell.detailTextLabel?.text = workout.duration.getDuration()
+				cell.detailTextLabel?.text = workout.duration.getFormattedDuration()
 			case 4:
 				title = "DISTANCE"
-				cell.detailTextLabel?.text = workout.totalDistance?.getFormattedDistance(withUnit: workout.distanceUnit.unit) ?? WorkoutDetail.noData
+				cell.detailTextLabel?.text = workout.totalDistance?.formatAsDistance(withUnit: workout.distanceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 5:
 				title = "AVG_HEART"
-				cell.detailTextLabel?.text = workout.avgHeart?.getFormattedHeartRate() ?? WorkoutDetail.noData
+				cell.detailTextLabel?.text = workout.avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 6:
 				title = "MAX_HEART"
-				cell.detailTextLabel?.text = workout.maxHeart?.getFormattedHeartRate() ?? WorkoutDetail.noData
+				cell.detailTextLabel?.text = workout.maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 7:
 				title = "AVG_PACE"
-				cell.detailTextLabel?.text = workout.pace?.getFormattedPace(forLengthUnit: workout.paceUnit.unit) ?? WorkoutDetail.noData
+				cell.detailTextLabel?.text = workout.pace?.formatAsPace(withReferenceLength: workout.paceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 8:
 				title = "AVG_SPEED"
-				cell.detailTextLabel?.text = workout.speed?.getFormattedSpeed(forLengthUnit: workout.speedUnit.unit
-					) ?? WorkoutDetail.noData
+				cell.detailTextLabel?.text = workout.speed?.formatAsSpeed(withUnit: workout.speedUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 9:
 				title = "CALORIES"
-				if let total = workout.totalCalories {
-					if let active = workout.activeCalories {
-						cell.detailTextLabel?.text = String(format: NSLocalizedString("CAL_SPLIT", comment: "Active/Total"), active.getFormattedCalories(), total.getFormattedCalories())
+				if let total = workout.totalEnergy {
+					if let active = workout.activeEnergy {
+						cell.detailTextLabel?.text = String(format: NSLocalizedString("WRKT_SPLIT_CAL_%@_TOTAL_%@", comment: "Active/Total"),
+															active.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits)),
+															total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits)))
 					} else {
-						cell.detailTextLabel?.text = total.getFormattedCalories()
+						cell.detailTextLabel?.text = total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits))
 					}
 				} else {
-					cell.detailTextLabel?.text = WorkoutDetail.noData
+					cell.detailTextLabel?.text = missingValueStr
 				}
 			default:
 				return cell
@@ -192,7 +194,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 				self.documentController = nil
 				
 				if completed {
-					Preferences.reviewRequestCounter += 1
+					preferences.reviewRequestCounter += 1
 					self.listController.checkRequestReview()
 				}
 			}

@@ -10,7 +10,7 @@
 "UNITS_NAME_0" = "Metric";
 "UNITS_NAME_1" = "Imperial";
 
-"STEP_SOURCE_ALL" = "All";
+"STEP_SOURCE_ALL" = "All Sources";
 
 // MARK: - Errors
 

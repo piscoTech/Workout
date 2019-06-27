@@ -9,20 +9,15 @@
 import UIKit
 import HealthKit
 import MBLibrary
+import WorkoutCore
 import GoogleMobileAds
 import PersonalizedAdConsent
 import StoreKit
 
-class ListTableViewController: UITableViewController, GADBannerViewDelegate, WorkoutDelegate, EnhancedNavigationBarDelegate {
-	
-	private let batchSize = 40
-	private let filteredLoadMultiplier = 5
-	private var moreToBeLoaded = true
-	private var isLoadingMore = false
-	
-	private var allWorkouts: [Workout]!
-	private var displayWorkouts: [Workout]!
-	private var err: Error?
+#warning("Remove WorkoutDelegate")
+class ListTableViewController: UITableViewController, WorkoutListDelegate, WorkoutDelegate, PreferencesDelegate, GADBannerViewDelegate, EnhancedNavigationBarDelegate {
+
+	private let list = WorkoutList(healthData: healthData, preferences: preferences)
 	
 	private var standardRightBtns: [UIBarButtonItem]!
 	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
@@ -33,6 +28,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	private var exportToggleBtn: UIBarButtonItem!
 	private var exportCommitBtn: UIBarButtonItem!
+	#warning("Move to dedicated class")
 	private var exportSelection: [Bool]!
 	
 	private var inExportMode = false
@@ -53,7 +49,6 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		filterLbl.textColor = navBar?.tintColor
 		navigationItem.titleView = titleView
 		navBar?.enhancedDelegate = self
-		updateFilterLabel()
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		standardRightBtns = navigationItem.rightBarButtonItems
@@ -64,7 +59,9 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		exportRightBtns = [exportCommitBtn, exportToggleBtn]
 		exportLeftBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelExport(_:)))
 
-        refresh(self)
+		preferences.add(delegate: self)
+		list.delegate = self
+        refresh()
 		initializeAds()
 		
 		DispatchQueue.main.async {
@@ -83,32 +80,16 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		
 		if !loaded {
 			loaded = true
-			authorize()
+			healthData.authorizeHealthKitAccess {
+				DispatchQueue.main.async {
+					self.refresh()
+				}
+			}
 		}
 	}
 	
 	deinit {
 		NotificationCenter.default.removeObserver(self)
-	}
-	
-	func authorize() {
-		let req = {
-			healthStore.requestAuthorization(toShare: nil, read: healthReadData) { _, _ in
-				DispatchQueue.main.async {
-					self.refresh(self)
-				}
-			}
-		}
-		
-		if #available(iOS 12.0, *) {
-			healthStore.getRequestStatusForAuthorization(toShare: [], read: healthReadData) { status, _ in
-				if status != .unnecessary {
-					req()
-				}
-			}
-		} else {
-			req()
-		}
 	}
 	
 	func largeTitleChanged(isLarge: Bool) {
@@ -121,7 +102,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	func checkRequestReview() {
 		if #available(iOS 10.3, *) {
-			guard Preferences.reviewRequestCounter >= Preferences.reviewRequestThreshold else {
+			guard preferences.reviewRequestCounter >= preferences.reviewRequestThreshold else {
 				return
 			}
 			
@@ -133,148 +114,18 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	private weak var loadMoreCell: LoadMoreCell?
 	
-	@IBAction func refresh(_ sender: AnyObject) {
-		allWorkouts = nil
-		displayWorkouts = filter(workouts: allWorkouts)
-		err = nil
-		isLoadingMore = true
-		
-		updateExportModeEnabled()
-		tableView.beginUpdates()
+	@IBAction func refresh() {
+		list.reload()
+	}
+	
+	func preferredSystemOfUnitsChanged() {
 		tableView.reloadSections([0], with: .automatic)
-		if tableView.numberOfSections > 1 {
-			tableView.deleteSections([1], with: .automatic)
-		}
-		tableView.endUpdates()
-		
-		if HKHealthStore.isHealthDataAvailable() {
-			DispatchQueue.main.asyncAfter(delay: 0.7) {
-				self.loadBatch(targetDisplayCount: self.batchSize)
-			}
-		}
-	}
-	
-	func refreshUnits() {
-		tableView.reloadSections([0], with: .automatic)
-	}
-	
-	private func loadMore() {
-		isLoadingMore = true
-		updateExportModeEnabled()
-		loadBatch(targetDisplayCount: displayWorkouts.count + batchSize)
-	}
-	
-	private func loadBatch(targetDisplayCount target: Int) {
-		let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-		let type = HKObjectType.workoutType()
-		let predicate: NSPredicate?
-		let limit: Int
-		
-		if let last = allWorkouts?.last {
-			predicate = NSPredicate(format: "%K <= %@", HKPredicateKeyPathStartDate, last.startDate as NSDate)
-			let sameDateCount = allWorkouts.count - (allWorkouts.firstIndex { $0.startDate == last.startDate } ?? allWorkouts.count)
-			let missing = target - (displayWorkouts?.count ?? 0)
-			limit = sameDateCount + min(batchSize, isFiltering ? missing * filteredLoadMultiplier : missing)
-		} else {
-			predicate = nil
-			limit = target
-		}
-		
-		let workoutQuery = HKSampleQuery(sampleType: type, predicate: predicate, limit: limit, sortDescriptors: [sortDescriptor]) { (_, r, err) in
-			// There's no need to call .load() as additional data is not needed here, we just need information about units
-			let res = r as? [HKWorkout]
-			var actions: [() -> Void] = []
-			
-			self.err = err
-			DispatchQueue.workout.async {
-				let addedLineCount: Int?
-				let loadingMore: Bool
-				let wasEmpty: Bool
-				
-				if let res = res {
-					self.moreToBeLoaded = res.count >= limit
-					
-					var wrkts: [Workout] = []
-					do {
-						wrkts.reserveCapacity(res.count)
-						var addAll = false
-						// By searching the reversed collection we reduce comparison as both collections are sorted
-						let revLoaded = (self.allWorkouts ?? []).reversed()
-						for w in res {
-							if addAll || !revLoaded.contains(where: { $0.raw == w }) {
-								// Stop searching already loaded workouts when the first new workout is not present.
-								addAll = true
-								wrkts.append(Workout.workoutFor(raw: w))
-							}
-						}
-					}
-					let disp = self.filter(workouts: wrkts) ?? []
-					addedLineCount = self.allWorkouts == nil ? nil : disp.count
-					
-					wasEmpty = (self.displayWorkouts?.count ?? 0) == 0
-					self.allWorkouts = (self.allWorkouts ?? []) + wrkts
-					self.displayWorkouts = (self.displayWorkouts ?? []) + disp
-					
-					if self.moreToBeLoaded && self.displayWorkouts.count < target {
-						loadingMore = true
-						actions.append {
-							self.loadBatch(targetDisplayCount: target)
-						}
-					} else {
-						loadingMore = false
-						actions.append {
-							self.updateExportModeEnabled()
-						}
-					}
-				} else {
-					self.moreToBeLoaded = false
-					addedLineCount = nil
-					loadingMore = false
-					wasEmpty = true
-					
-					self.allWorkouts = nil
-					self.displayWorkouts = self.filter(workouts: self.allWorkouts)
-					
-					actions.append(self.updateExportModeEnabled)
-				}
-				
-				actions.insert({
-					self.isLoadingMore = loadingMore
-					self.tableView.beginUpdates()
-					if let added = addedLineCount {
-						if wasEmpty {
-							self.tableView.reloadSections([0], with: .automatic)
-						} else {
-							let oldCount = self.tableView.numberOfRows(inSection: 0)
-							self.tableView.insertRows(at: (oldCount ..< (oldCount + added)).map { IndexPath(row: $0, section: 0) }, with: .automatic)
-						}
-						
-						self.loadMoreCell?.isEnabled = !loadingMore
-					} else {
-						self.tableView.reloadSections([0], with: .automatic)
-					}
-					
-					if self.moreToBeLoaded && self.tableView.numberOfSections == 1 {
-						self.tableView.insertSections([1], with: .automatic)
-					} else if !self.moreToBeLoaded && self.tableView.numberOfSections > 1 {
-						self.tableView.deleteSections([1], with: .automatic)
-					}
-					self.tableView.endUpdates()
-				}, at: 0)
-				
-				for a in actions {
-					DispatchQueue.main.async(execute: a)
-				}
-			}
-		}
-		
-		healthStore.execute(workoutQuery)
 	}
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-		if self.err == nil && self.allWorkouts != nil && self.moreToBeLoaded && !self.inExportMode {
+		if self.list.error == nil && self.list.workouts != nil && self.list.canLoadMore && !self.inExportMode {
 			return 2
 		} else {
 			return 1
@@ -283,7 +134,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if section == 0 {
-        	return max(displayWorkouts?.count ?? 1, 1)
+        	return max(list.workouts?.count ?? 1, 1)
 		} else {
 			return 1
 		}
@@ -292,19 +143,19 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if indexPath.section == 1 {
 			let res = tableView.dequeueReusableCell(withIdentifier: "loadMore", for: indexPath) as! LoadMoreCell
-			res.isEnabled = !self.isLoadingMore
+			res.isEnabled = !list.isLoading
 			loadMoreCell = res
 			
 			return res
 		}
 		
-		if displayWorkouts?.count ?? 0 == 0 {
+		guard let wrkts = list.workouts, !wrkts.isEmpty else {
 			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
 			let msg: String
 			if HKHealthStore.isHealthDataAvailable() {
-				if err != nil {
+				if list.error != nil {
 					msg = "WRKT_ERR_LOADING"
-				} else if displayWorkouts != nil {
+				} else if list.workouts != nil {
 					msg = "WRKT_LIST_ERR_NO_WORKOUT"
 				} else {
 					msg = "WRKT_LIST_LOADING"
@@ -318,15 +169,15 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 
 		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
-		let w = displayWorkouts[indexPath.row]
+		let w = wrkts[indexPath.row]
 		
 		cell.textLabel?.text = w.type.name
 		
-		var detail = [w.startDate.getFormattedDateTime(), w.duration.getDuration() ]
-		if let dist = w.totalDistance?.getFormattedDistance(withUnit: w.distanceUnit.unit) {
+		var detail = [w.startDate.getFormattedDateTime(), w.duration.getFormattedDuration() ]
+		if let dist = w.totalDistance?.formatAsDistance(withUnit: w.distanceUnit.unit(for: preferences.systemOfUnits)) {
 			detail.append(dist)
 		}
-		cell.detailTextLabel?.text = detail.joined(separator: " – ")
+		cell.detailTextLabel?.text = detail.joined(separator: " \(textSeparator) ")
 		
 		if inExportMode {
 			cell.accessoryType = exportSelection[indexPath.row] ? .checkmark : .none
@@ -340,8 +191,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		if indexPath.section == 1 {
 			if loadMoreCell?.isEnabled ?? false {
-				loadMoreCell?.isEnabled = false
-				loadMore()
+				list.loadMore()
 			}
 		} else {
 			if inExportMode {
@@ -361,39 +211,56 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
-	
-	// MARK: - Filter Workouts
-	
+
+	// MARK: - List Displaying
+
 	private let allFiltersStr = NSLocalizedString("WRKT_FILTER_ALL", comment: "All")
 	private let manyFiltersStr = NSLocalizedString("%lld_WRKT_FILTERS", comment: "Many")
-	
-	private func updateFilterLabel() {
-		switch filters.count {
+
+	func loadingStatusChanged() {
+		loadMoreCell?.isEnabled = !list.isLoading
+		updateExportModeEnabled()
+	}
+
+	func listChanged() {
+		updateExportModeEnabled()
+
+		switch list.filters.count {
 		case 0:
 			filterLbl.text = allFiltersStr
 		case 1:
-			filterLbl.text = filters.first?.name
+			filterLbl.text = list.filters.first?.name
 		default:
-			filterLbl.text = String(format: manyFiltersStr, filters.count)
+			filterLbl.text = String(format: manyFiltersStr, list.filters.count)
 		}
+
+		tableView.beginUpdates()
+		tableView.reloadSections([0], with: .automatic)
+		setupLoadMore()
+		tableView.endUpdates()
 	}
-	
-	var filters: [HKWorkoutActivityType] = [] {
-		didSet {
-			displayWorkouts = filter(workouts: allWorkouts)
+
+	func additionalWorkoutsLoaded(count: Int, oldCount: Int) {
+		tableView.beginUpdates()
+		if count > 0 && oldCount > 0 {
+			tableView.insertRows(at: (0 ..< count).map { IndexPath(row: $0 + oldCount, section: 0)}, with: .automatic)
+		} else {
 			tableView.reloadSections([0], with: .automatic)
-			
-			updateFilterLabel()
-			updateExportModeEnabled()
 		}
+		setupLoadMore()
+		tableView.endUpdates()
 	}
-	
-	var isFiltering: Bool {
-		return !filters.isEmpty
-	}
-	
-	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
-		return wrkts?.filter { filters.isEmpty || filters.contains($0.raw.workoutActivityType) }
+
+	private func setupLoadMore() {
+		if list.canLoadMore {
+			if tableView.numberOfSections == 1 {
+				tableView.insertSections([1], with: .automatic)
+			}
+		} else {
+			if tableView.numberOfSections > 1 {
+				tableView.deleteSections([1], with: .automatic)
+			}
+		}
 	}
 	
 	// MARK: - Export all workouts
@@ -411,13 +278,13 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		}
 		
 		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_NONE", comment: "Select None")
-		exportSelection = [Bool](repeating: true, count: displayWorkouts?.count ?? 0)
+		exportSelection = [Bool](repeating: true, count: list.workouts?.count ?? 0)
 		updateExportCommitButton()
 		
 		navigationItem.leftBarButtonItem = exportLeftBtn
 		navigationItem.rightBarButtonItems = exportRightBtns
 		
-		for i in 0 ..< (displayWorkouts?.count ?? 0) {
+		for i in 0 ..< (list.workouts?.count ?? 0) {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
 				cell.accessoryType = .checkmark
 			}
@@ -442,11 +309,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				self.present(self.loadingBar!, animated: true)
 			}
 			
-			for (w, e) in zip(self.displayWorkouts, self.exportSelection) {
+			for (w, e) in zip(self.list.workouts ?? [], self.exportSelection) {
 				if e {
-					let workout = Workout.workoutFor(raw: w.raw, delegate: self)
-					//Avoid loading additional (and unused) detail
-					workout.load(quickLoad: true)
+					let workout = Workout.workoutFor(raw: w.raw, from: healthData, and: preferences, delegate: self)
+					// Avoid loading additional (and unused) detail
+					workout.load(quickly: true)
 					self.exportWorkouts.append(workout)
 				}
 			}
@@ -455,18 +322,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	@objc func cancelExport(_ sender: AnyObject) {
 		inExportMode = false
-		if moreToBeLoaded && tableView.numberOfSections == 1 {
-			tableView.insertSections([1], with: .automatic)
-		}
+		#warning("Use a dedicated method for handling in and out of export mode")
+		listChanged()
 		
 		navigationItem.leftBarButtonItem = standardLeftBtn
 		navigationItem.rightBarButtonItems = standardRightBtns
-		
-		for i in 0 ..< (displayWorkouts?.count ?? 0) {
-			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
-				cell.accessoryType = .disclosureIndicator
-			}
-		}
 	}
 	
 	@objc func toggleExportAll(_ sender: AnyObject) {
@@ -485,13 +345,13 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		exportSelection = [Bool](repeating: newVal, count: exportSelection?.count ?? 0)
 		updateExportCommitButton()
 		
-		for i in 0 ..< (displayWorkouts?.count ?? 0) {
+		for i in 0 ..< (list.workouts?.count ?? 0) {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
 				cell.accessoryType = newVal ? .checkmark : .none
 			}
 		}
 	}
-	
+
 	private func updateExportCommitButton() {
 		exportCommitBtn.isEnabled = (exportSelection ?? []).firstIndex(of: true) != nil
 	}
@@ -501,10 +361,11 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	}
 	
 	private func updateExportModeEnabled() {
-		enterExportModeBtn.isEnabled = !isLoadingMore && (displayWorkouts?.count ?? 0) > 0
+//		exportToggleBtn.isEnabled = false
+		exportToggleBtn.isEnabled = !list.isLoading && !(list.workouts?.isEmpty ?? true)
 	}
 	
-	func dataIsReady() {
+	func workoutLoaded(_: Workout) {
 		// Move to a serial queue to synchronize access to counter
 		DispatchQueue.workout.async {
 			self.waitingForExport -= 1
@@ -554,7 +415,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 						self.documentController = nil
 						
 						if completed {
-							Preferences.reviewRequestCounter += 1
+							preferences.reviewRequestCounter += 1
 							self.checkRequestReview()
 						}
 					}
@@ -748,7 +609,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 	
 	override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
 		if identifier == "selectFilter" {
-			return !inExportMode
+			return !inExportMode && !list.isLoading
 		}
 		
 		return true
@@ -762,7 +623,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 		switch id {
 		case "showWorkout":
 			if let dest = segue.destination as? WorkoutTableViewController, let indexPath = tableView.indexPathForSelectedRow {
-				dest.rawWorkout = displayWorkouts[indexPath.row].raw
+				dest.rawWorkout = list.workouts![indexPath.row].raw
 				dest.listController = self
 			}
 		case "info":
@@ -776,9 +637,7 @@ class ListTableViewController: UITableViewController, GADBannerViewDelegate, Wor
 				dest.popoverPresentationController?.sourceView = self.view
 				dest.popoverPresentationController?.canOverlapSourceViewRect = true
 				
-				root.availableFilters = allWorkouts.map { $0.raw.workoutActivityType }
-				root.selectedFilters = filters
-				root.delegate = self
+				root.workoutList = list
 			}
 		default:
 			return

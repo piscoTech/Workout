@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import WorkoutCore
 
 class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDelegate {
 	
@@ -19,7 +20,7 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		zones = Preferences.runningHeartZones ?? RunningHeartZones.defaultZones
+		zones = preferences.runningHeartZones ?? RunningHeartZones.defaultZones
 
 		editBtn = self.editButtonItem
 		self.navigationItem.rightBarButtonItems = [editBtn]
@@ -43,7 +44,7 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 		self.navigationItem.setRightBarButtonItems(self.isEditing ? [editBtn, addZoneBtn] : [editBtn], animated:  true)
 		self.navigationItem.setLeftBarButton(self.isEditing ? cancelBtn : nil, animated: true)
 		self.navigationController?.interactivePopGestureRecognizer?.isEnabled = !self.isEditing
-		Preferences.runningHeartZones = self.zones
+		preferences.runningHeartZones = self.zones
 		
 		updateButtons()
 	}
@@ -81,7 +82,7 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if indexPath.section == 0 {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "maxRate", for: indexPath) as! MaxHeartRateCell
-			cell.setHeartRate(Preferences.maxHeartRate)
+			cell.setHeartRate(preferences.maxHeartRate)
 			
 			return cell
 		} else {
@@ -113,12 +114,12 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 	// MARK: - Max heart rate
 	
 	@IBAction func maxHeartRateChanged(_ sender: UITextField) {
-		Preferences.maxHeartRate = Int(sender.text ?? "")
+		preferences.maxHeartRate = Int(sender.text ?? "")
 		delegate.updateMaxHeartRate()
 	}
 	
 	@IBAction func maxHeartRateDone(_ sender: UITextField) {
-		(tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MaxHeartRateCell)?.setHeartRate(Preferences.maxHeartRate)
+		(tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? MaxHeartRateCell)?.setHeartRate(preferences.maxHeartRate)
 	}
 	
 	// MARK: - Edit zones
@@ -163,7 +164,7 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 	}
 	
 	@objc private func cancel() {
-		self.zones = Preferences.runningHeartZones ?? RunningHeartZones.defaultZones
+		self.zones = preferences.runningHeartZones ?? RunningHeartZones.defaultZones
 		tableView.reloadSections([1], with: .automatic)
 		self.setEditing(false, animated: true)
 	}
