@@ -47,37 +47,61 @@ extension HKQuantity: Comparable {
 	/// Considers the receiver a distance and formats it accordingly.
 	/// - parameter unit: The length unit to use in formatting.
 	/// - returns: The formatted value.
-	public func formatAsDistance(withUnit unit: HKUnit) -> String {
-		return distanceF.string(from: NSNumber(value: self.doubleValue(for: unit)))! + " \(unit.description)"
+	public func formatAsDistance(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return self.doubleValue(for: unit).toString()
+		} else {
+			return distanceF.string(from: NSNumber(value: value))! + " \(unit.description)"
+		}
 	}
 
 	/// Considers the receiver a pace and formats it accordingly.
 	/// - parameter unit: The reference length unit to use in formatting.
 	/// - returns: The formatted value.
-	public func formatAsPace(withReferenceLength lUnit: HKUnit) -> String {
-		let unit = HKUnit.second().unitDivided(by: lUnit)
-		return self.doubleValue(for: unit).getFormattedDuration() + "/\(lUnit.description)"
+	public func formatAsPace(withReferenceLength lUnit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: HKUnit.second().unitDivided(by: lUnit))
+		if rawFormat {
+			return value.getRawDuration()
+		} else {
+			return value.getFormattedDuration() + "/\(lUnit.description)"
+		}
 	}
 
 	/// Considers the receiver a heart rate and formats it accordingly.
 	/// - parameter unit: The heart rate unit to use in formatting.
 	/// - returns: The formatted value.
-	public func formatAsHeartRate(withUnit unit: HKUnit) -> String {
-		return integerF.string(from: NSNumber(value: self.doubleValue(for: unit)))! + " bpm"
+	public func formatAsHeartRate(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return value.toString()
+		} else {
+			return integerF.string(from: NSNumber(value: value))! + " bpm"
+		}
 	}
 
 	/// Considers the receiver a speed and formats it accordingly.
 	/// - parameter unit: The speed unit to use in formatting.
 	/// - returns: The formatted value.
-	public func formatAsSpeed(withUnit unit: HKUnit) -> String {
-		return speedF.string(from: NSNumber(value: self.doubleValue(for: unit)))! + " \(unit.description)"
+	public func formatAsSpeed(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return value.toString()
+		} else {
+			return speedF.string(from: NSNumber(value: value))! + " \(unit.description)"
+		}
 	}
 
 	/// Considers the receiver an energy and formats it accordingly.
 	/// - parameter unit: The energy unit to use in formatting.
 	/// - returns: The formatted value.
-	public func formatAsEnergy(withUnit unit: HKUnit) -> String {
-		return integerF.string(from: NSNumber(value: self.doubleValue(for: unit)))! + " \(unit.description)"
+	public func formatAsEnergy(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return value.toString()
+		} else {
+			return integerF.string(from: NSNumber(value: value))! + " \(unit.description)"
+		}
 	}
 
 }

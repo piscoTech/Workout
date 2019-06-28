@@ -172,7 +172,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		self.present(loadingIndicator!, animated: true)
 		
 		DispatchQueue.userInitiated.async {
-			guard let files = self.workout.export() else {
+			guard let files = self.workout.export(for: preferences.systemOfUnits) else {
 				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
 				
 				DispatchQueue.main.async {

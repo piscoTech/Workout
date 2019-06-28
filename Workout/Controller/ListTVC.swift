@@ -404,7 +404,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 						return
 					}
 					
-					data += w.exportGeneralData() + "\n"
+					data += w.exportGeneralData(for: preferences.systemOfUnits) + "\n"
 				}
 				
 				DispatchQueue.main.async {

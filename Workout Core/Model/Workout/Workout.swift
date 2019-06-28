@@ -339,67 +339,61 @@ public class Workout {
 
 	// MARK: - Export
 
-	#warning("Add back")
-	/*
-	private var generalData: [String] {
-	return [
-	type.name.toCSV(),
-	startDate.getUNIXDateTime().toCSV(),
-	endDate.getUNIXDateTime().toCSV(),
-	duration.getDuration().toCSV(),
-	totalDistance?.toCSV() ?? "",
-	avgHeart?.toCSV() ?? "",
-	maxHeart?.toCSV() ?? "",
-	pace?.getDuration().toCSV() ?? "",
-	speed?.toCSV() ?? "",
-	activeCalories?.toCSV() ?? "",
-	totalCalories?.toCSV() ?? ""
-	]
-	}*/
-
-	public func exportGeneralData() -> String {
-		return ""
-		#warning("Add back")
-//		return generalData.joined(separator: CSVSeparator)
+	private func generalData(for systemOfUnits: SystemOfUnits) -> [String] {
+		[
+			type.name.toCSV(),
+			startDate.getUNIXDateTime().toCSV(),
+			endDate.getUNIXDateTime().toCSV(),
+			duration.getRawDuration().toCSV(),
+			totalDistance?.formatAsDistance(withUnit: distanceUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			pace?.formatAsPace(withReferenceLength: paceUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			speed?.formatAsSpeed(withUnit: speedUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			activeEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			totalEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? ""
+		]
 	}
 
-	public func export() -> [URL]? {
-		#warning("Add back")
-		return []
+	#warning("This should be internal")
+	public func exportGeneralData(for systemOfUnits: SystemOfUnits) -> String {
+		return generalData(for: systemOfUnits).joined(separator: CSVSeparator)
+	}
 
-//	let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-//	var res = [general]
-//
-//	let genData = generalData
-//	let sep = CSVSeparator
-//	var data = "Field\(sep)Value\n"
-//	data += "Type\(sep)" + genData[0] + "\n"
-//	data += "Start\(sep)" + genData[1] + "\n"
-//	data += "End\(sep)" + genData[2] + "\n"
-//	data += "Duration\(sep)" + genData[3] + "\n"
-//	data += "\("Distance \(distanceUnit.description(for: preferences))".toCSV())\(sep)" + genData[4] + "\n"
-//	data += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
-//	data += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
-//	data += "\("Average Pace time/\(paceUnit.description(for: preferences))".toCSV())\(sep)" + genData[7] + "\n"
-//	data += "\("Average Speed \(speedUnit.description(for: preferences))/h".toCSV())\(sep)" + genData[8] + "\n"
-//	data += "\("Active Energy kcal".toCSV())\(sep)" + genData[9] + "\n"
-//	data += "\("Total Energy kcal".toCSV())\(sep)" + genData[10] + "\n"
-//
-//	do {
-//	try data.write(to: general, atomically: true, encoding: .utf8)
-//	} catch _ {
-//	return nil
-//	}
-//
-//	for dp in additionalProviders {
-//	guard let files = dp.export() else {
-//	return nil
-//	}
-//
-//	res += files
-//	}
-//
-//	return res
+	public func export(for systemOfUnits: SystemOfUnits) -> [URL]? {
+		let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
+		var res = [general]
+
+		let genData = generalData(for: systemOfUnits)
+		let sep = CSVSeparator
+		var data = "Field\(sep)Value\n"
+		data += "Type\(sep)" + genData[0] + "\n"
+		data += "Start\(sep)" + genData[1] + "\n"
+		data += "End\(sep)" + genData[2] + "\n"
+		data += "Duration\(sep)" + genData[3] + "\n"
+		data += "\("Distance \(distanceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[4] + "\n"
+		data += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
+		data += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
+		data += "\("Average Pace time/\(paceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[7] + "\n"
+		data += "\("Average Speed \(speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n"
+		data += "\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n"
+		data += "\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n"
+
+		do {
+			try data.write(to: general, atomically: true, encoding: .utf8)
+		} catch _ {
+			return nil
+		}
+
+		for dp in additionalProviders {
+			guard let files = dp.export() else {
+				return nil
+			}
+
+			res += files
+		}
+
+		return res
 	}
 	
 }
