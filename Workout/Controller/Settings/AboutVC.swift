@@ -346,7 +346,7 @@ class AboutViewController: UITableViewController {
 		let old = tableView.numberOfSections
 		let new = self.numberOfSections(in: tableView)
 		guard !areAdsEnabled, old > new else {
-			// Rows already hidden
+			// Rows already hidden or should not be hidden
 			return
 		}
 		
