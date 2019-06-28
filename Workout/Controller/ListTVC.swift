@@ -61,6 +61,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 
 		preferences.add(delegate: self)
 		list.delegate = self
+		updateFilterLabel()
         refresh()
 		initializeAds()
 		
@@ -225,14 +226,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	func listChanged() {
 		updateExportModeEnabled()
 
-		switch list.filters.count {
-		case 0:
-			filterLbl.text = allFiltersStr
-		case 1:
-			filterLbl.text = list.filters.first?.name
-		default:
-			filterLbl.text = String(format: manyFiltersStr, list.filters.count)
-		}
+		updateFilterLabel()
 
 		tableView.beginUpdates()
 		tableView.reloadSections([0], with: .automatic)
@@ -249,6 +243,17 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		}
 		setupLoadMore()
 		tableView.endUpdates()
+	}
+
+	private func updateFilterLabel() {
+		switch list.filters.count {
+		case 0:
+			filterLbl.text = allFiltersStr
+		case 1:
+			filterLbl.text = list.filters.first?.name
+		default:
+			filterLbl.text = String(format: manyFiltersStr, list.filters.count)
+		}
 	}
 
 	private func setupLoadMore() {

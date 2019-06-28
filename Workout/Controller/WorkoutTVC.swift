@@ -111,34 +111,34 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			let title: String
 			switch indexPath.row {
 			case 0:
-				title = "TYPE"
+				title = "WRKT_TYPE"
 				cell.detailTextLabel?.text = workout.type.name
 			case 1:
-				title = "START"
+				title = "WRKT_START"
 				cell.detailTextLabel?.text = workout.startDate.getFormattedDateTime()
 			case 2:
-				title = "END"
+				title = "WRKT_END"
 				cell.detailTextLabel?.text = workout.endDate.getFormattedDateTime()
 			case 3:
-				title = "DURATION"
+				title = "WRKT_DURATION"
 				cell.detailTextLabel?.text = workout.duration.getFormattedDuration()
 			case 4:
-				title = "DISTANCE"
+				title = "WRKT_DISTANCE"
 				cell.detailTextLabel?.text = workout.totalDistance?.formatAsDistance(withUnit: workout.distanceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 5:
-				title = "AVG_HEART"
+				title = "WRKT_AVG_HEART"
 				cell.detailTextLabel?.text = workout.avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 6:
-				title = "MAX_HEART"
+				title = "WRKT_MAX_HEART"
 				cell.detailTextLabel?.text = workout.maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 7:
-				title = "AVG_PACE"
+				title = "WRKT_AVG_PACE"
 				cell.detailTextLabel?.text = workout.pace?.formatAsPace(withReferenceLength: workout.paceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 8:
-				title = "AVG_SPEED"
+				title = "WRKT_AVG_SPEED"
 				cell.detailTextLabel?.text = workout.speed?.formatAsSpeed(withUnit: workout.speedUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case 9:
-				title = "CALORIES"
+				title = "WRKT_ENERGY"
 				if let total = workout.totalEnergy {
 					if let active = workout.activeEnergy {
 						cell.detailTextLabel?.text = String(format: NSLocalizedString("WRKT_SPLIT_CAL_%@_TOTAL_%@", comment: "Active/Total"),

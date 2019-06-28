@@ -103,7 +103,7 @@
                         <rightBarButtonItems>
                             <barButtonItem systemItem="refresh" id="yIy-Wt-wpU">
                                 <connections>
-                                    <action selector="refresh:" destination="5g0-8u-NPu" id="ebI-FF-5A9"/>
+                                    <action selector="refresh" destination="5g0-8u-NPu" id="ivf-wd-JiW"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem systemItem="action" id="LjV-W9-sZo">

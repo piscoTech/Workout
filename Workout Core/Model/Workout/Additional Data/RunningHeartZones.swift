@@ -114,7 +114,7 @@ public class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider,
 
 	private static let header = NSLocalizedString("HEART_ZONES_TITLE", comment: "Heart zones")
 	private static let footer = NSLocalizedString("HEART_ZONES_FOOTER", comment: "Can be less than total")
-	private static let zoneTitle = NSLocalizedString("HEART_ZONE", comment: "Zone x")
+	private static let zoneTitle = NSLocalizedString("HEART_ZONES_ZONE_%lld", comment: "Zone x")
 	private static let zoneConfig = NSLocalizedString("HEART_ZONES_NEED_CONFIG", comment: "Zone config")
 
 	public let sectionHeader: String? = RunningHeartZones.header

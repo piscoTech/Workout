@@ -55,6 +55,8 @@
 		7AB7CDAB22C4DBB2001A0171 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD7D8FB22C2BC5E0092480A /* Extensions.swift */; };
 		7AB7CDAC22C4DC38001A0171 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD7D8FC22C2BC5E0092480A /* Formatters.swift */; };
 		7AB7CDAE22C4DD3D001A0171 /* WorkoutMinuteTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B5122C1354300059687 /* WorkoutMinuteTVCell.swift */; };
+		7AB8F15C22C603EA00B84BE4 /* MBHealth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2B22C132DB00059687 /* MBHealth.framework */; };
+		7AB8F15F22C6040100B84BE4 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2522C132DB00059687 /* MBLibrary.framework */; };
 		7AD7D8FD22C2BC5F0092480A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD7D8FA22C2BC5E0092480A /* Constants.swift */; };
 /* End PBXBuildFile section */
 
@@ -198,6 +200,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7AB8F15C22C603EA00B84BE4 /* MBHealth.framework in Frameworks */,
+				7AB8F15F22C6040100B84BE4 /* MBLibrary.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -909,7 +913,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTS_UIKITFORMAC = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -936,7 +940,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTS_UIKITFORMAC = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};

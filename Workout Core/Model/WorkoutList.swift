@@ -165,6 +165,7 @@ public class WorkoutList {
 					} else {
 						self.isLoading = false
 						DispatchQueue.main.async {
+							self.delegate?.loadingStatusChanged()
 							self.delegate?.additionalWorkoutsLoaded(count: disp.count, oldCount: oldCount)
 						}
 					}

@@ -41,7 +41,7 @@
 "WRKT_MAX_HEART" = "Max Heart Rate";
 "WRKT_AVG_PACE" = "Average Pace";
 "WRKT_AVG_SPEED" = "Average Speed";
-"WRKT_CALORIES" = "Calories";
+"WRKT_ENERGY" = "Energy";
 
 "WRKT_SPLIT_CAL_%@_TOTAL_%@" = "%@ (%@ total)";
 
@@ -50,7 +50,7 @@
 "MINBYMIN_%@_PAUSE" = "Pause for %@";
 
 "HEART_ZONES_TITLE" = "Heart Zones";
-"HEART_ZONES_FOOTER" = "It is possible that the sum of time in each heart zone does not add up to the total duration of the workout as in some parts heart data is not available or the heart rate is below the threshold for Zone 1.";
+"HEART_ZONES_FOOTER" = "It is possible that the sum of times in each heart zone do not add up to the total duration of the workout as in some parts heart data is not available or the heart rate is below the threshold for Zone 1.";
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
 "HEART_ZONES_ZONE_%lld" = "Zone %d";
 

@@ -69,10 +69,10 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor, 
 	
 	// MARK: - Display Data
 	
-	public let sectionHeader: String? = NSLocalizedString("DETAILS_TITLE", comment: "Details")
+	public let sectionHeader: String? = NSLocalizedString("MINBYMIN_TITLE", comment: "Details")
 	public let sectionFooter: String? = nil
 
-	private static let pauseStr = NSLocalizedString("PAUSE_TIME", comment: "Pause for mm:ss")
+	private static let pauseStr = NSLocalizedString("MINBYMIN_%@_PAUSE", comment: "Pause for mm:ss")
 	
 	public var numberOfRows: Int {
 		return segments?.reduce(0) { $0 + $1.partCount } ?? 0
