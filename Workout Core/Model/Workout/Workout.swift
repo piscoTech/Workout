@@ -360,40 +360,63 @@ public class Workout {
 		return generalData(for: systemOfUnits).joined(separator: CSVSeparator)
 	}
 
-	public func export(for systemOfUnits: SystemOfUnits) -> [URL]? {
-		let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-		var res = [general]
+	public func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
+		DispatchQueue.background.async {
+			let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
 
-		let genData = generalData(for: systemOfUnits)
-		let sep = CSVSeparator
-		var data = "Field\(sep)Value\n"
-		data += "Type\(sep)" + genData[0] + "\n"
-		data += "Start\(sep)" + genData[1] + "\n"
-		data += "End\(sep)" + genData[2] + "\n"
-		data += "Duration\(sep)" + genData[3] + "\n"
-		data += "\("Distance \(distanceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[4] + "\n"
-		data += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
-		data += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
-		data += "\("Average Pace time/\(paceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[7] + "\n"
-		data += "\("Average Speed \(speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n"
-		data += "\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n"
-		data += "\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n"
+			let genData = self.generalData(for: systemOfUnits)
+			let sep = CSVSeparator
+			var data = "Field\(sep)Value\n"
+			data += "Type\(sep)" + genData[0] + "\n"
+			data += "Start\(sep)" + genData[1] + "\n"
+			data += "End\(sep)" + genData[2] + "\n"
+			data += "Duration\(sep)" + genData[3] + "\n"
+			data += "\("Distance \(self.distanceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[4] + "\n"
+			data += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
+			data += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
+			data += "\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[7] + "\n"
+			data += "\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n"
+			data += "\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n"
+			data += "\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n"
 
-		do {
-			try data.write(to: general, atomically: true, encoding: .utf8)
-		} catch _ {
-			return nil
-		}
-
-		for dp in additionalProviders {
-			guard let files = dp.export() else {
-				return nil
+			do {
+				try data.write(to: general, atomically: true, encoding: .utf8)
+			} catch _ {
+				callback(nil)
+				return
 			}
 
-			res += files
-		}
+			if self.additionalProviders.isEmpty {
+				callback([general])
+			} else {
+				var files = [[URL]?](repeating: nil, count: self.additionalProviders.count)
+				var completed = 0
+				for (i, dp) in self.additionalProviders.enumerated() {
+					dp.export(for: systemOfUnits) { f in
+						DispatchQueue.workout.async {
+							completed += 1
+							files[i] = f
 
-		return res
+							if completed == self.additionalProviders.count {
+								DispatchQueue.background.async {
+									if let res = files.reduce([], { (res, partial) -> [URL]? in
+										if let r = res, let p = partial {
+											return r + p
+										} else {
+											return nil
+										}
+									}) {
+										callback([general] + res)
+									} else {
+										callback(nil)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	
 }

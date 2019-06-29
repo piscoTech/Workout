@@ -17,6 +17,6 @@ public protocol AdditionalDataProvider {
 	
 	/// Export the data in CSV file(s).
 	/// - returns: An array of `URL`s for the files that contains the data or `nil` if an error occured. If no data should be exported an empty array is returned.
-	func export() -> [URL]?
+	func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void)
 	
 }

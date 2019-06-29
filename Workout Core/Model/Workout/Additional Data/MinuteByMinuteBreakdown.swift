@@ -109,26 +109,37 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor, 
 		
 		preconditionFailure("Given index path cannot be rendered")
 	}
-	
-	public func export() -> [URL]? {
-		return []
-		#warning("Add Back")
-//		guard let seg = self.segments else {
-//			return []
-//		}
-//		
-//		let export = [.time] + self.displayDetail
-//		let sep = CSVSeparator
-//		let data = export.map { $0.getNameAndUnit(for: owner).toCSV() }.joined(separator: sep) + "\n" + seg.map { $0.export(details: export) }.joined()
-//		
-//		do {
-//			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
-//			try data.write(to: detFile, atomically: true, encoding: .utf8)
-//			
-//			return [detFile]
-//		} catch {
-//			return nil
-//		}
+
+	func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
+		DispatchQueue.background.async {
+			guard let seg = self.segments else {
+				callback([])
+				return
+			}
+
+			let export = [.time] + self.displayDetail
+			let sep = CSVSeparator
+			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
+
+			do {
+				let header = export.map { $0.getNameAndUnit(for: self.owner, andSystemOfUnits: systemOfUnits).toCSV() }.joined(separator: sep) + "\n"
+				try header.write(to: detFile, atomically: true, encoding: .utf8)
+
+				let file = try FileHandle(forWritingTo: detFile)
+				defer {
+					file.closeFile()
+				}
+				file.seekToEndOfFile()
+
+				for s in seg {
+					file.write(s.export(details: export, withSystemOfUnits: systemOfUnits).data(using: .utf8)!)
+				}
+
+				callback([detFile])
+			} catch {
+				callback(nil)
+			}
+		}
 	}
 	
 }

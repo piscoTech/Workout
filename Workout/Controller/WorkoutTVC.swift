@@ -171,8 +171,8 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		loadingIndicator = UIAlertController.getModalLoading()
 		self.present(loadingIndicator!, animated: true)
 		
-		DispatchQueue.userInitiated.async {
-			guard let files = self.workout.export(for: preferences.systemOfUnits) else {
+		workout.export(for: preferences.systemOfUnits) { result in
+			guard let files = result else {
 				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
 				
 				DispatchQueue.main.async {

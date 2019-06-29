@@ -93,19 +93,17 @@ class WorkoutSegment {
 	/// Exports the minutes to CSV format.
 	/// - parameter details: The details to export for each minute, non-empty with at least two details.
 	/// - returns: A CSV string containing a row for each minute, each line is `\n`-terminated.
-	func export(details: [WorkoutDetail]) -> String {
-		#warning("Add back")
-		return ""
-		//		precondition(details.count >= 2, "Details for the workout don't make any sense")
-		//
-		//		let sep = CSVSeparator
-		//		var res = minutes.map { d in details.map { $0.export(val: d) }.joined(separator: sep) }.joined(separator: "\n") + "\n"
-		//
-		//		if let pause = pauseTime {
-		//			res += "\(pause.getDuration().toCSV())\(sep)Pause" + [String](repeating: sep, count: details.count - 2).joined() + "\n"
-		//		}
-		//
-		//		return res
+	func export(details: [WorkoutDetail], withSystemOfUnits systemOfUnits: SystemOfUnits) -> String {
+		precondition(details.count >= 2, "Details for the workout don't make any sense")
+
+		let sep = CSVSeparator
+		var res = minutes.map { d in details.map { $0.export(d, withSystemOfUnits: systemOfUnits) }.joined(separator: sep) }.joined(separator: "\n") + "\n"
+
+		if let pause = pauseTime {
+			res += "Pause\(sep)\(pause.getRawDuration().toCSV())" + [String](repeating: sep, count: details.count - 2).joined() + "\n"
+		}
+
+		return res
 	}
 
 }

@@ -141,30 +141,30 @@ public class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider,
 		return cell
 	}
 
-	public func export() -> [URL]? {
-		guard let zonesData = self.zonesData else {
-			return []
+	public func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
+		DispatchQueue.background.async {
+			guard let zonesData = self.zonesData else {
+				callback([])
+				return
+			}
+
+			let sep = CSVSeparator
+			var zones = "Zone\(sep)Time\n"
+			var i = 1
+			for t in zonesData {
+				zones += "\(i)\(sep)\(t.getRawDuration().toCSV())\n"
+				i += 1
+			}
+
+			do {
+				let hzFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("heartZones.csv")
+				try zones.write(to: hzFile, atomically: true, encoding: .utf8)
+
+				callback([hzFile])
+			} catch {
+				callback(nil)
+			}
 		}
-
-		#warning("Add Back")
-		return []
-
-		//		let sep = CSVSeparator
-		//		var zones = "Zone\(sep)Time\n"
-		//		var i = 1
-		//		for t in zonesData {
-		//			zones += "\(i)\(sep)\(t.getDuration().toCSV())\n"
-		//			i += 1
-		//		}
-		//
-		//		do {
-		//			let hzFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("heartZones.csv")
-		//			try zones.write(to: hzFile, atomically: true, encoding: .utf8)
-		//
-		//			return [hzFile]
-		//		} catch {
-		//			return nil
-		//		}
 	}
 
 }

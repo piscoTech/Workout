@@ -12,7 +12,7 @@ import HealthKit
 extension DispatchQueue {
 
 	#warning("Remove public visibility")
-	/// Serial queue to synchronize access to counters and data when loading and exporting workouts.
+	/// Serial queue to synchronize access to counters and data when loading or exporting workouts.
 	public static let workout = DispatchQueue(label: "Marco-Boschi.ios.Workout.loadExport")
 
 }
