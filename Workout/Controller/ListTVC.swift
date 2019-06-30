@@ -14,10 +14,10 @@ import GoogleMobileAds
 import PersonalizedAdConsent
 import StoreKit
 
-#warning("Remove WorkoutDelegate")
-class ListTableViewController: UITableViewController, WorkoutListDelegate, WorkoutDelegate, PreferencesDelegate, GADBannerViewDelegate, EnhancedNavigationBarDelegate {
+class ListTableViewController: UITableViewController, WorkoutListDelegate, WorkoutBulkExporterDelegate, PreferencesDelegate, GADBannerViewDelegate, EnhancedNavigationBarDelegate {
 
 	private let list = WorkoutList(healthData: healthData, preferences: preferences)
+	private var exporter: WorkoutBulkExporter?
 	
 	private var standardRightBtns: [UIBarButtonItem]!
 	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
@@ -28,10 +28,6 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	
 	private var exportToggleBtn: UIBarButtonItem!
 	private var exportCommitBtn: UIBarButtonItem!
-	#warning("Move to dedicated class")
-	private var exportSelection: [Bool]!
-	
-	private var inExportMode = false
 	
 	private var heightFixed = false
 	private var titleLblShouldHide = false
@@ -53,8 +49,11 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		standardRightBtns = navigationItem.rightBarButtonItems
 		standardLeftBtn = navigationItem.leftBarButtonItem
+		if #available(iOS 13, *) {} else {
+			standardLeftBtn.image = #imageLiteral(resourceName: "Settings")
+		}
 		
-		exportToggleBtn = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(toggleExportAll(_:)))
+		exportToggleBtn = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(toggleExportAll))
 		exportCommitBtn = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(doExport(_:)))
 		exportRightBtns = [exportCommitBtn, exportToggleBtn]
 		exportLeftBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelExport(_:)))
@@ -102,13 +101,15 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	}
 	
 	func checkRequestReview() {
-		if #available(iOS 10.3, *) {
-			guard preferences.reviewRequestCounter >= preferences.reviewRequestThreshold else {
-				return
+		#if !DEBUG
+			if #available(iOS 10.3, *) {
+				guard preferences.reviewRequestCounter >= preferences.reviewRequestThreshold else {
+					return
+				}
+				
+				SKStoreReviewController.requestReview()
 			}
-			
-			SKStoreReviewController.requestReview()
-		}
+		#endif
 	}
 	
 	// MARK: - Data Loading
@@ -126,7 +127,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-		if self.list.error == nil && self.list.workouts != nil && self.list.canLoadMore && !self.inExportMode {
+		if self.list.error == nil && self.list.workouts != nil && self.list.canLoadMore && self.exporter == nil {
 			return 2
 		} else {
 			return 1
@@ -180,8 +181,8 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		}
 		cell.detailTextLabel?.text = detail.joined(separator: " \(textSeparator) ")
 		
-		if inExportMode {
-			cell.accessoryType = exportSelection[indexPath.row] ? .checkmark : .none
+		if let exp = exporter {
+			cell.accessoryType = exp.selection[indexPath.row] ? .checkmark : .none
 		} else {
 			cell.accessoryType = .disclosureIndicator
 		}
@@ -195,16 +196,8 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 				list.loadMore()
 			}
 		} else {
-			if inExportMode {
-				let newSel = !exportSelection[indexPath.row]
-				exportSelection[indexPath.row] = newSel
-				
-				if let cell = tableView.cellForRow(at: indexPath) {
-					cell.accessoryType = newSel ? .checkmark : .none
-				}
-				
-				updateToggleExportAllText()
-				updateExportCommitButton()
+			if let exp = exporter {
+				exp[indexPath.row].toggle()
 			} else {
 				performSegue(withIdentifier: "showWorkout", sender: self)
 			}
@@ -257,7 +250,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	}
 
 	private func setupLoadMore() {
-		if list.canLoadMore {
+		if list.canLoadMore && exporter == nil {
 			if tableView.numberOfSections == 1 {
 				tableView.insertSections([1], with: .automatic)
 			}
@@ -275,172 +268,137 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	private var waitingForExport = 0
 	private var loadingBar: UIAlertController?
 	private weak var loadingProgress: UIProgressView?
+
+	private func updateExportModeEnabled() {
+		exportToggleBtn.isEnabled = !list.isLoading && !(list.workouts?.isEmpty ?? true)
+	}
 	
-	@IBAction func chooseExport(_ sender: AnyObject) {
-		inExportMode = true
-		if tableView.numberOfSections > 1 {
-			tableView.deleteSections([1], with: .automatic)
+	@IBAction func chooseExport() {
+		guard let exp = WorkoutBulkExporter(list) else {
+			return
 		}
-		
-		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_NONE", comment: "Select None")
-		exportSelection = [Bool](repeating: true, count: list.workouts?.count ?? 0)
-		updateExportCommitButton()
+
+		self.exporter = exp
+		exp.delegate = self
+		listChanged()
+		updateExportToggleAll()
 		
 		navigationItem.leftBarButtonItem = exportLeftBtn
 		navigationItem.rightBarButtonItems = exportRightBtns
-		
-		for i in 0 ..< (list.workouts?.count ?? 0) {
-			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
-				cell.accessoryType = .checkmark
-			}
-		}
 	}
-	
-	@objc func doExport(_ sender: UIBarButtonItem) {
-		loadingBar?.dismiss(animated: false)
-		
-		DispatchQueue.userInitiated.async {
-			self.exportWorkouts = []
-			self.waitingForExport = self.exportSelection.map { $0 ? 1 : 0 }.reduce(0) { $0 + $1 }
-			
-			guard self.waitingForExport > 0 else {
-				return
-			}
-			
-			DispatchQueue.main.async {
-				let (bar, progress) = UIAlertController.getModalProgress()
-				self.loadingBar = bar
-				self.loadingProgress = progress
-				self.present(self.loadingBar!, animated: true)
-			}
-			
-			for (w, e) in zip(self.list.workouts ?? [], self.exportSelection) {
-				if e {
-					let workout = Workout.workoutFor(raw: w.raw, from: healthData, and: preferences, delegate: self)
-					// Avoid loading additional (and unused) detail
-					workout.load(quickly: true)
-					self.exportWorkouts.append(workout)
-				}
-			}
-		}
-	}
-	
+
 	@objc func cancelExport(_ sender: AnyObject) {
-		inExportMode = false
-		#warning("Use a dedicated method for handling in and out of export mode")
+		self.exporter = nil
 		listChanged()
-		
+
 		navigationItem.leftBarButtonItem = standardLeftBtn
 		navigationItem.rightBarButtonItems = standardRightBtns
 	}
 	
-	@objc func toggleExportAll(_ sender: AnyObject) {
-		let newVal: Bool
-		let newText: String
-		
-		if exportSelection?.firstIndex(of: false) == nil {
-			newVal = false
-			newText = "ALL"
-		} else {
-			newVal = true
-			newText = "NONE"
+	private func updateExportToggleAll() {
+		guard let exp = exporter else {
+			return
 		}
 		
-		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_" + newText, comment: "Select")
-		exportSelection = [Bool](repeating: newVal, count: exportSelection?.count ?? 0)
-		updateExportCommitButton()
-		
-		for i in 0 ..< (list.workouts?.count ?? 0) {
+		exportToggleBtn.title = NSLocalizedString("EXPORT_SELECT_\(exp.selection.firstIndex(of: false) != nil ? "ALL" : "NONE")", comment: "Select")
+	}
+
+	@objc func toggleExportAll() {
+		guard let exp = exporter else {
+			return
+		}
+
+		exp.selectAll(exp.selection.firstIndex(of: false) != nil)
+	}
+
+	func exportSelectionChanged(for offsets: [Int]?) {
+		guard let exp = exporter else {
+			return
+		}
+
+		for i in offsets ?? Array(0 ..< (list.workouts?.count ?? 0)) {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {
-				cell.accessoryType = newVal ? .checkmark : .none
+				cell.accessoryType = exp.selection[i] ? .checkmark : .none
 			}
+		}
+
+		exportCommitBtn.isEnabled = exp.canExport
+		updateExportToggleAll()
+	}
+	
+	@objc func doExport(_ sender: UIBarButtonItem) {
+		guard let exp = exporter else {
+			return
+		}
+
+		loadingBar?.dismiss(animated: false)
+		if exp.export(from: healthData, and: preferences) {
+			let (bar, progress) = UIAlertController.getModalProgress()
+			self.loadingBar = bar
+			self.loadingProgress = progress
+			self.present(self.loadingBar!, animated: true)
 		}
 	}
 
-	private func updateExportCommitButton() {
-		exportCommitBtn.isEnabled = (exportSelection ?? []).firstIndex(of: true) != nil
+	func exportProgressChanged(_ progress: Float) {
+		DispatchQueue.main.async {
+			self.loadingProgress?.setProgress(progress, animated: true)
+		}
 	}
-	
-	private func updateToggleExportAllText() {
-		exportToggleBtn.title = NSLocalizedString("SEL_EXPORT_" + (exportSelection?.firstIndex(of: false) == nil ? "NONE" : "ALL"), comment: "Select")
-	}
-	
-	private func updateExportModeEnabled() {
-//		exportToggleBtn.isEnabled = false
-		exportToggleBtn.isEnabled = !list.isLoading && !(list.workouts?.isEmpty ?? true)
-	}
-	
-	func workoutLoaded(_: Workout) {
-		// Move to a serial queue to synchronize access to counter
-		DispatchQueue.workout.async {
-			self.waitingForExport -= 1
-			DispatchQueue.main.async {
-				let total = self.exportWorkouts.count
-				self.loadingProgress?.setProgress(Float(total - self.waitingForExport) / Float(total), animated: true)
+
+	func exportCompleted(data: URL?, individualFailures failures: [Date]?) {
+		DispatchQueue.main.async {
+			self.cancelExport(self)
+
+			guard let filePath = data, let fail = failures else {
+				let alert = UIAlertController(simpleAlert: NSLocalizedString("EXPORT_ERROR", comment: "Export error"), message: nil)
+
+				if let l = self.loadingBar {
+					l.dismiss(animated: true) {
+						self.loadingBar = nil
+						self.present(alert, animated: true)
+					}
+				} else {
+					self.present(alert, animated: true)
+				}
+
+				return
 			}
-			
-			if self.waitingForExport == 0 {
-				let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
-				let displayError = {
-					let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
-					
-					DispatchQueue.main.async {
-						if let l = self.loadingBar {
-							l.dismiss(animated: true) {
-								self.loadingBar = nil
-								self.present(alert, animated: true)
-							}
-						} else {
-							self.present(alert, animated: true)
+
+			self.documentController = UIActivityViewController(activityItems: [filePath], applicationActivities: nil)
+			self.documentController.completionWithItemsHandler = { _, completed, _, _ in
+				self.documentController = nil
+
+				if completed {
+					let review = {
+						preferences.reviewRequestCounter += 1
+						self.checkRequestReview()
+					}
+
+					if !fail.isEmpty {
+						let text = String(format: NSLocalizedString("EXPORT_ERROR_PARTIAL_%@", comment: "Failed workouts"), fail.map { $0.getFormattedDateTime() }.joined(separator: "\n"))
+						let alert = UIAlertController(simpleAlert: NSLocalizedString("EXPORT_ERROR_PARTIAL", comment: "Export error"),
+													  message: text) {
+							review()
 						}
+
+						self.present(alert, animated: true)
+					} else {
+						review()
 					}
-				}
-				
-				let sep = CSVSeparator
-				var data = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Active Energy kcal".toCSV())\(sep)\("Total Energy kcal".toCSV())\n"
-				for w in self.exportWorkouts {
-					if w.hasError {
-						displayError()
-						return
-					}
-					
-					data += w.exportGeneralData(for: preferences.systemOfUnits) + "\n"
-				}
-				
-				DispatchQueue.main.async {
-					self.cancelExport(self)
-				}
-				
-				do {
-					try data.write(to: filePath, atomically: true, encoding: .utf8)
-					
-					self.exportWorkouts = []
-					self.documentController = UIActivityViewController(activityItems: [filePath], applicationActivities: nil)
-					self.documentController.completionWithItemsHandler = { _, completed, _, _ in
-						self.documentController = nil
-						
-						if completed {
-							preferences.reviewRequestCounter += 1
-							self.checkRequestReview()
-						}
-					}
-					
-					DispatchQueue.main.async {
-						if let l = self.loadingBar {
-							l.dismiss(animated: true) {
-								self.loadingBar = nil
-								self.present(self.documentController, animated: true)
-							}
-						} else {
-							self.present(self.documentController, animated: true)
-						}
-						
-						self.documentController.popoverPresentationController?.barButtonItem = self.exportCommitBtn
-					}
-				} catch _ {
-					displayError()
 				}
 			}
+
+			if let l = self.loadingBar {
+				l.dismiss(animated: true) {
+					self.loadingBar = nil
+					self.present(self.documentController, animated: true)
+				}
+			} else {
+				self.present(self.documentController, animated: true)
+			}
+
+			self.documentController.popoverPresentationController?.barButtonItem = self.exportCommitBtn
 		}
 	}
 	
@@ -614,7 +572,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	
 	override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
 		if identifier == "selectFilter" {
-			return !inExportMode && !list.isLoading
+			return exporter == nil && !list.isLoading
 		}
 		
 		return true

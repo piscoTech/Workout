@@ -12,7 +12,6 @@ import HealthKit
 class StepSourceTableViewController: UITableViewController, UITextFieldDelegate {
 	
 	@IBOutlet weak var customSource: UITextField!
-	weak var delegate: AboutViewController!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,8 +70,6 @@ class StepSourceTableViewController: UITableViewController, UITextFieldDelegate 
 			setCheckmark()
 			preferences.stepSourceFilter = .custom(txt)
 		}
-		
-		delegate.updateStepSource()
 	}
 	
 	@IBAction func customSourceDidChange(_ sender: AnyObject) {
@@ -85,7 +82,6 @@ class StepSourceTableViewController: UITableViewController, UITextFieldDelegate 
 			tableView.cellForRow(at: IndexPath(row: 3, section: 0))?.accessoryType = .checkmark
 			
 			preferences.stepSourceFilter = .custom(str)
-			delegate.updateStepSource()
 		}
 	}
 	

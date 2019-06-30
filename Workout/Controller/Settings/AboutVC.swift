@@ -12,10 +12,11 @@ import MBLibrary
 import WorkoutCore
 import PersonalizedAdConsent
 
-class AboutViewController: UITableViewController {
+class AboutViewController: UITableViewController, PreferencesDelegate {
 	
 	private var appInfo: String!
 	private let maxHeart = NSLocalizedString("HEART_ZONES_MAX_RATE", comment: "Max x bpm")
+	#warning("Removable after using a dedicated ad controller")
 	var delegate: ListTableViewController!
 	
 	private var numberOfRowsInAdsSection: Int {
@@ -137,26 +138,27 @@ class AboutViewController: UITableViewController {
 		
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
-	
-	func updateUnits() {
+
+	// MARK: - Preferences Updated
+
+	func preferredSystemOfUnitsChanged() {
 		if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: settingsSectionOffset)) {
 			setUnits(in: cell)
 		}
 	}
-	
-	func updateStepSource() {
+
+	func stepSourceChanged() {
 		if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: settingsSectionOffset)) {
 			setStepSource(in: cell)
 		}
 	}
-	
-	func updateMaxHeartRate() {
+
+	func runningHeartZonesConfigChanged() {
 		if let cell = tableView.cellForRow(at: IndexPath(row: 2, section: settingsSectionOffset)) {
 			setMaxHeartRate(in: cell)
 		}
 	}
 
-	#warning("Use preference delegate directly")
 	private func setUnits(in cell: UITableViewCell) {
 		cell.detailTextLabel?.text = preferences.systemOfUnits.displayName
 	}
@@ -365,15 +367,6 @@ class AboutViewController: UITableViewController {
 		}
 		
 		switch segueID {
-		case "units":
-			let dest = segue.destination as! UnitsTableViewController
-			dest.delegate = self
-		case "stepSource":
-			let dest = segue.destination as! StepSourceTableViewController
-			dest.delegate = self
-		case "heartZones":
-			let dest = segue.destination as! RunningHeartZonesTableViewController
-			dest.delegate = self
 		case "contact":
 			let dest = (segue.destination as! UINavigationController).topViewController as! ContactMeViewController
 			dest.appName = "Workout"

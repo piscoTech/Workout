@@ -11,21 +11,9 @@ import WorkoutCore
 
 class UnitsTableViewController: UITableViewController {
 	
-	weak var delegate: AboutViewController!
-	private var shouldUpdate = false
-
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-	
-	override func viewWillDisappear(_ animated: Bool) {
-		super.viewWillDisappear(animated)
-		
-		if shouldUpdate {
-			delegate.updateUnits()
-			shouldUpdate = false
-		}
-	}
 
     // MARK: - Table view data source
 
@@ -48,7 +36,6 @@ class UnitsTableViewController: UITableViewController {
 	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		preferences.systemOfUnits = SystemOfUnits.allCases[indexPath.row]
-		shouldUpdate = true
 		
 		for i in 0 ..< SystemOfUnits.allCases.count {
 			if let cell = tableView.cellForRow(at: IndexPath(row: i, section: 0)) {

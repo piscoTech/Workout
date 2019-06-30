@@ -28,16 +28,19 @@ private enum PreferenceKeys: String, KeyValueStoreKey {
 public protocol PreferencesDelegate: AnyObject {
 
 	@objc optional func preferencesChanged()
+
 	@objc optional func preferredSystemOfUnitsChanged()
-	@objc optional func reviewCounterUpdated()
+	@objc optional func stepSourceChanged()
 	@objc optional func runningHeartZonesConfigChanged()
+
+	@objc optional func reviewCounterUpdated()
 
 }
 
 public class Preferences {
 
 	private enum Change {
-		case generic, systemOfUnits, reviewCounter, hzConfig
+		case generic, systemOfUnits, stepSource, hzConfig, reviewCounter
 	}
 
 	public let local = KeyValueStore(userDefaults: UserDefaults.standard)
@@ -61,10 +64,12 @@ public class Preferences {
 			switch change {
 			case .systemOfUnits:
 				d.preferredSystemOfUnitsChanged?()
-			case .reviewCounter:
-				d.reviewCounterUpdated?()
+			case .stepSource:
+				d.stepSourceChanged?()
 			case .hzConfig:
 				d.runningHeartZonesConfigChanged?()
+			case .reviewCounter:
+				d.reviewCounterUpdated?()
 			case .generic:
 				d.preferencesChanged?()
 			}
@@ -89,7 +94,7 @@ public class Preferences {
 		}
 		set {
 			local.set(newValue.description, forKey: PreferenceKeys.stepSource)
-			saveChanges()
+			saveChanges(.stepSource)
 		}
 	}
 

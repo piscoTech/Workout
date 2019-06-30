@@ -11,7 +11,6 @@ import WorkoutCore
 
 class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDelegate {
 	
-	weak var delegate: AboutViewController!
 	private var zones: [Int]!
 	private weak var editBtn: UIBarButtonItem!
 	private var addZoneBtn: UIBarButtonItem!
@@ -115,7 +114,6 @@ class RunningHeartZonesTableViewController: UITableViewController, UITextFieldDe
 	
 	@IBAction func maxHeartRateChanged(_ sender: UITextField) {
 		preferences.maxHeartRate = Int(sender.text ?? "")
-		delegate.updateMaxHeartRate()
 	}
 	
 	@IBAction func maxHeartRateDone(_ sender: UITextField) {

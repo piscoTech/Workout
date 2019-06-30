@@ -173,7 +173,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		
 		workout.export(for: preferences.systemOfUnits) { result in
 			guard let files = result else {
-				let alert = UIAlertController(simpleAlert: NSLocalizedString("CANNOT_EXPORT", comment: "Export error"), message: nil)
+				let alert = UIAlertController(simpleAlert: NSLocalizedString("EXPORT_ERROR", comment: "Export error"), message: nil)
 				
 				DispatchQueue.main.async {
 					if let l = self.loadingIndicator {

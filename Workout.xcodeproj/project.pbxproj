@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6FDD7897C9603553538BAE3D /* Pods_Workout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */; };
+		7A1CE14122C7649200414497 /* WorkoutBulkExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */; };
 		7A650B0122C1300100059687 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0022C1300100059687 /* AppDelegate.swift */; };
 		7A650B0322C1300100059687 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0222C1300100059687 /* SceneDelegate.swift */; };
 		7A650B0A22C1300500059687 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A650B0922C1300500059687 /* Assets.xcassets */; };
@@ -132,6 +133,7 @@
 		15DCB1062DF12CD614F251B6 /* Pods-Workout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.release.xcconfig"; sourceTree = "<group>"; };
 		36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Workout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D5FDF6B281BD8F3FEE5AC5C /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
+		7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutBulkExporter.swift; sourceTree = "<group>"; };
 		7A2B0E5022C26A1800F09DA1 /* StepSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepSource.swift; sourceTree = "<group>"; };
 		7A2B0E5222C26A5E00F09DA1 /* SystemOfUnits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemOfUnits.swift; sourceTree = "<group>"; };
 		7A650AFD22C1300100059687 /* Workout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Workout.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -216,6 +218,7 @@
 				7AD7D8EB22C2B0A40092480A /* Health.swift */,
 				7AD7D8EE22C2B0D00092480A /* Preferences.swift */,
 				7AD7D8E222C2B0600092480A /* WorkoutList.swift */,
+				7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -662,6 +665,7 @@
 				7AB7CD9E22C4DB1A001A0171 /* AdditionalDataProcessor.swift in Sources */,
 				7AB7CDAE22C4DD3D001A0171 /* WorkoutMinuteTVCell.swift in Sources */,
 				7AB7CDA822C4DB89001A0171 /* Constants.swift in Sources */,
+				7A1CE14122C7649200414497 /* WorkoutBulkExporter.swift in Sources */,
 				7AB7CDA522C4DB20001A0171 /* WorkoutSegment.swift in Sources */,
 				7AB7CD9722C4DB06001A0171 /* StepSource.swift in Sources */,
 				7AB7CD9622C4DAFF001A0171 /* WorkoutList.swift in Sources */,

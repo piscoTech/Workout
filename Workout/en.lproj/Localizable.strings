@@ -54,21 +54,23 @@
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
 "HEART_ZONES_ZONE_%lld" = "Zone %d";
 
+// MARK: - Export
+
+"EXPORT_SELECT_ALL" = "Select All";
+"EXPORT_SELECT_NONE" = "Select None";
+
+"EXPORT_ERROR" = "Cannot export workout data";
+"EXPORT_ERROR_PARTIAL" = "Cannot export some workout data";
+"EXPORT_ERROR_PARTIAL_%@" = "The workouts at the following times failed to export:\n%@";
+
+
 // MARK: - Settings
 
-// MARK: - Unclassified
+"HEART_ZONES_MAX_RATE" = "Max %@";
+"HEART_ZONES_EXPLANATION" = "Heart zones are ranges of your heart rate in terms of percentage of your max heart rate. Spending certain amouts of time in each zone will help you train in a certain way, customize the zones to better suit your needs.";
 
 "REPORT_TEXT" = "Report any problem also on Twitter @piscoTech or at GitHub tapping Source Code.";
+
 "REMOVE_ADS" = "Remove Ads";
 "MANAGE_CONSENT" = "Manage Ads Consent";
 "MANAGE_CONSENT_ERR" = "Unable to update ads consent";
-
-
-
-"HEART_ZONES_EXPLANATION" = "Heart zones are ranges of your heart rates in terms of percentage of your max heart rate. Spending certain amouts of time in each zone will help you train in a certain way, customize the zones to better suit your needs.";
-
-"HEART_ZONES_MAX_RATE" = "Max %@";
-
-"CANNOT_EXPORT" = "Cannot export workout data";
-"SEL_EXPORT_ALL" = "Select All";
-"SEL_EXPORT_NONE" = "Select None";

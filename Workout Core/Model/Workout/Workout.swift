@@ -355,12 +355,20 @@ public class Workout {
 		]
 	}
 
-	#warning("This should be internal")
-	public func exportGeneralData(for systemOfUnits: SystemOfUnits) -> String {
+	func exportGeneralData(for systemOfUnits: SystemOfUnits) -> String {
+		guard isLoaded, !hasError else {
+			return ""
+		}
+
 		return generalData(for: systemOfUnits).joined(separator: CSVSeparator)
 	}
 
 	public func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
+		guard isLoaded, !hasError else {
+			callback(nil)
+			return
+		}
+
 		DispatchQueue.background.async {
 			let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
 

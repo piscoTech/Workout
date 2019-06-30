@@ -31,7 +31,11 @@ public class WorkoutList {
 
 	public var filters: WorkoutListFilter = [] {
 		didSet {
-			updateFilteredList()
+			if locked {
+				filters = oldValue
+			} else {
+				updateFilteredList()
+			}
 		}
 	}
 	public var isFiltering: Bool {
@@ -46,6 +50,8 @@ public class WorkoutList {
 		return types
 	}
 
+	public internal(set) var locked = false
+
 	/// The workout list, if `nil` either there's an error or the initial loading is being performed or it's waiting to be performed.
 	public private(set) var workouts: [Workout]?
 	public private(set) var isLoading = false
@@ -53,7 +59,11 @@ public class WorkoutList {
 	public private(set) var canLoadMore = false
 
 	private var allWorkouts: [Workout]?
-	private let batchSize = 40
+	#if DEBUG
+		private let batchSize = 4
+	#else
+		private let batchSize = 40
+	#endif
 	private let filteredLoadMultiplier = 5
 
 	public init(healthData: Health, preferences: Preferences) {
@@ -74,7 +84,7 @@ public class WorkoutList {
 	}
 
 	public func reload() {
-		guard !isLoading else {
+		guard !isLoading, !locked else {
 			return
 		}
 		
@@ -100,7 +110,7 @@ public class WorkoutList {
 	}
 
 	public func loadMore() {
-		guard !isLoading else {
+		guard !isLoading, !locked else {
 			return
 		}
 
