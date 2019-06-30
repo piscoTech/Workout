@@ -20,8 +20,8 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	private var exporter: WorkoutBulkExporter?
 	
 	private var standardRightBtns: [UIBarButtonItem]!
-	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
 	private var standardLeftBtn: UIBarButtonItem!
+	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
 	
 	private var exportRightBtns: [UIBarButtonItem]!
 	private var exportLeftBtn: UIBarButtonItem!
@@ -270,7 +270,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	private weak var loadingProgress: UIProgressView?
 
 	private func updateExportModeEnabled() {
-		exportToggleBtn.isEnabled = !list.isLoading && !(list.workouts?.isEmpty ?? true)
+		enterExportModeBtn.isEnabled = !list.isLoading && !(list.workouts?.isEmpty ?? true)
 	}
 	
 	@IBAction func chooseExport() {

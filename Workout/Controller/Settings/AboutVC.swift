@@ -45,6 +45,8 @@ class AboutViewController: UITableViewController, PreferencesDelegate {
 		
 		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		NotificationCenter.default.addObserver(self, selector: #selector(restoreCompleted(_:)), name: InAppPurchaseManager.restoreNotification, object: nil)
+		
+		preferences.add(delegate: self)
 	}
 	
 	deinit {
