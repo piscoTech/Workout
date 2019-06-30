@@ -16,8 +16,8 @@ class FilterListTableViewController: UITableViewController {
 	var workoutList: WorkoutList!
 	
 	private var filterList: [(type: HKWorkoutActivityType, name: String)] = []
-	private var selected: [Int] = []
 	
+	@IBOutlet private weak var dateLbl: UILabel!
 	@IBOutlet private weak var filtersCountLbl: UILabel!
 	
 	private let allStr = NSLocalizedString("WRKT_FILTER_ALL", comment: "All wrkt")
@@ -27,8 +27,6 @@ class FilterListTableViewController: UITableViewController {
         super.viewDidLoad()
 
 		filterList = workoutList.availableFilters.map { ($0, $0.name)}.sorted { $0.1 < $1.1 }
-		selected = filterList.enumerated().filter { (_, w) in workoutList.filters.contains(w.type) }.map { (i, _) in i }
-
 		updateFiltersCount()
     }
 	
@@ -37,10 +35,10 @@ class FilterListTableViewController: UITableViewController {
 	}
 	
 	private func updateFiltersCount() {
-		if selected.isEmpty {
+		if workoutList.filters.isEmpty {
 			filtersCountLbl.text = allStr
 		} else {
-			filtersCountLbl.text = String(format: someStr, selected.count, filterList.count)
+			filtersCountLbl.text = String(format: someStr, workoutList.filters.count, filterList.count)
 		}
 	}
 
@@ -59,47 +57,34 @@ class FilterListTableViewController: UITableViewController {
 
 		if indexPath.section == 0 {
 			cell.textLabel?.text = allStr
-			cell.accessoryType = selected.isEmpty ? .checkmark : .none
+			cell.accessoryType = workoutList.filters.isEmpty
+				? .checkmark
+				: .none
 		} else {
 			cell.textLabel?.text = filterList[indexPath.row].name
-			cell.accessoryType = selected.contains(indexPath.row) ? .checkmark : .none
+			cell.accessoryType = workoutList.filters.contains(filterList[indexPath.row].type)
+				? .checkmark
+				: .none
 		}
 
         return cell
     }
 	
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let allSelected = {
-			self.selected = []
-			tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.accessoryType = .checkmark
-			for i in 0 ..< self.filterList.count {
-				tableView.cellForRow(at: IndexPath(row: i, section: 1))?.accessoryType = .none
-			}
-		}
 		if indexPath.section == 0 {
-			allSelected()
+			workoutList.filters = []
 		} else {
-			if selected.contains(indexPath.row) {
-				selected.removeElement(indexPath.row)
-				tableView.cellForRow(at: indexPath)?.accessoryType = .none
-				if selected.isEmpty {
-					tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.accessoryType = .checkmark
-				}
+			let type = filterList[indexPath.row].type
+			if workoutList.filters.contains(type) {
+				workoutList.filters.remove(type)
 			} else {
-				selected.append(indexPath.row)
-				if selected.count == filterList.count {
-					allSelected()
-				} else {
-					tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.accessoryType = .none
-					tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-				}
+				workoutList.filters.insert(type)
 			}
 		}
 		
 		tableView.deselectRow(at: indexPath, animated: true)
 		updateFiltersCount()
-		
-		workoutList.filters = Set(zip(filterList, 0 ..< filterList.count).filter { selected.contains($0.1) }.map { $0.0.type })
+		tableView.reloadRows(at: [IndexPath(row: 0, section: 0)] + (0 ..< filterList.count).map { IndexPath(row: $0, section: 1) }, with: .automatic)
 	}
 
 }

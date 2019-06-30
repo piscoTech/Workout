@@ -33,6 +33,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	private var titleLblShouldHide = false
 	@IBOutlet private var titleView: UIView!
 	@IBOutlet private weak var titleLbl: UILabel!
+	@IBOutlet private weak var datelLbl: UILabel!
 	@IBOutlet private weak var filterLbl: UILabel!
 	
 	private var loaded = false
@@ -42,6 +43,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		
 		let navBar = navigationController?.navigationBar as? EnhancedNavigationBar
 		titleLbl.text = self.navigationItem.title
+		datelLbl.textColor = navBar?.tintColor
 		filterLbl.textColor = navBar?.tintColor
 		navigationItem.titleView = titleView
 		navBar?.enhancedDelegate = self

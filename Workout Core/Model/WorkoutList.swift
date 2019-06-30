@@ -34,20 +34,30 @@ public class WorkoutList {
 			if locked {
 				filters = oldValue
 			} else {
-				updateFilteredList()
+				let av = availableFilters
+				let good = filters.intersection(av)
+				
+				if good == av {
+					filters = []
+				} else if good != filters {
+					filters = good
+				}
+				
+				if filters != oldValue {
+					updateFilteredList()
+				}
 			}
 		}
 	}
 	public var isFiltering: Bool {
 		return !filters.isEmpty
 	}
-	public var availableFilters: [HKWorkoutActivityType] {
-		guard var types = allWorkouts?.map({ $0.raw.workoutActivityType }) else {
+	public var availableFilters: WorkoutListFilter {
+		guard let types = allWorkouts?.map({ $0.raw.workoutActivityType }) else {
 			return []
 		}
 
-		types.removeDuplicates()
-		return types
+		return Set(types)
 	}
 
 	public internal(set) var locked = false
