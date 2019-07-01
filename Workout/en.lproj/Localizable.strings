@@ -12,6 +12,11 @@
 
 "STEP_SOURCE_ALL" = "All Sources";
 
+"WRKT_FILTER_ANY_TIME" = "Any time";
+"WRKT_FILTER_FROM_%@" = "From %@";
+"WRKT_FILTER_TO_%@" = "To %@";
+"WRKT_FILTER_FROM_%@_TO_%@" = "From %@ to %@";
+
 // MARK: - Errors
 
 "WRKT_ERR_LOADING" = "Unable to load workout data";
@@ -23,6 +28,11 @@
 "WRKT_FILTER" = "Filter";
 "WRKT_FILTER_ALL" = "All workouts";
 "WRKT_FILTER_%lld_OUT_%lld" = "%lld/%lld workouts";
+
+"WRKT_FILTER_FROM" = "From";
+"WRKT_FILTER_FROM_NONE" = "The dawn of time";
+"WRKT_FILTER_TO" = "To";
+"WRKT_FILTER_TO_NONE" = "The end of the universe";
 
 "WRKT_LIST_MORE" = "Load More";
 

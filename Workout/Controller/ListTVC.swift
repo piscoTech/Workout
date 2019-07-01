@@ -33,7 +33,6 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	private var titleLblShouldHide = false
 	@IBOutlet private var titleView: UIView!
 	@IBOutlet private weak var titleLbl: UILabel!
-	@IBOutlet private weak var datelLbl: UILabel!
 	@IBOutlet private weak var filterLbl: UILabel!
 	
 	private var loaded = false
@@ -43,7 +42,6 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		
 		let navBar = navigationController?.navigationBar as? EnhancedNavigationBar
 		titleLbl.text = self.navigationItem.title
-		datelLbl.textColor = navBar?.tintColor
 		filterLbl.textColor = navBar?.tintColor
 		navigationItem.titleView = titleView
 		navBar?.enhancedDelegate = self
@@ -241,14 +239,21 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	}
 
 	private func updateFilterLabel() {
+		let types: String
 		switch list.filters.count {
 		case 0:
-			filterLbl.text = allFiltersStr
+			types = allFiltersStr
 		case 1:
-			filterLbl.text = list.filters.first?.name
+			guard let n = list.filters.first?.name else {
+				fallthrough
+			}
+
+			types = n
 		default:
-			filterLbl.text = String(format: manyFiltersStr, list.filters.count)
+			types = String(format: manyFiltersStr, list.filters.count)
 		}
+
+		filterLbl.text = [list.dateFilterString, types].compactMap { $0 }.joined(separator: " \(textSeparator) ")
 	}
 
 	private func setupLoadMore() {

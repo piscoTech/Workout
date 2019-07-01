@@ -29,6 +29,9 @@ public class WorkoutList {
 
 	public weak var delegate: WorkoutListDelegate?
 
+	public var startDate: Date?
+	public var endDate: Date?
+
 	public var filters: WorkoutListFilter = [] {
 		didSet {
 			if locked {
@@ -49,15 +52,16 @@ public class WorkoutList {
 			}
 		}
 	}
-	public var isFiltering: Bool {
-		return !filters.isEmpty
-	}
 	public var availableFilters: WorkoutListFilter {
 		guard let types = allWorkouts?.map({ $0.raw.workoutActivityType }) else {
 			return []
 		}
 
 		return Set(types)
+	}
+
+	public var isFiltering: Bool {
+		return !filters.isEmpty
 	}
 
 	public internal(set) var locked = false
