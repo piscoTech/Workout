@@ -257,7 +257,7 @@
             <objects>
                 <tableViewController id="czl-ry-GH1" customClass="FilterListTableViewController" customModule="Workout" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="cTg-lz-xXm">
-                        <rect key="frame" x="0.0" y="0.0" width="300" height="400"/>
+                        <rect key="frame" x="0.0" y="0.0" width="300" height="450"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="systemGroupedBackgroundColor"/>
                         <prototypes>
@@ -269,7 +269,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="mFk-qq-zdQ">
-                                            <rect key="frame" x="16" y="0.0" width="276" height="44"/>
+                                            <rect key="frame" x="16" y="0.0" width="268" height="44"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fy0-94-uI0">
                                                     <rect key="frame" x="0.0" y="0.0" width="42" height="44"/>
@@ -278,13 +278,13 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DRM-gr-uTS">
-                                                    <rect key="frame" x="50" y="0.0" width="193" height="44"/>
+                                                    <rect key="frame" x="50" y="0.0" width="185" height="44"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="secondaryLabelColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J6h-EI-0sf">
-                                                    <rect key="frame" x="251" y="0.0" width="25" height="44"/>
+                                                    <rect key="frame" x="243" y="0.0" width="25" height="44"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="25" id="ejg-7S-D2B"/>
                                                     </constraints>
@@ -293,12 +293,12 @@
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="44" id="I5K-Cd-BPZ"/>
+                                                <constraint firstAttribute="height" priority="999" constant="44" id="I5K-Cd-BPZ"/>
                                             </constraints>
                                         </stackView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" secondItem="mFk-qq-zdQ" secondAttribute="trailing" constant="8" id="8os-ir-jg0"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="mFk-qq-zdQ" secondAttribute="trailing" id="8os-ir-jg0"/>
                                         <constraint firstAttribute="bottom" secondItem="mFk-qq-zdQ" secondAttribute="bottom" id="gKT-hx-KDW"/>
                                         <constraint firstItem="mFk-qq-zdQ" firstAttribute="leading" secondItem="jav-RU-zN5" secondAttribute="leadingMargin" id="lYf-oA-Tl7"/>
                                         <constraint firstItem="mFk-qq-zdQ" firstAttribute="top" secondItem="jav-RU-zN5" secondAttribute="top" id="rDT-uO-YWo"/>
@@ -320,7 +320,7 @@
                                         <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" translatesAutoresizingMaskIntoConstraints="NO" id="Y1C-Ns-Wuh">
                                             <rect key="frame" x="0.0" y="0.0" width="300" height="44"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="150" id="XX3-WD-Scw"/>
+                                                <constraint firstAttribute="height" priority="999" constant="150" id="XX3-WD-Scw"/>
                                             </constraints>
                                         </datePicker>
                                     </subviews>
@@ -359,7 +359,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="rlA-9e-e0Z">
-                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="aAU-S0-gGU">
+                        <barButtonItem key="leftBarButtonItem" style="done" systemItem="done" id="aAU-S0-gGU">
                             <connections>
                                 <action selector="done:" destination="czl-ry-GH1" id="H7R-9Y-7mf"/>
                             </connections>
@@ -393,7 +393,7 @@
                 </stackView>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2ui-9c-2U3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1581" y="976"/>
+            <point key="canvasLocation" x="1581" y="1028"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="b4V-Mu-Axq">
@@ -928,8 +928,8 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hQ8-BZ-RnS" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <value key="contentSizeForViewInPopover" type="size" width="300" height="400"/>
-                    <size key="freeformSize" width="300" height="400"/>
+                    <value key="contentSizeForViewInPopover" type="size" width="300" height="450"/>
+                    <size key="freeformSize" width="300" height="450"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="QlP-z4-UKQ">
                         <rect key="frame" x="0.0" y="0.0" width="300" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -941,7 +941,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sDf-tb-uck" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="738" y="976"/>
+            <point key="canvasLocation" x="738" y="1028"/>
         </scene>
         <!--Contact Me-->
         <scene sceneID="Xm2-z5-itb">

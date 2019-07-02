@@ -15,6 +15,14 @@ class DateFilterCell: UITableViewCell {
 
 	@IBOutlet private weak var clearButton: UIButton!
 	var clearAction: (() -> Void)?
+	var hidesClearButton: Bool {
+		get {
+			clearButton.isHidden
+		}
+		set {
+			clearButton.isHidden = newValue
+		}
+	}
 
 	override func awakeFromNib() {
 		super.awakeFromNib()

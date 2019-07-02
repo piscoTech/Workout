@@ -12,10 +12,30 @@ import MBLibrary
 import WorkoutCore
 
 class FilterListTableViewController: UITableViewController {
+
+	private enum DateFilter {
+		case none, start, end
+	}
 	
 	var workoutList: WorkoutList!
 	
 	private var filterList: [(type: HKWorkoutActivityType, name: String)] = []
+	private var editingDate = DateFilter.none
+
+	private let startDateRow = 0
+	private var endDateRow: Int {
+		editingDate == .start ? 2 : 1
+	}
+	private var editingDateRow: Int? {
+		switch editingDate {
+		case .none:
+			return nil
+		case .start:
+			return 1
+		case .end:
+			return 2
+		}
+	}
 
 	@IBOutlet private weak var filtersLbl: UILabel!
 	
@@ -30,10 +50,8 @@ class FilterListTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-		workoutList.endDate = Date().addingTimeInterval(-10 * 24 * 2600)
-
 		filterList = workoutList.availableFilters.map { ($0, $0.name)}.sorted { $0.1 < $1.1 }
-		updateFiltersCount()
+		updateFilterLabel()
 
 		tableView.rowHeight = UITableView.automaticDimension
 		tableView.estimatedRowHeight = 44
@@ -43,7 +61,7 @@ class FilterListTableViewController: UITableViewController {
 		self.dismiss(animated: true)
 	}
 	
-	private func updateFiltersCount() {
+	private func updateFilterLabel() {
 		let types: String
 		if workoutList.filters.isEmpty {
 			types = allStr
@@ -60,11 +78,21 @@ class FilterListTableViewController: UITableViewController {
         return 2
     }
 
+	override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		switch section {
+		case 0:
+			return NSLocalizedString("WRKT_FILTER_DATE", comment: "Date")
+		case 1:
+			return NSLocalizedString("WRKT_FILTER_TYPE", comment: "Type")
+		default:
+			fatalError("Unknown section")
+		}
+	}
+
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		switch section {
 		case 0:
-			#warning("Consider + 1 if changing")
-			return 3
+			return 2 + (editingDate != .none ? 1 : 0)
 		case 1:
 			return filterList.count + 1
 		default:
@@ -75,24 +103,77 @@ class FilterListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		switch indexPath.section {
 		case 0:
-			#warning("Consider picker cell")
-			if indexPath.row == 2 {
-				let cell = tableView.dequeueReusableCell(withIdentifier: "datePicker", for: indexPath) as! DatePickerCell
-				cell.date = workoutList.endDate ?? Date()
-
-				return cell
-			}
-			let cell = tableView.dequeueReusableCell(withIdentifier: "dateFilter", for: indexPath) as! DateFilterCell
-
-			if indexPath.row == 0 {
+			switch indexPath.row {
+			case startDateRow:
+				let cell = tableView.dequeueReusableCell(withIdentifier: "dateFilter", for: indexPath) as! DateFilterCell
 				cell.title.text = fromStr
 				cell.date.text = workoutList.startDate?.getFormattedDate() ?? fromNoneStr
-			} else {
+				cell.hidesClearButton = workoutList.startDate == nil
+				cell.clearAction = {
+					self.workoutList.startDate = nil
+					self.tableView.beginUpdates()
+					self.tableView.reloadRows(at: [IndexPath(row: self.startDateRow, section: 0)], with: .automatic)
+					if self.editingDate == .start {
+						self.tableView.deleteRows(at: [IndexPath(row: self.editingDateRow!, section: 0)], with: .automatic)
+						self.editingDate = .none
+					}
+					self.tableView.endUpdates()
+					self.updateFilterLabel()
+				}
+
+				return cell
+			case endDateRow:
+				let cell = tableView.dequeueReusableCell(withIdentifier: "dateFilter", for: indexPath) as! DateFilterCell
 				cell.title.text = toStr
 				cell.date.text = workoutList.endDate?.getFormattedDate() ?? toNoneStr
-			}
+				cell.hidesClearButton = workoutList.endDate == nil
+				cell.clearAction = {
+					self.workoutList.endDate = nil
+					self.tableView.beginUpdates()
+					self.tableView.reloadRows(at: [IndexPath(row: self.endDateRow, section: 0)], with: .automatic)
+					if self.editingDate == .end {
+						self.tableView.deleteRows(at: [IndexPath(row: self.editingDateRow!, section: 0)], with: .automatic)
+						self.editingDate = .none
+					}
+					self.tableView.endUpdates()
+					self.updateFilterLabel()
+				}
 
-			return cell
+				return cell
+			case editingDateRow:
+				guard editingDate != .none else {
+					fallthrough
+				}
+				let cell = tableView.dequeueReusableCell(withIdentifier: "datePicker", for: indexPath) as! DatePickerCell
+
+				if editingDate == .start {
+					cell.date = workoutList.startDate ?? Date()
+					cell.dateChanged = { d in
+						let e = self.workoutList.endDate
+						self.workoutList.startDate = d
+						self.tableView.reloadRows(at: [IndexPath(row: self.startDateRow, section: 0)], with: .automatic)
+						if e != self.workoutList.endDate {
+							self.tableView.reloadRows(at: [IndexPath(row: self.endDateRow, section: 0)], with: .automatic)
+						}
+						self.updateFilterLabel()
+					}
+				} else {
+					cell.date = workoutList.endDate ?? Date()
+					cell.dateChanged = { d in
+						let s = self.workoutList.startDate
+						self.workoutList.endDate = d
+						self.tableView.reloadRows(at: [IndexPath(row: self.endDateRow, section: 0)], with: .automatic)
+						if s != self.workoutList.startDate {
+							self.tableView.reloadRows(at: [IndexPath(row: self.startDateRow, section: 0)], with: .automatic)
+						}
+						self.updateFilterLabel()
+					}
+				}
+
+				return cell
+			default:
+				fatalError("Unknown section")
+			}
 		case 1:
 			let cell = tableView.dequeueReusableCell(withIdentifier: "wrktType", for: indexPath)
 
@@ -120,7 +201,47 @@ class FilterListTableViewController: UITableViewController {
 
 		switch indexPath.section {
 		case 0:
-			print("Coming soon")
+			guard [startDateRow, endDateRow].contains(indexPath.row) else {
+				break
+			}
+
+			let this = indexPath.row == startDateRow ? DateFilter.start : .end
+			let other = indexPath.row == startDateRow ? DateFilter.end : .start
+			let thisDate = indexPath.row == startDateRow ? \WorkoutList.startDate : \.endDate
+			let otherDate = indexPath.row == startDateRow ? \WorkoutList.endDate : \.startDate
+
+			tableView.beginUpdates()
+			if editingDate != this, workoutList?[keyPath: thisDate] == nil {
+				let o = workoutList?[keyPath: otherDate]
+				#warning("This doesn't work but should (Beta 2)")
+				// workoutList?[keyPath: thisDate] = Date()
+				let today = Date()
+				if this == .start {
+					workoutList.startDate = today
+				} else {
+					workoutList.endDate = today
+				}
+				
+				self.tableView.reloadRows(at: [indexPath], with: .automatic)
+				if o != workoutList?[keyPath: otherDate] {
+					self.tableView.reloadRows(at: [IndexPath(row: indexPath.row == startDateRow ? endDateRow : startDateRow, section: 0)], with: .automatic)
+				}
+			}
+
+			switch editingDate {
+			case other:
+				tableView.deleteRows(at: [IndexPath(row: editingDateRow!, section: 0)], with: .right)
+				fallthrough
+			case .none:
+				editingDate = this
+				tableView.insertRows(at: [IndexPath(row: editingDateRow!, section: 0)], with: .left)
+			case this:
+				tableView.deleteRows(at: [IndexPath(row: editingDateRow!, section: 0)], with: .right)
+				editingDate = .none
+			default:
+				break
+			}
+			tableView.endUpdates()
 		case 1:
 			if indexPath.row == 0 {
 				workoutList.filters = []
@@ -133,7 +254,7 @@ class FilterListTableViewController: UITableViewController {
 				}
 			}
 
-			updateFiltersCount()
+			updateFilterLabel()
 			// There are filterList.count + 1 cells in section 1
 			tableView.reloadRows(at: (0 ... filterList.count).map { IndexPath(row: $0, section: 1) }, with: .automatic)
 		default:

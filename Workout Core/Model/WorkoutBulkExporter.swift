@@ -85,11 +85,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 	public private(set) var isExporting = false
 	public private(set) var exportCompleted = false
 
-	#if DEBUG
-		private let maximumConcurrentLoad = 2
-	#else
-		private let maximumConcurrentLoad = 10
-	#endif
+	private let maximumConcurrentLoad = 10
 	private let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
 	private var fileHandle: FileHandle?
 

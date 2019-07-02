@@ -29,8 +29,24 @@ public class WorkoutList {
 
 	public weak var delegate: WorkoutListDelegate?
 
-	public var startDate: Date?
-	public var endDate: Date?
+	public var startDate: Date? {
+		didSet {
+			if let start = startDate, let end = endDate, start > end {
+				endDate = nil
+			}
+
+			updateFilteredList()
+		}
+	}
+	public var endDate: Date? {
+		didSet {
+			if let start = startDate, let end = endDate, end < start {
+				startDate = nil
+			}
+
+			updateFilteredList()
+		}
+	}
 
 	public var filters: WorkoutListFilter = [] {
 		didSet {
@@ -73,11 +89,7 @@ public class WorkoutList {
 	public private(set) var canLoadMore = false
 
 	private var allWorkouts: [Workout]?
-	#if DEBUG
-		private let batchSize = 4
-	#else
-		private let batchSize = 40
-	#endif
+	private let batchSize = 40
 	private let filteredLoadMultiplier = 5
 
 	public init(healthData: Health, preferences: Preferences) {

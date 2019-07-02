@@ -29,6 +29,9 @@
 "WRKT_FILTER_ALL" = "All workouts";
 "WRKT_FILTER_%lld_OUT_%lld" = "%lld/%lld workouts";
 
+"WRKT_FILTER_DATE" = "Start Date";
+"WRKT_FILTER_TYPE" = "Type";
+
 "WRKT_FILTER_FROM" = "From";
 "WRKT_FILTER_FROM_NONE" = "The dawn of time";
 "WRKT_FILTER_TO" = "To";
