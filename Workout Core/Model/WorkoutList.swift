@@ -86,7 +86,18 @@ public class WorkoutList {
 	public private(set) var workouts: [Workout]?
 	public private(set) var isLoading = false
 	public private(set) var error: Swift.Error?
-	public private(set) var canLoadMore = false
+	/// Whether calling `loadMore()` will yield more workouts.
+	private var canLoadMore = false
+	/// Whether calling `loadMore()` will yield more workouts to be displayed according to the current filters.
+	///
+	/// Type filters don't affect this value, but as the loading is performed by sorting on starting time, filtering on `startDate` can block displaying of any other workout being loaded.
+	public var canDisplayMore: Bool {
+		guard let start = startDate, let lastStart = allWorkouts?.last?.startDate else {
+			return canLoadMore
+		}
+
+		return canLoadMore && start <= lastStart
+	}
 
 	private var allWorkouts: [Workout]?
 	private let batchSize = 40
@@ -106,7 +117,22 @@ public class WorkoutList {
 	}
 
 	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
-		return wrkts?.filter { filters.isEmpty || filters.contains($0.type) }
+		return wrkts?.filter { w in
+			// Start time filter
+			if let s = startDate, w.startDate < s {
+				return false
+			}
+			if let e = endDate, w.endDate > e {
+				return false
+			}
+
+			// Type filter
+			guard filters.isEmpty || filters.contains(w.type) else {
+				return false
+			}
+
+			return true
+		}
 	}
 
 	public func reload() {
@@ -193,7 +219,8 @@ public class WorkoutList {
 					self.allWorkouts = (self.allWorkouts ?? []) + wrkts
 					self.workouts = (self.workouts ?? []) + disp
 
-					if self.canLoadMore && (self.workouts?.count ?? 0) < target {
+					// Don't perform a meaningless load of all possible workout when we know none of them can be displayed
+					if self.canDisplayMore && (self.workouts?.count ?? 0) < target {
 						DispatchQueue.main.async {
 							self.delegate?.additionalWorkoutsLoaded(count: disp.count, oldCount: oldCount)
 							self.loadBatch(targetDisplayCount: target)

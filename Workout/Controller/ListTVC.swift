@@ -127,7 +127,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-		if self.list.error == nil && self.list.workouts != nil && self.list.canLoadMore && self.exporter == nil {
+		if self.list.error == nil && self.list.workouts != nil && self.list.canDisplayMore && self.exporter == nil {
 			return 2
 		} else {
 			return 1
@@ -257,7 +257,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	}
 
 	private func setupLoadMore() {
-		if list.canLoadMore && exporter == nil {
+		if list.canDisplayMore && exporter == nil {
 			if tableView.numberOfSections == 1 {
 				tableView.insertSections([1], with: .automatic)
 			}

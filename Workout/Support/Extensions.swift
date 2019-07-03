@@ -18,8 +18,12 @@ extension WorkoutList {
 	private static let fromToTimeStr = NSLocalizedString("WRKT_FILTER_FROM_%@_TO_%@", comment: "From-to")
 
 	var dateFilterString: String? {
-		if let f = startDate, let t = endDate {
-			return String(format: WorkoutList.fromToTimeStr, f.getFormattedDate(), t.getFormattedDate())
+		if let f = startDate?.getFormattedDate(), let t = endDate?.getFormattedDate() {
+			if f == t {
+				return f
+			} else {
+				return String(format: WorkoutList.fromToTimeStr, f, t)
+			}
 		} else if let f = startDate {
 			return String(format: WorkoutList.fromTimeStr, f.getFormattedDate())
 		} else if let t = endDate {
