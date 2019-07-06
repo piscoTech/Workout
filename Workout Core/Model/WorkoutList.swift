@@ -119,10 +119,11 @@ public class WorkoutList {
 	private func filter(workouts wrkts: [Workout]?) -> [Workout]? {
 		return wrkts?.filter { w in
 			// Start time filter
-			if let s = startDate, w.startDate < s {
+			// The dates set in the filters are inclusive
+			if let s = startDate?.removingTime(), w.startDate < s {
 				return false
 			}
-			if let e = endDate, w.endDate > e {
+			if let e = endDate?.removingTime(), w.endDate.removingTime() > e {
 				return false
 			}
 

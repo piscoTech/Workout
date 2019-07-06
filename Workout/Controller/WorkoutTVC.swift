@@ -22,7 +22,14 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		let loading = UIActivityIndicatorView(style: .gray)
+		let loading: UIActivityIndicatorView
+		if #available(iOS 13.0, *) {
+			loading = UIActivityIndicatorView(style: .medium)
+		} else {
+			loading = UIActivityIndicatorView(style: .gray)
+		}
+		loading.translatesAutoresizingMaskIntoConstraints = false
+		loading.color = .systemGray
 		loading.startAnimating()
 		navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loading)
 		

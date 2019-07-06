@@ -12,6 +12,17 @@ class LoadMoreCell: UITableViewCell {
 	
 	@IBOutlet private weak var loadIndicator: UIActivityIndicatorView!
 	@IBOutlet private weak var loadBtn: UIButton!
+
+	override func awakeFromNib() {
+		super.awakeFromNib()
+
+		if #available(iOS 13.0, *) {
+			loadIndicator.style = .medium
+		} else {
+			loadIndicator.style = .gray
+		}
+		loadIndicator.color = .systemGray
+	}
 	
 	var isEnabled: Bool {
 		get {
