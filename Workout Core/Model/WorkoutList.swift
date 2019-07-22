@@ -31,7 +31,7 @@ public class WorkoutList {
 
 	public var startDate: Date? {
 		didSet {
-			if let start = startDate, let end = endDate, start > end {
+			if let start = startDate, let end = endDate, start.round(to: .day) > end.round(to: .day) {
 				endDate = nil
 			}
 
@@ -40,7 +40,7 @@ public class WorkoutList {
 	}
 	public var endDate: Date? {
 		didSet {
-			if let start = startDate, let end = endDate, end < start {
+			if let start = startDate, let end = endDate, end.round(to: .day) < start.round(to: .day) {
 				startDate = nil
 			}
 

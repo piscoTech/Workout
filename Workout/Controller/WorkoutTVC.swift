@@ -85,6 +85,53 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		
 		return nil
 	}
+	
+	private let typeRow = 0
+	private let startRow = 1
+	private let endRow = 2
+	private let durationRow = 3
+	private var distanceRow: Int? {
+		guard workout.totalDistance != nil else {
+			return nil
+		}
+		
+		return 1 + durationRow
+	}
+	private var avgHeartRow: Int? {
+		guard workout.avgHeart != nil else {
+			return nil
+		}
+		
+		return 1 + (distanceRow ?? durationRow)
+	}
+	private var maxHeartRow: Int? {
+		guard workout.maxHeart != nil else {
+			return nil
+		}
+		
+		return 1 + (avgHeartRow ?? distanceRow ?? durationRow)
+	}
+	private var paceRow: Int? {
+		guard workout.pace != nil else {
+			return nil
+		}
+		
+		return 1 + (maxHeartRow ?? avgHeartRow ?? distanceRow ?? durationRow)
+	}
+	private var speedRow: Int? {
+		guard workout.speed != nil else {
+			return nil
+		}
+		
+		return 1 + (paceRow ?? maxHeartRow ?? avgHeartRow ?? distanceRow ?? durationRow)
+	}
+	private var energyRow: Int? {
+		guard workout.totalEnergy != nil else {
+			return nil
+		}
+		
+		return 1 + (speedRow ?? paceRow ?? maxHeartRow ?? avgHeartRow ?? distanceRow ?? durationRow)
+	}
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if workout.hasError {
@@ -92,7 +139,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		}
 		
 		if section == 0 {
-			return 10
+			return [typeRow, startRow, endRow, durationRow, distanceRow, avgHeartRow, maxHeartRow, paceRow, speedRow, energyRow].lazy.compactMap { $0 }.count
 		} else {
 			return workout.additionalProviders[section - 1].numberOfRows
 		}
@@ -117,34 +164,34 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			
 			let title: String
 			switch indexPath.row {
-			case 0:
+			case typeRow:
 				title = "WRKT_TYPE"
 				cell.detailTextLabel?.text = workout.type.name
-			case 1:
+			case startRow:
 				title = "WRKT_START"
 				cell.detailTextLabel?.text = workout.startDate.getFormattedDateTime()
-			case 2:
+			case endRow:
 				title = "WRKT_END"
 				cell.detailTextLabel?.text = workout.endDate.getFormattedDateTime()
-			case 3:
+			case durationRow:
 				title = "WRKT_DURATION"
 				cell.detailTextLabel?.text = workout.duration.getFormattedDuration()
-			case 4:
+			case distanceRow:
 				title = "WRKT_DISTANCE"
 				cell.detailTextLabel?.text = workout.totalDistance?.formatAsDistance(withUnit: workout.distanceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
-			case 5:
+			case avgHeartRow:
 				title = "WRKT_AVG_HEART"
 				cell.detailTextLabel?.text = workout.avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
-			case 6:
+			case maxHeartRow:
 				title = "WRKT_MAX_HEART"
 				cell.detailTextLabel?.text = workout.maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
-			case 7:
+			case paceRow:
 				title = "WRKT_AVG_PACE"
 				cell.detailTextLabel?.text = workout.pace?.formatAsPace(withReferenceLength: workout.paceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
-			case 8:
+			case speedRow:
 				title = "WRKT_AVG_SPEED"
 				cell.detailTextLabel?.text = workout.speed?.formatAsSpeed(withUnit: workout.speedUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
-			case 9:
+			case energyRow:
 				title = "WRKT_ENERGY"
 				if let total = workout.totalEnergy {
 					if let active = workout.activeEnergy {

@@ -151,8 +151,9 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 		}
 		
 		if manual {
-			loading = UIAlertController.getModalLoading()
-			presenter.present(loading!, animated: true)
+			let loading = UIAlertController.getModalLoading()
+			presenter.present(loading, animated: true)
+			self.loading = loading
 		}
 		
 		form.load { err in
@@ -256,14 +257,14 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 			fatalError("No controller set to handle the purchase process")
 		}
 		
-		loading = UIAlertController.getModalLoading()
-		presenter.present(loading!, animated: true)
+		let loading = UIAlertController.getModalLoading()
+		presenter.present(loading, animated: true)
+		self.loading = loading
 		
 		let buy = {
 			if !self.iapManager.buyProduct(pId: Self.removeAdsProductId) {
 				if let load = self.loading {
 					load.dismiss(animated: true) {
-						self.loading = nil
 						presenter.present(InAppPurchaseManager.getProductListError(), animated: true)
 					}
 				} else {
@@ -278,7 +279,6 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 					DispatchQueue.main.async {
 						if let load = self.loading {
 							load.dismiss(animated: true) {
-								self.loading = nil
 								presenter.present(InAppPurchaseManager.getProductListError(), animated: true)
 							}
 						} else {
@@ -299,8 +299,9 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 			fatalError("No controller set to handle the restoration process")
 		}
 		
-		loading = UIAlertController.getModalLoading()
-		presenter.present(loading!, animated: true, completion: nil)
+		let loading = UIAlertController.getModalLoading()
+		presenter.present(loading, animated: true, completion: nil)
+		self.loading = loading
 		
 		iapManager.restorePurchases()
 	}
@@ -329,7 +330,6 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 			
 			if let load = self.loading {
 				load.dismiss(animated: true) {
-					self.loading = nil
 					if let a = alert {
 						presenter.present(a, animated: true)
 					}
@@ -352,16 +352,12 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 			
 			if let err = status.error {
 				guard let alert = InAppPurchaseManager.getAlert(forError: err) else {
-					self.loading?.dismiss(animated: true) {
-						self.loading = nil
-					}
-					
+					self.loading?.dismiss(animated: true)
 					return
 				}
 				
 				if let load = self.loading {
 					load.dismiss(animated: true) {
-						self.loading = nil
 						presenter.present(alert, animated: true)
 					}
 				} else {
@@ -369,9 +365,7 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 				}
 			} else if status.restored == 0 {
 				// Nothing has been restored
-				self.loading?.dismiss(animated: true) {
-					self.loading = nil
-				}
+				self.loading?.dismiss(animated: true)
 			}
 		}
 	}
