@@ -11,10 +11,9 @@ import HealthKit
 import MBLibrary
 import WorkoutCore
 import GoogleMobileAds
-import PersonalizedAdConsent
 import StoreKit
 
-class ListTableViewController: UITableViewController, WorkoutListDelegate, WorkoutBulkExporterDelegate, PreferencesDelegate, GADBannerViewDelegate, EnhancedNavigationBarDelegate {
+class ListTableViewController: UITableViewController, WorkoutListDelegate, WorkoutBulkExporterDelegate, PreferencesDelegate, AdsManagerDelegate, EnhancedNavigationBarDelegate {
 
 	private let list = WorkoutList(healthData: healthData, preferences: preferences)
 	private var exporter: WorkoutBulkExporter?
@@ -40,13 +39,13 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
     override func viewDidLoad() {
         super.viewDidLoad()
 		
+		// Navigation Bar
 		let navBar = navigationController?.navigationBar as? EnhancedNavigationBar
 		titleLbl.text = self.navigationItem.title
 		filterLbl.textColor = navBar?.tintColor
 		navigationItem.titleView = titleView
 		navBar?.enhancedDelegate = self
 		
-		NotificationCenter.default.addObserver(self, selector: #selector(transactionUpdated(_:)), name: InAppPurchaseManager.transactionNotification, object: nil)
 		standardRightBtns = navigationItem.rightBarButtonItems
 		standardLeftBtn = navigationItem.leftBarButtonItem
 		if #available(iOS 13, *) {} else {
@@ -57,12 +56,17 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		exportCommitBtn = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(doExport(_:)))
 		exportRightBtns = [exportCommitBtn, exportToggleBtn]
 		exportLeftBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelExport(_:)))
+		
+		// Ads
+		navigationController?.isToolbarHidden = true
+		adsManager.delegate = self
+		adsManager.initialize()
+		
 
 		preferences.add(delegate: self)
 		list.delegate = self
 		updateFilterLabel()
         refresh()
-		initializeAds()
 		
 		DispatchQueue.main.async {
 			self.checkRequestReview()
@@ -86,10 +90,6 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 				}
 			}
 		}
-	}
-	
-	deinit {
-		NotificationCenter.default.removeObserver(self)
 	}
 	
 	func largeTitleChanged(isLarge: Bool) {
@@ -409,170 +409,48 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		}
 	}
 	
-	// MARK: - Ads stuff
+	// MARK: - Ads
 	
-	private var adView: GADBannerView!
-	private let defaultAdRetryDelay = 5.0
-	private let maxAdRetryDelay = 5 * 60.0
-	private var adRetryDelay = 5.0
-	private var allowPersonalizedAds = true
+	var defaultPresenter: UIViewController {
+		self
+	}
 	
-	private func initializeAds() {
-		navigationController?.isToolbarHidden = true
-		
-		guard areAdsEnabled else {
-			return
+	func displayAds() {
+		DispatchQueue.main.async {
+			guard let nav = self.navigationController else {
+				return
+			}
+			
+			guard let adView = adsManager.adView else {
+				self.hideAds()
+				return
+			}
+			
+			if nav.toolbar.subviews.isEmpty {
+				nav.toolbar.addSubview(adView)
+				var constraint = NSLayoutConstraint(item: adView, attribute: .centerX, relatedBy: .equal, toItem: nav.toolbar, attribute: .centerX, multiplier: 1, constant: 0)
+				constraint.isActive = true
+				constraint = NSLayoutConstraint(item: adView, attribute: .top, relatedBy: .equal, toItem: nav.toolbar, attribute: .top, multiplier: 1, constant: 0)
+				constraint.isActive = true
+			}
+			
+			nav.setToolbarHidden(false, animated: true)
 		}
-		
-		PACConsentInformation.sharedInstance.requestConsentInfoUpdate(forPublisherIdentifiers: [adsPublisherID]) { err in
-			if err != nil {
-				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
-				self.adRetryDelay = min(self.maxAdRetryDelay, self.adRetryDelay * 2)
-			} else {
-				self.adRetryDelay = self.defaultAdRetryDelay
-				if PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown {
-					let consent = PACConsentInformation.sharedInstance.consentStatus
-					if consent == .unknown {
-						DispatchQueue.main.async {
-							self.collectAdsConsent()
-						}
-					} else {
-						self.allowPersonalizedAds = consent == .personalized
-						DispatchQueue.main.async {
-							self.loadAd()
-						}
-					}
-				} else {
-					self.allowPersonalizedAds = true
-					DispatchQueue.main.async {
-						self.loadAd()
-					}
+	}
+	
+	func hideAds() {
+		DispatchQueue.main.async {
+			guard let nav = self.navigationController else {
+				return
+			}
+			
+			nav.setToolbarHidden(true, animated: true)
+			DispatchQueue.main.asyncAfter(delay: 2) {
+				for v in nav.toolbar.subviews {
+					v.removeFromSuperview()
 				}
 			}
 		}
-	}
-	
-	func getAdsConsentForm(shouldOfferAdFree: Bool) -> PACConsentForm {
-		guard let privacyUrl = URL(string: "https://marcoboschi.altervista.org/app/workout/privacy/"),
-			let form = PACConsentForm(applicationPrivacyPolicyURL: privacyUrl) else {
-				fatalError("Incorrect privacy URL.")
-		}
-		
-		form.shouldOfferPersonalizedAds = true
-		form.shouldOfferNonPersonalizedAds = true
-		form.shouldOfferAdFree = shouldOfferAdFree && iapManager.canMakePayments
-		
-		return form
-	}
-	
-	private func collectAdsConsent() {
-		let form = getAdsConsentForm(shouldOfferAdFree: true)
-		form.load { err in
-			if err != nil {
-				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
-				self.adRetryDelay = min(self.maxAdRetryDelay, self.adRetryDelay * 2)
-			} else {
-				self.adRetryDelay = self.defaultAdRetryDelay
-				DispatchQueue.main.async {
-					form.present(from: self) { err, adsFree in
-						if err != nil {
-							DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initializeAds)
-							self.adRetryDelay = min(self.maxAdRetryDelay, self.adRetryDelay * 2)
-						} else {
-							self.adRetryDelay = self.defaultAdRetryDelay
-							self.allowPersonalizedAds = !adsFree && PACConsentInformation.sharedInstance.consentStatus == .personalized
-							DispatchQueue.main.async {
-								self.loadAd()
-								if adsFree {
-									self.performSegue(withIdentifier: "info", sender: self)
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	private func loadAd() {
-		adView = GADBannerView(adSize: kGADAdSizeBanner)
-		adView.translatesAutoresizingMaskIntoConstraints = false
-		adView.rootViewController = self
-		adView.delegate = self
-		adView.adUnitID = adsUnitID
-		
-		adView.load(getAdRequest())
-		navigationController?.toolbar.addSubview(adView)
-		var constraint = NSLayoutConstraint(item: adView as Any, attribute: .centerX, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .centerX, multiplier: 1, constant: 0)
-		constraint.isActive = true
-		constraint = NSLayoutConstraint(item: adView as Any, attribute: .top, relatedBy: .equal, toItem: navigationController!.toolbar, attribute: .top, multiplier: 1, constant: 0)
-		constraint.isActive = true
-	}
-	
-	func adConsentChanged(allowPersonalized pers: Bool) {
-		allowPersonalizedAds = pers
-		guard areAdsEnabled else {
-			return
-		}
-		
-		if let view = adView{
-			view.load(getAdRequest())
-		} else {
-			loadAd()
-		}
-	}
-	
-	func adViewDidReceiveAd(_ bannerView: GADBannerView) {
-		guard areAdsEnabled else {
-			return
-		}
-		
-		//Display ad
-		navigationController?.setToolbarHidden(false, animated: true)
-	}
-	
-	func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
-		//Remove ad view
-		DispatchQueue.main.asyncAfter(delay: adRetryDelay) {
-			self.adView.load(self.getAdRequest())
-			self.adRetryDelay *= 2
-		}
-	}
-	
-	@objc func transactionUpdated(_ not: NSNotification) {
-		guard let transaction = not.object as? TransactionStatus, transaction.product == removeAdsId else {
-			return
-		}
-		
-		if transaction.status.isSuccess() {
-			DispatchQueue.main.async {
-				self.terminateAds()
-			}
-		}
-	}
-	
-	func terminateAds() {
-		guard adView != nil else {
-			//Ads already removed
-			return
-		}
-
-		navigationController?.setToolbarHidden(false, animated: false)
-		navigationController?.setToolbarHidden(true, animated: true)
-		DispatchQueue.main.asyncAfter(delay: 2) {
-			self.adView?.removeFromSuperview()
-			self.adView = nil
-		}
-	}
-	
-	private func getAdRequest() -> GADRequest {
-		let req = GADRequest()
-		if !allowPersonalizedAds {
-			let extras = GADExtras()
-			extras.additionalParameters = ["npa": "1"]
-			req.register(extras)
-		}
-		return req
 	}
 
     // MARK: - Navigation
@@ -596,10 +474,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 				dest.rawWorkout = list.workouts![indexPath.row].raw
 				dest.listController = self
 			}
-		case "info":
-			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? AboutViewController {
-				root.delegate = self
-			}
+			
 		case "selectFilter":
 			if let dest = segue.destination as? UINavigationController, let root = dest.topViewController as? FilterListTableViewController {
 				PopoverController.preparePresentation(for: dest)
@@ -609,8 +484,9 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 				
 				root.workoutList = list
 			}
+			
 		default:
-			return
+			break
 		}
     }
 

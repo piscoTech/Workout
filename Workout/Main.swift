@@ -13,11 +13,4 @@ import WorkoutCore
 let preferences = Preferences()
 let healthData = Health()
 
-/// Enable or disable ads override.
-let adsEnable = true
-/// Enabled status of ads.
-var areAdsEnabled: Bool {
-	return adsEnable && !iapManager.isProductPurchased(pId: removeAdsId)
-}
-
-let iapManager = InAppPurchaseManager(productIds: [removeAdsId], inUserDefaults: preferences.local)
+let adsManager = AdsManager(preferences: preferences)

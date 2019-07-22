@@ -120,10 +120,10 @@ public class WorkoutList {
 		return wrkts?.filter { w in
 			// Start time filter
 			// The dates set in the filters are inclusive
-			if let s = startDate?.removingTime(), w.startDate < s {
+			if let s = startDate?.round(to: .day), w.startDate < s {
 				return false
 			}
-			if let e = endDate?.removingTime(), w.endDate.removingTime() > e {
+			if let e = endDate?.round(to: .day), w.endDate.round(to: .day) > e {
 				return false
 			}
 
