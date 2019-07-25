@@ -109,28 +109,41 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return nil
 		}
 		
-		return 1 + (avgHeartRow ?? distanceRow ?? durationRow)
+		let base = [avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
 	}
 	private var paceRow: Int? {
 		guard workout.pace != nil else {
 			return nil
 		}
 		
-		return 1 + (maxHeartRow ?? avgHeartRow ?? distanceRow ?? durationRow)
+		let base = [maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
 	}
 	private var speedRow: Int? {
 		guard workout.speed != nil else {
 			return nil
 		}
 		
-		return 1 + (paceRow ?? maxHeartRow ?? avgHeartRow ?? distanceRow ?? durationRow)
+		let base = [paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
 	}
 	private var energyRow: Int? {
 		guard workout.totalEnergy != nil else {
 			return nil
 		}
 		
-		return 1 + (speedRow ?? paceRow ?? maxHeartRow ?? avgHeartRow ?? distanceRow ?? durationRow)
+		let base = [speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
+	}
+	private var elevationRow: Int? {
+		let (asc, desc) = workout.elevationChange
+		guard asc != nil || desc != nil else {
+			return nil
+		}
+		
+		let base = [energyRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
 	}
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -139,11 +152,14 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		}
 		
 		if section == 0 {
-			return [typeRow, startRow, endRow, durationRow, distanceRow, avgHeartRow, maxHeartRow, paceRow, speedRow, energyRow].lazy.compactMap { $0 }.count
+			return [typeRow, startRow, endRow, durationRow, distanceRow, avgHeartRow, maxHeartRow, paceRow, speedRow, energyRow, elevationRow].lazy.compactMap { $0 }.count
 		} else {
 			return workout.additionalProviders[section - 1].numberOfRows
 		}
     }
+	
+	@available(iOS 13.0, *)
+	private static let elevationConfiguration = UIImage.SymbolConfiguration(weight: .bold)
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if workout.hasError {
@@ -160,55 +176,101 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		}
 		
 		if indexPath.section == 0 {
-			let cell = tableView.dequeueReusableCell(withIdentifier: "basic", for: indexPath)
+			let cell = tableView.dequeueReusableCell(withIdentifier: "general", for: indexPath) as! WorkoutGeneralDataCell
 			
 			let title: String
 			switch indexPath.row {
 			case typeRow:
 				title = "WRKT_TYPE"
-				cell.detailTextLabel?.text = workout.type.name
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.type.name
 			case startRow:
 				title = "WRKT_START"
-				cell.detailTextLabel?.text = workout.startDate.getFormattedDateTime()
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.startDate.getFormattedDateTime()
 			case endRow:
 				title = "WRKT_END"
-				cell.detailTextLabel?.text = workout.endDate.getFormattedDateTime()
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.endDate.getFormattedDateTime()
 			case durationRow:
 				title = "WRKT_DURATION"
-				cell.detailTextLabel?.text = workout.duration.getFormattedDuration()
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.duration.getFormattedDuration()
 			case distanceRow:
 				title = "WRKT_DISTANCE"
-				cell.detailTextLabel?.text = workout.totalDistance?.formatAsDistance(withUnit: workout.distanceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.totalDistance?.formatAsDistance(withUnit: workout.distanceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case avgHeartRow:
 				title = "WRKT_AVG_HEART"
-				cell.detailTextLabel?.text = workout.avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case maxHeartRow:
 				title = "WRKT_MAX_HEART"
-				cell.detailTextLabel?.text = workout.maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case paceRow:
 				title = "WRKT_AVG_PACE"
-				cell.detailTextLabel?.text = workout.pace?.formatAsPace(withReferenceLength: workout.paceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.pace?.formatAsPace(withReferenceLength: workout.paceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case speedRow:
 				title = "WRKT_AVG_SPEED"
-				cell.detailTextLabel?.text = workout.speed?.formatAsSpeed(withUnit: workout.speedUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.setCustomDetails(nil)
+				cell.detail?.text = workout.speed?.formatAsSpeed(withUnit: workout.speedUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case energyRow:
 				title = "WRKT_ENERGY"
+				cell.setCustomDetails(nil)
 				if let total = workout.totalEnergy {
 					if let active = workout.activeEnergy {
-						cell.detailTextLabel?.text = String(format: NSLocalizedString("WRKT_SPLIT_CAL_%@_TOTAL_%@", comment: "Active/Total"),
-															active.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits)),
-															total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits)))
+						cell.detail?.text = String(format: NSLocalizedString("WRKT_SPLIT_CAL_%@_TOTAL_%@", comment: "Active/Total"),
+												   active.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits)),
+												   total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits)))
 					} else {
-						cell.detailTextLabel?.text = total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits))
+						cell.detail?.text = total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits))
 					}
 				} else {
-					cell.detailTextLabel?.text = missingValueStr
+					cell.detail?.text = missingValueStr
+				}
+			case elevationRow:
+				title = "WRKT_ELEVATION"
+				
+				let elView = UIStackView()
+				elView.axis = .horizontal
+				elView.translatesAutoresizingMaskIntoConstraints = false
+				elView.tintColor = cell.detail.textColor
+				elView.alignment = .center
+				elView.isBaselineRelativeArrangement = true
+				elView.spacing = 8
+				cell.setCustomDetails(elView)
+				
+				let (asc, desc) = workout.elevationChange
+				for (v, dir) in [(asc, "up"), (desc, "down")] {
+					guard let v = v else {
+						continue
+					}
+					
+					let image: UIImage?
+					if #available(iOS 13.0, *) {
+						image = UIImage(systemName: "chevron.\(dir)", withConfiguration: Self.elevationConfiguration)
+					} else {
+						image = UIImage(named: "Elevation \(dir[..<1].uppercased())\(dir[1...])")
+					}
+					
+					let distance = UILabel()
+					distance.text = v.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: preferences.systemOfUnits))
+					distance.textColor = cell.detail.textColor
+					
+					let el = UIStackView(arrangedSubviews: [UIImageView(image: image), distance])
+					el.spacing = 2
+					el.alignment = .center
+					el.isBaselineRelativeArrangement = true
+					
+					elView.addArrangedSubview(el)
 				}
 			default:
 				return cell
 			}
 			
-			cell.textLabel?.text = NSLocalizedString(title, comment: "Cell title")
+			cell.title.text = NSLocalizedString(title, comment: "Cell title")
 			return cell
 		} else {
 			return workout.additionalProviders[indexPath.section - 1].cellForRowAt(indexPath, for: tableView)

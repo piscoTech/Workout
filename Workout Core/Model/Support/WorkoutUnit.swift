@@ -65,6 +65,7 @@ public class WorkoutUnit {
 	public static let meter = WorkoutUnit(.meter())
 	public static let meterAndYard = WorkoutUnit(units: [.metric: .meter(), .imperial: .yard()])
 	public static let kilometerAndMile = WorkoutUnit(units: [.metric: .meterUnit(with: .kilo), .imperial: .mile()])
+	public static let elevation = WorkoutUnit(units: [.metric : .meter(), .imperial: .foot()])
 
 	public static let kilometerAndMilePerHour = kilometerAndMile.divided(by: HKUnit.hour())
 

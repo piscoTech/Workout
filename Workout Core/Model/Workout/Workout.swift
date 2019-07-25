@@ -27,19 +27,12 @@ public class Workout {
 	/// Request for additional details and a full load.
 	private var requests = [WorkoutDataQuery]()
 
-	//Set when .load() is called
+	// Set when .load() is called
 	private var requestToDo = 0
 	private var requestDone = 0 {
 		didSet {
 			if requestDone == requestToDo, requestToDo > 0 {
-				isLoading = false
-				isLoaded = true
-				requestToDo = 0
-				requestDone = 0
-
-				DispatchQueue.main.async {
-					self.delegate?.workoutLoaded(self)
-				}
+				completeLoading()
 			}
 		}
 	}
@@ -82,7 +75,7 @@ public class Workout {
 			return nil
 		}
 	}
-	public private(set) var maxHeart: HKQuantity? = nil
+	public private(set) var maxHeart: HKQuantity?
 	public private(set) var avgHeart: HKQuantity?
 	/// Average pace of the workout in time per unit length, see `paceUnit` for the desired unit for presentation.
 	public var pace: HKQuantity? {
@@ -121,7 +114,7 @@ public class Workout {
 			return nil
 		}
 	}
-	///Total energy burned.
+	/// Total energy burned.
 	public var totalEnergy: HKQuantity? {
 		if let kcal = rawTotalCalories ?? rawActiveCalories {
 			return HKQuantity(unit: .kilocalorie(), doubleValue: kcal)
@@ -129,12 +122,32 @@ public class Workout {
 			return nil
 		}
 	}
-	///Active energy burned.
+	/// Active energy burned.
 	public var activeEnergy: HKQuantity? {
 		if rawTotalCalories != nil, let kcal = rawActiveCalories {
 			return HKQuantity(unit: .kilocalorie(), doubleValue: kcal)
 		} else {
 			return nil
+		}
+	}
+	
+	private var elevationChangeCache: (ascended: HKQuantity?, descended: HKQuantity?)?
+	/// The elevation change, divided in distance ascended and descended, during the whole duration of the workout.
+	public var elevationChange: (ascended: HKQuantity?, descended: HKQuantity?) {
+		let (asc, desc) = raw.elevationChange
+		
+		if asc == nil && desc == nil {
+			if let eg = elevationChangeCache {
+				return eg
+			} else if let res = additionalProviders.compactMap({ $0 as? ElevationChangeProvider }).first?.elevationChange {
+				self.elevationChangeCache = res
+				
+				return res
+			} else {
+				return (nil, nil)
+			}
+		} else {
+			return (asc, desc)
 		}
 	}
 
@@ -336,11 +349,24 @@ public class Workout {
 			}
 		}
 	}
+	
+	private func completeLoading() {
+		isLoading = false
+		isLoaded = true
+		requestToDo = 0
+		requestDone = 0
+		
+		elevationChangeCache = nil
+		
+		DispatchQueue.main.async {
+			self.delegate?.workoutLoaded(self)
+		}
+	}
 
 	// MARK: - Export
 
-	private func generalData(for systemOfUnits: SystemOfUnits) -> [String] {
-		[
+	private func generalData(for systemOfUnits: SystemOfUnits, extraDetails: Bool) -> [String] {
+		let base = [
 			type.name.toCSV(),
 			startDate.getUNIXDateTime().toCSV(),
 			endDate.getUNIXDateTime().toCSV(),
@@ -353,6 +379,13 @@ public class Workout {
 			activeEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			totalEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? ""
 		]
+		
+		if extraDetails {
+			#warning("Add elevation change")
+			return base + []
+		} else {
+			return base
+		}
 	}
 
 	func exportGeneralData(for systemOfUnits: SystemOfUnits) -> String {
@@ -360,7 +393,7 @@ public class Workout {
 			return ""
 		}
 
-		return generalData(for: systemOfUnits).joined(separator: CSVSeparator)
+		return generalData(for: systemOfUnits, extraDetails: false).joined(separator: CSVSeparator)
 	}
 
 	public func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
@@ -372,7 +405,7 @@ public class Workout {
 		DispatchQueue.background.async {
 			let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
 
-			let genData = self.generalData(for: systemOfUnits)
+			let genData = self.generalData(for: systemOfUnits, extraDetails: true)
 			let sep = CSVSeparator
 			var data = "Field\(sep)Value\n"
 			data += "Type\(sep)" + genData[0] + "\n"
@@ -386,6 +419,7 @@ public class Workout {
 			data += "\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n"
 			data += "\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n"
 			data += "\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n"
+			#warning("Add elevation change")
 
 			do {
 				try data.write(to: general, atomically: true, encoding: .utf8)

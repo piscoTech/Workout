@@ -31,6 +31,10 @@ class WorkoutMinute: CustomStringConvertible {
 	}
 
 	private var data = [HKQuantityTypeIdentifier: (unit: HKUnit, values: [HKQuantity])]()
+	/// The totale elevation ascended during the minute, in meters.
+	private(set) var elevationAscended: Double = 0
+	/// The totale elevation descended during the minute, in meters.
+	private(set) var elevationDescended: Double = 0
 
 	/// Distance covered in the minute, see `owner.distanceUnit` for the desired unit for presentation.
 	var distance: HKQuantity? {
@@ -98,13 +102,42 @@ class WorkoutMinute: CustomStringConvertible {
 			self.data[to]!.values.append(v)
 		}
 	}
+	
+	private func addElevationChange(from data: DataPoint, ofType type: HKQuantityTypeIdentifier, percentage: Double = 1) {
+		precondition(percentage >= 0 && percentage <= 1, "Percentage must be in the range [0,1]")
+		
+		let distances: Set<HKQuantityTypeIdentifier>
+		do {
+			let oth: Set<HKQuantityTypeIdentifier>
+			if #available(iOS 11.2, *) {
+				oth = [.distanceDownhillSnowSports]
+			} else {
+				oth = []
+			}
+			distances = oth.union([.distanceCycling, .distanceWheelchair, .distanceWalkingRunning])
+		}
+		guard distances.contains(type) else {
+			// It doesn't make sense to record elevation change for the given data type
+			return
+		}
+		
+		let (asc, desc) = data.elevationChange
+		for (val, saveTo) in [(asc, \WorkoutMinute.elevationAscended), (desc, \.elevationDescended)] {
+			guard let raw = val?.doubleValue(for: .meter()) else {
+				// No data to save
+				continue
+			}
+			
+			self[keyPath: saveTo] += abs(raw)
+		}
+	}
 
 	///Add the relevant part of the data to the minute.
 	///- returns: `true` if some of the data belongs to following minutes, `false` otherwise.
 	@discardableResult
 	func add(_ data: RangedDataPoint, ofType type: HKQuantityTypeIdentifier) -> Bool {
 		guard data.start != data.end else {
-			let instant = InstantDataPoint(time: data.start, value: data.value)
+			let instant = InstantDataPoint(time: data.start, value: data.value, metadata: data.metadata)
 
 			return self.add(instant, ofType: type)
 		}
@@ -114,20 +147,20 @@ class WorkoutMinute: CustomStringConvertible {
 				preconditionFailure("You must firstly set up the type using set(unit:for:)")
 			}
 
-			let val: Double?
+			let frac: Double?
 			if data.start >= self.startTime && data.start < self.endTime {
 				// Start time is in range
-				let frac = (min(self.endTime, data.end) - data.start) / data.duration
-				val = data.value.doubleValue(for: unit) * frac
+				frac = (min(self.endTime, data.end) - data.start) / data.duration
 			} else if data.start < self.startTime && data.end >= self.startTime {
 				// Point started before the range but ends in or after the range
-				let frac = (min(self.endTime, data.end) - self.startTime) / data.duration
-				val = data.value.doubleValue(for: unit) * frac
+				frac = (min(self.endTime, data.end) - self.startTime) / data.duration
 			} else {
-				val = nil
+				frac = nil
 			}
-			if let val = val {
+			if let frac = frac {
+				let val = data.value.doubleValue(for: unit) * frac
 				self.add(HKQuantity(unit: unit, doubleValue: val), to: type)
+				self.addElevationChange(from: data, ofType: type, percentage: frac)
 			}
 		}
 
@@ -139,7 +172,8 @@ class WorkoutMinute: CustomStringConvertible {
 	@discardableResult
 	func add(_ data: InstantDataPoint, ofType type: HKQuantityTypeIdentifier) -> Bool {
 		if data.time >= startTime && data.time < endTime {
-			add(data.value, to: type)
+			self.add(data.value, to: type)
+			self.addElevationChange(from: data, ofType: type)
 		}
 
 		return data.time >= endTime

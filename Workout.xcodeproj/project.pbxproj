@@ -63,6 +63,7 @@
 		7AB7CDAE22C4DD3D001A0171 /* WorkoutMinuteTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B5122C1354300059687 /* WorkoutMinuteTVCell.swift */; };
 		7AB8F15C22C603EA00B84BE4 /* MBHealth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2B22C132DB00059687 /* MBHealth.framework */; };
 		7AB8F15F22C6040100B84BE4 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2522C132DB00059687 /* MBLibrary.framework */; };
+		7AE6A94222E793E600D2ED88 /* WorkoutGeneralDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE6A94122E793E600D2ED88 /* WorkoutGeneralDataCell.swift */; };
 		FEBC70160AA4711455BAEE49 /* Pods_Workout_Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D16061966C93D1ABFEF82786 /* Pods_Workout_Core.framework */; };
 /* End PBXBuildFile section */
 
@@ -190,6 +191,7 @@
 		7AD7D8EE22C2B0D00092480A /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		7AD7D8FB22C2BC5E0092480A /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		7AD7D8FC22C2BC5E0092480A /* Formatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		7AE6A94122E793E600D2ED88 /* WorkoutGeneralDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutGeneralDataCell.swift; sourceTree = "<group>"; };
 		A91EF3720C9C955433E15722 /* Pods-Workout Core.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout Core.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout Core/Pods-Workout Core.debug.xcconfig"; sourceTree = "<group>"; };
 		D16061966C93D1ABFEF82786 /* Pods_Workout_Core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Workout_Core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -253,6 +255,7 @@
 				7AA121E922C137250063E0F3 /* Main.storyboard */,
 				7A650B5322C1354300059687 /* LoadMoreCell.swift */,
 				7A9BF6D322CA317600EC1D95 /* FilterCells.swift */,
+				7AE6A94122E793E600D2ED88 /* WorkoutGeneralDataCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -688,6 +691,7 @@
 				7A650B6E22C1354500059687 /* LoadMoreCell.swift in Sources */,
 				7A650B0122C1300100059687 /* AppDelegate.swift in Sources */,
 				7A650B6022C1354500059687 /* StepSourceTVC.swift in Sources */,
+				7AE6A94222E793E600D2ED88 /* WorkoutGeneralDataCell.swift in Sources */,
 				7A650B5E22C1354500059687 /* WorkoutTVC.swift in Sources */,
 				7A650B6822C1354500059687 /* ListTVC.swift in Sources */,
 				7A9BF6D422CA317600EC1D95 /* FilterCells.swift in Sources */,

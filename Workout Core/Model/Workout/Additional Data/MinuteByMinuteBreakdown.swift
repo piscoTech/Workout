@@ -11,7 +11,7 @@ import HealthKit
 import MBLibrary
 import MBHealth
 
-class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor, PreferencesDelegate {
+class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor, PreferencesDelegate {
 
 	private weak var preferences: Preferences?
 	private var systemOfUnits: SystemOfUnits
@@ -108,6 +108,31 @@ class MinuteByMinuteBreakdown: AdditionalDataProvider, AdditionalDataProcessor, 
 		}
 		
 		preconditionFailure("Given index path cannot be rendered")
+	}
+	
+	var elevationChange: (ascended: HKQuantity?, descended: HKQuantity?) {
+		let (asc, desc) = segments?.reduce((0.0, 0.0), { (partial, s) in
+			let (a, d) = s.minutes.reduce((0.0, 0.0)) {
+				($0.0 + $1.elevationAscended, $0.1 + $1.elevationDescended)
+			}
+				
+			return (partial.0 + a, partial.1 + d)
+		}) ?? (0, 0)
+			
+		let ascended, descended: HKQuantity?
+		if asc > 0 {
+			ascended = HKQuantity(unit: .meter(), doubleValue: asc)
+		} else {
+			ascended = nil
+		}
+		
+		if desc > 0 {
+			descended = HKQuantity(unit: .meter(), doubleValue: desc)
+		} else {
+			descended = nil
+		}
+		
+		return (ascended, descended)
 	}
 
 	func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {

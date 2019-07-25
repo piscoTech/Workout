@@ -16,6 +16,22 @@ extension DispatchQueue {
 
 }
 
+extension HKObject: MetadataHolder {}
+extension MetadataHolder {
+	
+	var elevationChange: (ascended: HKQuantity?, descended: HKQuantity?) {
+		guard #available(iOS 11.2, *) else {
+			return (nil, nil)
+		}
+		
+		return (
+			(self.metadata?[HKMetadataKeyElevationAscended] as? HKQuantity)?.filter(as: .meter()),
+			(self.metadata?[HKMetadataKeyElevationDescended] as? HKQuantity)?.filter(as: .meter())
+		)
+	}
+	
+}
+
 extension HKQuantityTypeIdentifier {
 
 	func getType() -> HKQuantityType? {
@@ -33,6 +49,16 @@ extension HKQuantity: Comparable {
 	func `is`(compatibleWith unit: WorkoutUnit) -> Bool {
 		return self.is(compatibleWith: unit.default)
 	}
+	
+	/// Ensures that the receiver is a quanity compatible with the given unit.
+	/// - returns: The receiver if compatible with the given unit, `nil` otherwise.
+	func filter(as unit: HKUnit) -> HKQuantity? {
+		guard self.is(compatibleWith: unit) else {
+			return nil
+		}
+		
+		return self
+	}
 
 	///- parameter withMaximum: The max acceptable pace, if any, in time per unit length..
 	func filterAsPace(withMaximum maxPace: HKQuantity?) -> HKQuantity? {
@@ -49,9 +75,21 @@ extension HKQuantity: Comparable {
 	public func formatAsDistance(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
 		let value = self.doubleValue(for: unit)
 		if rawFormat {
-			return self.doubleValue(for: unit).toString()
+			return value.toString()
 		} else {
 			return distanceF.string(from: NSNumber(value: value))! + " \(unit.description)"
+		}
+	}
+	
+	/// Considers the receiver an elevation change and formats it accordingly.
+	/// - parameter unit: The length unit to use in formatting.
+	/// - returns: The formatted value.
+	public func formatAsElevationChange(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return value.toString()
+		} else {
+			return integerF.string(from: NSNumber(value: value))! + " \(unit.description)"
 		}
 	}
 

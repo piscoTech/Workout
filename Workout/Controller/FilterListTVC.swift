@@ -213,7 +213,7 @@ class FilterListTableViewController: UITableViewController {
 			tableView.beginUpdates()
 			if editingDate != this, workoutList?[keyPath: thisDate] == nil {
 				let o = workoutList?[keyPath: otherDate]
-				#warning("Workaround for a compiler quirk (required up to Beta 3)")
+				#warning("Workaround for SR-11184")
 				let list: WorkoutList? = workoutList
 				list?[keyPath: thisDate] = Date()
 				

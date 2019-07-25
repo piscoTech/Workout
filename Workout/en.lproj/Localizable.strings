@@ -55,6 +55,7 @@
 "WRKT_AVG_PACE" = "Average Pace";
 "WRKT_AVG_SPEED" = "Average Speed";
 "WRKT_ENERGY" = "Energy";
+"WRKT_ELEVATION" = "Elevation Change";
 
 "WRKT_SPLIT_CAL_%@_TOTAL_%@" = "%@ (%@ total)";
 

@@ -183,23 +183,62 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="basic" textLabel="CRN-rY-SQN" detailTextLabel="7GA-1H-3bQ" style="IBUITableViewCellStyleValue1" id="T8u-Lq-06M">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="general" id="T8u-Lq-06M" customClass="WorkoutGeneralDataCell" customModule="Workout" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="134.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="T8u-Lq-06M" id="9OS-4n-Gm3">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="[Title]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="CRN-rY-SQN">
-                                            <rect key="frame" x="16" y="13" width="43.5" height="19.5"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Y3W-gB-Llc">
+                                            <rect key="frame" x="16" y="0.0" width="343" height="44"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="[Title]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f27-5Z-Fl6">
+                                                    <rect key="frame" x="0.0" y="0.0" width="43.5" height="44"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="[Detail]" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QEN-bt-c2A">
+                                                    <rect key="frame" x="289.5" y="0.0" width="53.5" height="44"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="secondaryLabelColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </stackView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="Y3W-gB-Llc" firstAttribute="leading" secondItem="9OS-4n-Gm3" secondAttribute="leadingMargin" id="B10-7E-zkI"/>
+                                        <constraint firstItem="Y3W-gB-Llc" firstAttribute="top" secondItem="9OS-4n-Gm3" secondAttribute="top" id="Yry-Ry-SdG"/>
+                                        <constraint firstAttribute="bottom" secondItem="Y3W-gB-Llc" secondAttribute="bottom" id="h8P-Ue-1IZ"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="Y3W-gB-Llc" secondAttribute="trailing" id="wWT-Dy-fnA"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                <connections>
+                                    <outlet property="detail" destination="QEN-bt-c2A" id="U2G-Sy-I1i"/>
+                                    <outlet property="stackView" destination="Y3W-gB-Llc" id="PFJ-0e-czK"/>
+                                    <outlet property="title" destination="f27-5Z-Fl6" id="9dZ-Jm-niu"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="basic" textLabel="Yra-1s-wze" detailTextLabel="qMa-t7-e6b" style="IBUITableViewCellStyleValue1" id="1qO-SP-NdM" customClass="WorkoutGeneralDataCell" customModule="Workout" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="178.5" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1qO-SP-NdM" id="1Uh-AB-XAw">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Yra-1s-wze">
+                                            <rect key="frame" x="16" y="13" width="31.5" height="19.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="[Detail]" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="7GA-1H-3bQ">
-                                            <rect key="frame" x="305.5" y="13" width="53.5" height="19.5"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qMa-t7-e6b">
+                                            <rect key="frame" x="317.5" y="13" width="41.5" height="19.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" cocoaTouchSystemColor="secondaryLabelColor"/>
                                             <nil key="highlightedColor"/>
@@ -209,7 +248,7 @@
                                 <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="detail" id="XxF-cE-zn6" customClass="WorkoutMinuteTableViewCell" customModule="WorkoutCore">
-                                <rect key="frame" x="0.0" y="178.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="222.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XxF-cE-zn6" id="DTP-CT-N40">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>

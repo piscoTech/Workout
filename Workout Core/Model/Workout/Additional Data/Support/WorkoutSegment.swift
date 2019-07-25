@@ -70,10 +70,10 @@ class WorkoutSegment {
 			let data: DataPoint
 			switch request.timeType {
 			case .instant:
-				data = InstantDataPoint(time: start, value: s.quantity)
+				data = InstantDataPoint(time: start, value: s.quantity, metadata: s.metadata)
 			case .ranged:
 				let end = s.endDate.timeIntervalSince1970 == TimeInterval.infinity ? start : s.endDate.timeIntervalSince1970 - rawStart
-				data = RangedDataPoint(start: start, end: end, value: s.quantity)
+				data = RangedDataPoint(start: start, end: end, value: s.quantity, metadata: s.metadata)
 			}
 
 			// Add the sample to as many minutes as needed
