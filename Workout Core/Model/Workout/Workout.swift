@@ -167,6 +167,8 @@ public class Workout {
 			wClass = RunningWorkout.self
 		case .swimming:
 			wClass = SwimmingWorkout.self
+		case .cycling:
+			wClass = CyclingWorkout.self
 		default:
 			wClass = Workout.self
 		}
@@ -365,8 +367,8 @@ public class Workout {
 
 	// MARK: - Export
 
-	private func generalData(for systemOfUnits: SystemOfUnits, extraDetails: Bool) -> [String] {
-		let base = [
+	private func generalData(for systemOfUnits: SystemOfUnits) -> [String] {
+		[
 			type.name.toCSV(),
 			startDate.getUNIXDateTime().toCSV(),
 			endDate.getUNIXDateTime().toCSV(),
@@ -377,15 +379,10 @@ public class Workout {
 			pace?.formatAsPace(withReferenceLength: paceUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			speed?.formatAsSpeed(withUnit: speedUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			activeEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
-			totalEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? ""
+			totalEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			elevationChange.ascended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			elevationChange.descended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? ""
 		]
-		
-		if extraDetails {
-			#warning("Add elevation change")
-			return base + []
-		} else {
-			return base
-		}
 	}
 
 	func exportGeneralData(for systemOfUnits: SystemOfUnits) -> String {
@@ -393,7 +390,7 @@ public class Workout {
 			return ""
 		}
 
-		return generalData(for: systemOfUnits, extraDetails: false).joined(separator: CSVSeparator)
+		return generalData(for: systemOfUnits).joined(separator: CSVSeparator)
 	}
 
 	public func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
@@ -405,7 +402,7 @@ public class Workout {
 		DispatchQueue.background.async {
 			let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
 
-			let genData = self.generalData(for: systemOfUnits, extraDetails: true)
+			let genData = self.generalData(for: systemOfUnits)
 			let sep = CSVSeparator
 			var data = "Field\(sep)Value\n"
 			data += "Type\(sep)" + genData[0] + "\n"
@@ -419,7 +416,9 @@ public class Workout {
 			data += "\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n"
 			data += "\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n"
 			data += "\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n"
-			#warning("Add elevation change")
+			data += "\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[11] + "\n"
+			data += "\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[12] + "\n"
+			
 
 			do {
 				try data.write(to: general, atomically: true, encoding: .utf8)

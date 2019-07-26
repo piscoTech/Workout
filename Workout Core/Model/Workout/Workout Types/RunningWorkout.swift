@@ -33,7 +33,6 @@ class RunningWorkout: Workout {
 		) {
 			self.addQuery(steps)
 		}
-		
 	}
 	
 }

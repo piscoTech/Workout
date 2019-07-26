@@ -38,11 +38,10 @@ class WorkoutMinute: CustomStringConvertible {
 
 	/// Distance covered in the minute, see `owner.distanceUnit` for the desired unit for presentation.
 	var distance: HKQuantity? {
-		var res = getTotal(for: .distanceWalkingRunning)
-		res = res ?? getTotal(for: .distanceSwimming)
+		let distances = [HKQuantityTypeIdentifier.distanceWalkingRunning, .distanceSwimming, .distanceCycling]
 
 		// Don't expose a 0 distance, give nil instead
-		if let dist = res, dist > HKQuantity(unit: .meter(), doubleValue: 0) {
+		if let dist = distances.lazy.compactMap({ self.getTotal(for: $0) }).first, dist > HKQuantity(unit: .meter(), doubleValue: 0) {
 			return dist
 		} else {
 			return nil

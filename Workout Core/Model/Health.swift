@@ -26,7 +26,9 @@ public class Health {
 			HKObjectType.quantityType(forIdentifier: .stepCount)!,
 
 			HKObjectType.quantityType(forIdentifier: .distanceSwimming)!,
-			HKObjectType.quantityType(forIdentifier: .swimmingStrokeCount)!
+			HKObjectType.quantityType(forIdentifier: .swimmingStrokeCount)!,
+			
+			HKObjectType.quantityType(forIdentifier: .distanceCycling)!
 		]
 
 	public func authorizeHealthKitAccess(_ callback: @escaping () -> Void) {

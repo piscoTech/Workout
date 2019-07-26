@@ -108,7 +108,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 		// Prepare the file with the header
 		do {
 			let sep = CSVSeparator
-			let data = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Active Energy".toCSV())\(sep)\("Total Energy".toCSV())\n"
+			let data = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Active Energy".toCSV())\(sep)\("Total Energy".toCSV())\(sep)\("Elevation Ascended".toCSV())\(sep)\("Elevation Descended".toCSV())\n"
 
 			try data.write(to: filePath, atomically: true, encoding: .utf8)
 			fileHandle = try FileHandle(forWritingTo: filePath)
