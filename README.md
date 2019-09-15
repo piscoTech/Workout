@@ -18,7 +18,7 @@ pod install
 
 in a terminal in the project directory to download linked frameworks and use `Workout.xcworkspace` to open the project.
 
-The frameworks `MBLibrary` and `MBHealth` referenced by this project are available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.5.1](https://github.com/piscoTech/MBLibrary/releases/tag/v1.5.1(16)).
+The frameworks `MBLibrary` and `MBHealth` referenced by this project are available [here](https://github.com/piscoTech/MBLibrary), version currently in use is [1.7](https://github.com/piscoTech/MBLibrary/releases/tag/v1.7(18)).
 
 ## Customization
 General behaviour of the app can be configured at compile time as specified in the [wiki](https://github.com/piscoTech/Workout/wiki#compile-time-setup).
