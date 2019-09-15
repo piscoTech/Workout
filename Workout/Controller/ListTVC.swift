@@ -48,8 +48,9 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		
 		standardRightBtns = navigationItem.rightBarButtonItems
 		standardLeftBtn = navigationItem.leftBarButtonItem
-		if #available(iOS 13, *) {} else {
-			standardLeftBtn.image = #imageLiteral(resourceName: "Settings")
+		if #available(iOS 13, *) {
+			// This can be done in storyboard
+			standardLeftBtn.image = UIImage(systemName: "gear")
 		}
 		
 		exportToggleBtn = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(toggleExportAll))
@@ -61,7 +62,6 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		navigationController?.isToolbarHidden = true
 		adsManager.delegate = self
 		adsManager.initialize()
-		
 
 		preferences.add(delegate: self)
 		list.delegate = self
@@ -410,11 +410,11 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	}
 	
 	// MARK: - Ads
-	
+
 	var defaultPresenter: UIViewController {
 		self
 	}
-	
+
 	func displayAds() {
 		DispatchQueue.main.async {
 			guard let nav = self.navigationController else {
@@ -426,8 +426,9 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 				return
 			}
 			
-			if nav.toolbar.subviews.isEmpty {
+			if adView.superview == nil {
 				nav.toolbar.addSubview(adView)
+				nav.toolbar.bringSubviewToFront(adView)
 				var constraint = NSLayoutConstraint(item: adView, attribute: .centerX, relatedBy: .equal, toItem: nav.toolbar, attribute: .centerX, multiplier: 1, constant: 0)
 				constraint.isActive = true
 				constraint = NSLayoutConstraint(item: adView, attribute: .top, relatedBy: .equal, toItem: nav.toolbar, attribute: .top, multiplier: 1, constant: 0)
@@ -446,9 +447,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 			
 			nav.setToolbarHidden(true, animated: true)
 			DispatchQueue.main.asyncAfter(delay: 2) {
-				for v in nav.toolbar.subviews {
-					v.removeFromSuperview()
-				}
+				adsManager.adView?.removeFromSuperview()
 			}
 		}
 	}

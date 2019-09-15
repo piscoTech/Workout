@@ -27,8 +27,9 @@ class DateFilterCell: UITableViewCell {
 	override func awakeFromNib() {
 		super.awakeFromNib()
 
-		if #available(iOS 13, *) {} else {
-			clearButton.setImage(#imageLiteral(resourceName: "Clear"), for: [])
+		if #available(iOS 13, *) {
+			// This can be done in storyboard
+			clearButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: [])
 		}
 		clearButton.addTarget(self, action: #selector(clear), for: .primaryActionTriggered)
 	}
