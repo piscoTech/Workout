@@ -173,7 +173,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		let cell = tableView.dequeueReusableCell(withIdentifier: "workout", for: indexPath)
 		let w = wrkts[indexPath.row]
 		
-		cell.textLabel?.text = w.type.name
+		cell.textLabel?.text = w.name
 		
 		var detail = [w.startDate.getFormattedDateTime(), w.duration.getFormattedDuration() ]
 		if let dist = w.totalDistance?.formatAsDistance(withUnit: w.distanceUnit.unit(for: preferences.systemOfUnits)) {

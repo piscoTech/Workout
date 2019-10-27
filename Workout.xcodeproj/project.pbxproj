@@ -29,6 +29,13 @@
 		7A650B6922C1354500059687 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B4E22C1354200059687 /* AboutVC.swift */; };
 		7A650B6E22C1354500059687 /* LoadMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B5322C1354300059687 /* LoadMoreCell.swift */; };
 		7A714AA722D0D90B00AB7DD0 /* AdsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A714AA622D0D90B00AB7DD0 /* AdsManager.swift */; };
+		7A7170FE2365B355005A3314 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A7170FD2365B355005A3314 /* AppDelegate.swift */; };
+		7A7171002365B355005A3314 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A7170FF2365B355005A3314 /* SceneDelegate.swift */; };
+		7A7171022365B355005A3314 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A7171012365B355005A3314 /* ContentView.swift */; };
+		7A7171042365B35C005A3314 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A7171032365B35C005A3314 /* Assets.xcassets */; };
+		7A7171072365B35C005A3314 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A7171062365B35C005A3314 /* Preview Assets.xcassets */; };
+		7A71710A2365B35C005A3314 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A7171082365B35C005A3314 /* LaunchScreen.storyboard */; };
+		7A7171162365B36E005A3314 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B1622C1307200059687 /* HealthKit.framework */; };
 		7A79B1E222DB205800106F14 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7AA121EC22C1373B0063E0F3 /* Localizable.strings */; };
 		7A79B1E322DB205800106F14 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 7AA121EE22C1373C0063E0F3 /* Localizable.stringsdict */; };
 		7A9BF6CC22CA233900EC1D95 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9BF6CB22CA233900EC1D95 /* Extensions.swift */; };
@@ -178,6 +185,15 @@
 		7A650B5722C1354400059687 /* WorkoutUnit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutUnit.swift; sourceTree = "<group>"; };
 		7A650B5822C1354500059687 /* AdditionalDataProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdditionalDataProcessor.swift; sourceTree = "<group>"; };
 		7A714AA622D0D90B00AB7DD0 /* AdsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsManager.swift; sourceTree = "<group>"; };
+		7A7170FB2365B355005A3314 /* WorkoutHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorkoutHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A7170FD2365B355005A3314 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7A7170FF2365B355005A3314 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		7A7171012365B355005A3314 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7A7171032365B35C005A3314 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7A7171062365B35C005A3314 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		7A7171092365B35C005A3314 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7A71710B2365B35C005A3314 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7A7171152365B36E005A3314 /* WorkoutHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WorkoutHelper.entitlements; sourceTree = "<group>"; };
 		7A9BF6CB22CA233900EC1D95 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		7A9BF6D322CA317600EC1D95 /* FilterCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCells.swift; sourceTree = "<group>"; };
 		7AA121E722C1370D0063E0F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -209,6 +225,14 @@
 				7A650B3622C1330A00059687 /* StoreKit.framework in Frameworks */,
 				6FDD7897C9603553538BAE3D /* Pods_Workout.framework in Frameworks */,
 				7AB7CD8822C4D774001A0171 /* WorkoutCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7A7170F82365B355005A3314 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7A7171162365B36E005A3314 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -333,6 +357,7 @@
 				7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */,
 				7AB7CD8222C4D774001A0171 /* Workout Core */,
 				7A650AFF22C1300100059687 /* Workout */,
+				7A7170FC2365B355005A3314 /* WorkoutHelper */,
 				7A650AFE22C1300100059687 /* Products */,
 				7A650B1522C1307200059687 /* Frameworks */,
 				A120C71C422EB50006948EBF /* Pods */,
@@ -344,6 +369,7 @@
 			children = (
 				7A650AFD22C1300100059687 /* Workout.app */,
 				7AB7CD8122C4D774001A0171 /* WorkoutCore.framework */,
+				7A7170FB2365B355005A3314 /* WorkoutHelper.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -396,6 +422,29 @@
 				7A650B2F22C132DB00059687 /* MBLibraryTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7A7170FC2365B355005A3314 /* WorkoutHelper */ = {
+			isa = PBXGroup;
+			children = (
+				7A7171152365B36E005A3314 /* WorkoutHelper.entitlements */,
+				7A7170FD2365B355005A3314 /* AppDelegate.swift */,
+				7A7170FF2365B355005A3314 /* SceneDelegate.swift */,
+				7A7171012365B355005A3314 /* ContentView.swift */,
+				7A7171032365B35C005A3314 /* Assets.xcassets */,
+				7A7171082365B35C005A3314 /* LaunchScreen.storyboard */,
+				7A71710B2365B35C005A3314 /* Info.plist */,
+				7A7171052365B35C005A3314 /* Preview Content */,
+			);
+			path = WorkoutHelper;
+			sourceTree = "<group>";
+		};
+		7A7171052365B35C005A3314 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				7A7171062365B35C005A3314 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		7AB7CD8222C4D774001A0171 /* Workout Core */ = {
@@ -490,6 +539,23 @@
 			productReference = 7A650AFD22C1300100059687 /* Workout.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7A7170FA2365B355005A3314 /* WorkoutHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7A7171142365B35C005A3314 /* Build configuration list for PBXNativeTarget "WorkoutHelper" */;
+			buildPhases = (
+				7A7170F72365B355005A3314 /* Sources */,
+				7A7170F82365B355005A3314 /* Frameworks */,
+				7A7170F92365B355005A3314 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WorkoutHelper;
+			productName = WorkoutHelper;
+			productReference = 7A7170FB2365B355005A3314 /* WorkoutHelper.app */;
+			productType = "com.apple.product-type.application";
+		};
 		7AB7CD8022C4D774001A0171 /* Workout Core */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7AB7CD9222C4D774001A0171 /* Build configuration list for PBXNativeTarget "Workout Core" */;
@@ -515,12 +581,15 @@
 		7A650AF522C1300000059687 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1100;
+				LastSwiftUpdateCheck = 1110;
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Marco Boschi";
 				TargetAttributes = {
 					7A650AFC22C1300100059687 = {
 						CreatedOnToolsVersion = 11.0;
+					};
+					7A7170FA2365B355005A3314 = {
+						CreatedOnToolsVersion = 11.1;
 					};
 					7AB7CD8022C4D774001A0171 = {
 						CreatedOnToolsVersion = 11.0;
@@ -548,6 +617,7 @@
 			targets = (
 				7A650AFC22C1300100059687 /* Workout */,
 				7AB7CD8022C4D774001A0171 /* Workout Core */,
+				7A7170FA2365B355005A3314 /* WorkoutHelper */,
 			);
 		};
 /* End PBXProject section */
@@ -607,6 +677,16 @@
 				7A650B0A22C1300500059687 /* Assets.xcassets in Resources */,
 				7AA121EB22C137260063E0F3 /* Main.storyboard in Resources */,
 				7AA121F122C1373C0063E0F3 /* Localizable.stringsdict in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7A7170F92365B355005A3314 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7A71710A2365B35C005A3314 /* LaunchScreen.storyboard in Resources */,
+				7A7171072365B35C005A3314 /* Preview Assets.xcassets in Resources */,
+				7A7171042365B35C005A3314 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -707,6 +787,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7A7170F72365B355005A3314 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7A7170FE2365B355005A3314 /* AppDelegate.swift in Sources */,
+				7A7171002365B355005A3314 /* SceneDelegate.swift in Sources */,
+				7A7171022365B355005A3314 /* ContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7AB7CD7D22C4D774001A0171 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -750,6 +840,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		7A7171082365B35C005A3314 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7A7171092365B35C005A3314 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 		7AA121E622C1370D0063E0F3 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -819,7 +917,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -838,7 +936,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 1.7;
+				MARKETING_VERSION = 1.7.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -882,7 +980,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -895,7 +993,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				MARKETING_VERSION = 1.7;
+				MARKETING_VERSION = 1.7.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -944,6 +1042,50 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		7A71710C2365B35C005A3314 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = WorkoutHelper/WorkoutHelper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"WorkoutHelper/Preview Content\"";
+				DEVELOPMENT_TEAM = C8D57YLUAC;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = WorkoutHelper/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Marco-Boschi.ios.WorkoutHelper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7A71710D2365B35C005A3314 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = WorkoutHelper/WorkoutHelper.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"WorkoutHelper/Preview Content\"";
+				DEVELOPMENT_TEAM = C8D57YLUAC;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = WorkoutHelper/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "Marco-Boschi.ios.WorkoutHelper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1020,6 +1162,15 @@
 			buildConfigurations = (
 				7A650B1222C1300500059687 /* Debug */,
 				7A650B1322C1300500059687 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7A7171142365B35C005A3314 /* Build configuration list for PBXNativeTarget "WorkoutHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7A71710C2365B35C005A3314 /* Debug */,
+				7A71710D2365B35C005A3314 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

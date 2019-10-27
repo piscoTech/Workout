@@ -183,7 +183,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			case typeRow:
 				title = "WRKT_TYPE"
 				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.type.name
+				cell.detail?.text = workout.name
 			case startRow:
 				title = "WRKT_START"
 				cell.setCustomDetails(nil)

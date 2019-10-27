@@ -54,6 +54,9 @@ public class Workout {
 	/// Max acceptable pace, if any, in time per unit length.
 	private(set) var maxPace: HKQuantity?
 
+	public var name: String {
+		return raw.workoutActivityName
+	}
 	public var type: HKWorkoutActivityType {
 		return raw.workoutActivityType
 	}
@@ -369,7 +372,7 @@ public class Workout {
 
 	private func generalData(for systemOfUnits: SystemOfUnits) -> [String] {
 		[
-			type.name.toCSV(),
+			name.toCSV(),
 			startDate.getUNIXDateTime().toCSV(),
 			endDate.getUNIXDateTime().toCSV(),
 			duration.getRawDuration().toCSV(),
@@ -418,7 +421,6 @@ public class Workout {
 			data += "\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n"
 			data += "\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[11] + "\n"
 			data += "\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[12] + "\n"
-			
 
 			do {
 				try data.write(to: general, atomically: true, encoding: .utf8)
