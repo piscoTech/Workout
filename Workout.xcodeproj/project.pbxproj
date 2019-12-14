@@ -14,10 +14,6 @@
 		7A650B0322C1300100059687 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0222C1300100059687 /* SceneDelegate.swift */; };
 		7A650B0A22C1300500059687 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A650B0922C1300500059687 /* Assets.xcassets */; };
 		7A650B1722C1307200059687 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B1622C1307200059687 /* HealthKit.framework */; };
-		7A650B3022C132EE00059687 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2522C132DB00059687 /* MBLibrary.framework */; };
-		7A650B3122C132EE00059687 /* MBLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2522C132DB00059687 /* MBLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		7A650B3322C132F500059687 /* MBHealth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2B22C132DB00059687 /* MBHealth.framework */; };
-		7A650B3422C132F500059687 /* MBHealth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2B22C132DB00059687 /* MBHealth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A650B3622C1330A00059687 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B3522C1330A00059687 /* StoreKit.framework */; };
 		7A650B5C22C1354500059687 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B4122C1353F00059687 /* Main.swift */; };
 		7A650B5D22C1354500059687 /* UnitsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B4222C1353F00059687 /* UnitsTVC.swift */; };
@@ -69,49 +65,47 @@
 		7AB7CDAB22C4DBB2001A0171 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD7D8FB22C2BC5E0092480A /* Extensions.swift */; };
 		7AB7CDAC22C4DC38001A0171 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD7D8FC22C2BC5E0092480A /* Formatters.swift */; };
 		7AB7CDAE22C4DD3D001A0171 /* WorkoutMinuteTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B5122C1354300059687 /* WorkoutMinuteTVCell.swift */; };
-		7AB8F15C22C603EA00B84BE4 /* MBHealth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2B22C132DB00059687 /* MBHealth.framework */; };
-		7AB8F15F22C6040100B84BE4 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A650B2522C132DB00059687 /* MBLibrary.framework */; };
 		7AE6A94222E793E600D2ED88 /* WorkoutGeneralDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE6A94122E793E600D2ED88 /* WorkoutGeneralDataCell.swift */; };
 		FEBC70160AA4711455BAEE49 /* Pods_Workout_Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D16061966C93D1ABFEF82786 /* Pods_Workout_Core.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7A650B2422C132DB00059687 /* PBXContainerItemProxy */ = {
+		3B26BEDD23A4F7EB0079213E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 7A584FA51D3E241C000C739B;
 			remoteInfo = "MBLibrary iOS";
 		};
-		7A650B2622C132DB00059687 /* PBXContainerItemProxy */ = {
+		3B26BEDF23A4F7EB0079213E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 7A0064CA1D3E9AF00089297D;
 			remoteInfo = "MBLibrary macOS";
 		};
-		7A650B2822C132DB00059687 /* PBXContainerItemProxy */ = {
+		3B26BEE123A4F7EB0079213E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 7A0064FE1D3EB02B0089297D;
 			remoteInfo = "MBLibrary watchOS";
 		};
-		7A650B2A22C132DB00059687 /* PBXContainerItemProxy */ = {
+		3B26BEE323A4F7EB0079213E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 7AB95A4F223845ED0021EE86;
 			remoteInfo = "MBHealth iOS";
 		};
-		7A650B2C22C132DB00059687 /* PBXContainerItemProxy */ = {
+		3B26BEE523A4F7EB0079213E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 7AB95A5C2238471A0021EE86;
 			remoteInfo = "MBHealth watchOS";
 		};
-		7A650B2E22C132DB00059687 /* PBXContainerItemProxy */ = {
+		3B26BEE723A4F7EB0079213E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
 			proxyType = 2;
@@ -134,8 +128,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				7A650B3122C132EE00059687 /* MBLibrary.framework in Embed Frameworks */,
-				7A650B3422C132F500059687 /* MBHealth.framework in Embed Frameworks */,
 				7AB7CD8922C4D774001A0171 /* WorkoutCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -146,6 +138,11 @@
 /* Begin PBXFileReference section */
 		15DCB1062DF12CD614F251B6 /* Pods-Workout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.release.xcconfig"; sourceTree = "<group>"; };
 		36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Workout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B26BEEB23A4F8930079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		3B26BEEC23A4F8930079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		3B26BEEE23A4F8940079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = fr; path = fr.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3B26BEEF23A4F8940079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3B26BEF023A4F8940079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fr; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		5CDCD9A647ADAC5D3651BE69 /* Pods-Workout Core.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout Core.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout Core/Pods-Workout Core.release.xcconfig"; sourceTree = "<group>"; };
 		5D5FDF6B281BD8F3FEE5AC5C /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
 		7A09205822EB8BA900EC86A6 /* CyclingWorkout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingWorkout.swift; sourceTree = "<group>"; };
@@ -159,7 +156,7 @@
 		7A650B0E22C1300500059687 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A650B1422C1307200059687 /* Workout.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Workout.entitlements; sourceTree = "<group>"; };
 		7A650B1622C1307200059687 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
-		7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = ../MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
+		7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
 		7A650B3522C1330A00059687 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		7A650B3E22C1353E00059687 /* RunningHeartZones.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RunningHeartZones.swift; sourceTree = "<group>"; };
 		7A650B3F22C1353F00059687 /* DataPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
@@ -220,8 +217,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A650B1722C1307200059687 /* HealthKit.framework in Frameworks */,
-				7A650B3322C132F500059687 /* MBHealth.framework in Frameworks */,
-				7A650B3022C132EE00059687 /* MBLibrary.framework in Frameworks */,
 				7A650B3622C1330A00059687 /* StoreKit.framework in Frameworks */,
 				6FDD7897C9603553538BAE3D /* Pods_Workout.framework in Frameworks */,
 				7AB7CD8822C4D774001A0171 /* WorkoutCore.framework in Frameworks */,
@@ -240,8 +235,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7AB8F15C22C603EA00B84BE4 /* MBHealth.framework in Frameworks */,
-				7AB8F15F22C6040100B84BE4 /* MBLibrary.framework in Frameworks */,
 				FEBC70160AA4711455BAEE49 /* Pods_Workout_Core.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -249,6 +242,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3B26BED523A4F7EB0079213E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3B26BEDE23A4F7EB0079213E /* MBLibrary.framework */,
+				3B26BEE023A4F7EB0079213E /* MBLibrary.framework */,
+				3B26BEE223A4F7EB0079213E /* MBLibrary.framework */,
+				3B26BEE423A4F7EB0079213E /* MBHealth.framework */,
+				3B26BEE623A4F7EB0079213E /* MBHealth.framework */,
+				3B26BEE823A4F7EB0079213E /* MBLibraryTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		7A2B0E4422C268DF00F09DA1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -409,19 +415,6 @@
 				7A650B1422C1307200059687 /* Workout.entitlements */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		7A650B1C22C132DA00059687 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				7A650B2522C132DB00059687 /* MBLibrary.framework */,
-				7A650B2722C132DB00059687 /* MBLibrary.framework */,
-				7A650B2922C132DB00059687 /* MBLibrary.framework */,
-				7A650B2B22C132DB00059687 /* MBHealth.framework */,
-				7A650B2D22C132DB00059687 /* MBHealth.framework */,
-				7A650B2F22C132DB00059687 /* MBLibraryTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		7A7170FC2365B355005A3314 /* WorkoutHelper */ = {
@@ -603,13 +596,14 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = 7A650AF422C1300000059687;
 			productRefGroup = 7A650AFE22C1300100059687 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 7A650B1C22C132DA00059687 /* Products */;
+					ProductGroup = 3B26BED523A4F7EB0079213E /* Products */;
 					ProjectRef = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
 				},
 			);
@@ -623,46 +617,46 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		7A650B2522C132DB00059687 /* MBLibrary.framework */ = {
+		3B26BEDE23A4F7EB0079213E /* MBLibrary.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = MBLibrary.framework;
-			remoteRef = 7A650B2422C132DB00059687 /* PBXContainerItemProxy */;
+			remoteRef = 3B26BEDD23A4F7EB0079213E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		7A650B2722C132DB00059687 /* MBLibrary.framework */ = {
+		3B26BEE023A4F7EB0079213E /* MBLibrary.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = MBLibrary.framework;
-			remoteRef = 7A650B2622C132DB00059687 /* PBXContainerItemProxy */;
+			remoteRef = 3B26BEDF23A4F7EB0079213E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		7A650B2922C132DB00059687 /* MBLibrary.framework */ = {
+		3B26BEE223A4F7EB0079213E /* MBLibrary.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = MBLibrary.framework;
-			remoteRef = 7A650B2822C132DB00059687 /* PBXContainerItemProxy */;
+			remoteRef = 3B26BEE123A4F7EB0079213E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		7A650B2B22C132DB00059687 /* MBHealth.framework */ = {
+		3B26BEE423A4F7EB0079213E /* MBHealth.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = MBHealth.framework;
-			remoteRef = 7A650B2A22C132DB00059687 /* PBXContainerItemProxy */;
+			remoteRef = 3B26BEE323A4F7EB0079213E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		7A650B2D22C132DB00059687 /* MBHealth.framework */ = {
+		3B26BEE623A4F7EB0079213E /* MBHealth.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = MBHealth.framework;
-			remoteRef = 7A650B2C22C132DB00059687 /* PBXContainerItemProxy */;
+			remoteRef = 3B26BEE523A4F7EB0079213E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		7A650B2F22C132DB00059687 /* MBLibraryTests.xctest */ = {
+		3B26BEE823A4F7EB0079213E /* MBLibraryTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = MBLibraryTests.xctest;
-			remoteRef = 7A650B2E22C132DB00059687 /* PBXContainerItemProxy */;
+			remoteRef = 3B26BEE723A4F7EB0079213E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -844,6 +838,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7A7171092365B35C005A3314 /* Base */,
+				3B26BEEC23A4F8930079213E /* fr */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -852,6 +847,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7AA121E722C1370D0063E0F3 /* Base */,
+				3B26BEEB23A4F8930079213E /* fr */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -860,6 +856,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7AA121EA22C137250063E0F3 /* en */,
+				3B26BEEE23A4F8940079213E /* fr */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -868,6 +865,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7AA121ED22C1373B0063E0F3 /* en */,
+				3B26BEEF23A4F8940079213E /* fr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -876,6 +874,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7AA121EF22C1373C0063E0F3 /* en */,
+				3B26BEF023A4F8940079213E /* fr */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";
@@ -888,6 +887,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APP_NAME_IDENTIFIER = Workout;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -951,6 +951,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				APP_NAME_IDENTIFIER = Workout;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
