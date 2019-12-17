@@ -1,0 +1,147 @@
+
+/* Class = "UILabel"; text = "[Unit]"; ObjectID = "1Ax-9T-4ZO"; */
+"1Ax-9T-4ZO.text" = "[Unité]";
+
+/* Class = "UILabel"; text = "[y %]"; ObjectID = "8Ip-Rq-vW4"; */
+"8Ip-Rq-vW4.text" = "[y %]";
+
+/* Class = "UILabel"; text = "iPhone"; ObjectID = "ACU-RP-Us6"; */
+"ACU-RP-Us6.text" = "iPhone";
+
+/* Class = "UITableViewSection"; footerTitle = "Select the source from which to load step data. If your devices have not a standard name insert a custom source."; ObjectID = "DE6-lx-y5P"; */
+"DE6-lx-y5P.footerTitle" = "Select the source from which to load step data. If your devices have not a standard name insert a custom source.";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "DRM-gr-uTS"; */
+"DRM-gr-uTS.text" = "Label";
+
+/* Class = "UILabel"; text = "Authorize Health data access"; ObjectID = "DeD-yh-hfG"; */
+"DeD-yh-hfG.text" = "Autoriser l'accès aux données de santé";
+
+/* Class = "UILabel"; text = "bpm"; ObjectID = "DyT-UL-y1f"; */
+"DyT-UL-y1f.text" = "bpm";
+
+/* Class = "UILabel"; text = "[Max 60bpm]"; ObjectID = "ES6-46-UVk"; */
+"ES6-46-UVk.text" = "[60 bpm Max]";
+
+/* Class = "UILabel"; text = "%"; ObjectID = "HYe-hx-Xiu"; */
+"HYe-hx-Xiu.text" = "%";
+
+/* Class = "UILabel"; text = "Source Code"; ObjectID = "Hhm-6m-J7Z"; */
+"Hhm-6m-J7Z.text" = "Code Source";
+
+/* Class = "UILabel"; text = "Custom"; ObjectID = "IHW-A3-oq6"; */
+"IHW-A3-oq6.text" = "Personnalisé";
+
+/* Class = "UILabel"; text = "[Message]"; ObjectID = "JJ1-ny-IjM"; */
+"JJ1-ny-IjM.text" = "[Message]";
+
+/* Class = "UILabel"; text = "to"; ObjectID = "Jz3-dh-rRA"; */
+"Jz3-dh-rRA.text" = "à";
+
+/* Class = "UITextField"; placeholder = "60"; ObjectID = "MVj-Ip-JKh"; */
+"MVj-Ip-JKh.placeholder" = "60";
+
+/* Class = "UINavigationItem"; title = "Units"; ObjectID = "O9R-3v-zu9"; */
+"O9R-3v-zu9.title" = "Unités";
+
+/* Class = "UILabel"; text = "[Zone x]"; ObjectID = "Oxh-pC-9My"; */
+"Oxh-pC-9My.text" = "[Zone x]";
+
+/* Class = "UILabel"; text = "[Detail]"; ObjectID = "QEN-bt-c2A"; */
+"QEN-bt-c2A.text" = "[Détail]";
+
+/* Class = "UINavigationItem"; title = "Workout detail"; ObjectID = "QUK-cG-kWu"; */
+"QUK-cG-kWu.title" = "Détails d'Entraînement";
+
+/* Class = "UIButton"; normalTitle = "Remove Ads"; ObjectID = "Qam-ee-Z2S"; */
+"Qam-ee-Z2S.normalTitle" = "Supprimer la pub";
+
+/* Class = "UILabel"; text = "Detail"; ObjectID = "RON-yh-x5J"; */
+"RON-yh-x5J.text" = "Détail";
+
+/* Class = "UILabel"; text = "Step Source"; ObjectID = "RXY-ea-kL0"; */
+"RXY-ea-kL0.text" = "Source du podomètre";
+
+/* Class = "UINavigationItem"; title = "Workout"; ObjectID = "Tcm-Zm-2CH"; */
+"Tcm-Zm-2CH.title" = "Entraînement";
+
+/* Class = "UILabel"; text = "Manage Ads Consent"; ObjectID = "UZS-mG-WS7"; */
+"UZS-mG-WS7.text" = "Gérer le consentement des annonces";
+
+/* Class = "UILabel"; text = "All"; ObjectID = "Uxm-XN-Aib"; */
+"Uxm-XN-Aib.text" = "Tout";
+
+/* Class = "UILabel"; text = "[Filter]"; ObjectID = "XkP-LW-dPB"; */
+"XkP-LW-dPB.text" = "[Filtre]";
+
+/* Class = "UILabel"; text = "Max Heart Rate"; ObjectID = "Xkc-YX-SQk"; */
+"Xkc-YX-SQk.text" = "Fréquence cardiaque maximale";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "Yra-1s-wze"; */
+"Yra-1s-wze.text" = "Titre";
+
+/* Class = "UILabel"; text = "[Date – x/y workout(s)]"; ObjectID = "aIA-kd-flk"; */
+"aIA-kd-flk.text" = "[Date – x/y Entraînement(s)]";
+
+/* Class = "UIButton"; normalTitle = "Restore"; ObjectID = "aur-kd-U1r"; */
+"aur-kd-U1r.normalTitle" = "Restaurer";
+
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "bbu-3H-lJv"; */
+"bbu-3H-lJv.text" = "Sous-Titre";
+
+/* Class = "UILabel"; text = "Filter"; ObjectID = "c7b-sc-qHH"; */
+"c7b-sc-qHH.text" = "Filtre";
+
+/* Class = "UILabel"; text = "[Title]"; ObjectID = "ce9-aa-2d2"; */
+"ce9-aa-2d2.text" = "[Titre]";
+
+/* Class = "UILabel"; text = "Units"; ObjectID = "drg-GC-zpj"; */
+"drg-GC-zpj.text" = "Unités";
+
+/* Class = "UILabel"; text = "[Title]"; ObjectID = "f27-5Z-Fl6"; */
+"f27-5Z-Fl6.text" = "[Titre]";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "fy0-94-uI0"; */
+"fy0-94-uI0.text" = "Label";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "gZR-WK-721"; */
+"gZR-WK-721.text" = "Titre";
+
+/* Class = "UILabel"; text = "Running Heart Zones"; ObjectID = "gp7-Kc-v84"; */
+"gp7-Kc-v84.text" = "Zones de fréquence cardiaque";
+
+/* Class = "UITextField"; placeholder = "60"; ObjectID = "iDd-zm-qwW"; */
+"iDd-zm-qwW.placeholder" = "60";
+
+/* Class = "UINavigationItem"; title = "Running Heart Zones"; ObjectID = "jdI-fn-b3q"; */
+"jdI-fn-b3q.title" = "Zones de fréquence cardiaque";
+
+/* Class = "UILabel"; text = "[Message]"; ObjectID = "kRo-Ia-wba"; */
+"kRo-Ia-wba.text" = "[Message]";
+
+/* Class = "UINavigationItem"; title = "Step Source"; ObjectID = "n64-Oo-NfG"; */
+"n64-Oo-NfG.title" = "Source du podomètre";
+
+/* Class = "UILabel"; text = "Apple Watch"; ObjectID = "nBo-YC-1H8"; */
+"nBo-YC-1H8.text" = "Apple Watch";
+
+/* Class = "UILabel"; text = "Detail"; ObjectID = "qMa-t7-e6b"; */
+"qMa-t7-e6b.text" = "Détail";
+
+/* Class = "UIBarButtonItem"; title = "Item"; ObjectID = "rf3-yY-QN1"; */
+"rf3-yY-QN1.title" = "Item";
+
+/* Class = "UILabel"; text = "Detail"; ObjectID = "s6R-3Z-jd6"; */
+"s6R-3Z-jd6.text" = "Détail";
+
+/* Class = "UILabel"; text = "Contact Me"; ObjectID = "wAE-M9-GC0"; */
+"wAE-M9-GC0.text" = "Me Contacter";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "wjs-I5-QDS"; */
+"wjs-I5-QDS.text" = "Titre";
+
+/* Class = "UINavigationItem"; title = "Workouts"; ObjectID = "wns-Y0-8IB"; */
+"wns-Y0-8IB.title" = "Entraînements";
+
+/* Class = "UIButton"; normalTitle = "Load More"; ObjectID = "ya0-9d-7C7"; */
+"ya0-9d-7C7.normalTitle" = "Charger Plus";

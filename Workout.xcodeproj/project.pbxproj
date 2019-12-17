@@ -70,48 +70,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		3B26BEDD23A4F7EB0079213E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7A584FA51D3E241C000C739B;
-			remoteInfo = "MBLibrary iOS";
-		};
-		3B26BEDF23A4F7EB0079213E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7A0064CA1D3E9AF00089297D;
-			remoteInfo = "MBLibrary macOS";
-		};
-		3B26BEE123A4F7EB0079213E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7A0064FE1D3EB02B0089297D;
-			remoteInfo = "MBLibrary watchOS";
-		};
-		3B26BEE323A4F7EB0079213E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7AB95A4F223845ED0021EE86;
-			remoteInfo = "MBHealth iOS";
-		};
-		3B26BEE523A4F7EB0079213E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7AB95A5C2238471A0021EE86;
-			remoteInfo = "MBHealth watchOS";
-		};
-		3B26BEE723A4F7EB0079213E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7A0064DF1D3E9BFA0089297D;
-			remoteInfo = MBLibraryTests;
-		};
 		7AB7CD8622C4D774001A0171 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A650AF522C1300000059687 /* Project object */;
@@ -138,11 +96,14 @@
 /* Begin PBXFileReference section */
 		15DCB1062DF12CD614F251B6 /* Pods-Workout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.release.xcconfig"; sourceTree = "<group>"; };
 		36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Workout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B26BEEB23A4F8930079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		3B26BEEC23A4F8930079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		3B26BEEE23A4F8940079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = fr; path = fr.lproj/Main.storyboard; sourceTree = "<group>"; };
-		3B26BEEF23A4F8940079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		3B26BEF023A4F8940079213E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fr; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		3BD3437423A998CC00567BD7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3BD3437523A998CC00567BD7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3BD3437623A998CC00567BD7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3BD3437723A998D800567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		3BD3437823A998D800567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
+		3BD3437923A998D800567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		3BD3437A23A998D900567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3BD3437B23A998DA00567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fr; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		5CDCD9A647ADAC5D3651BE69 /* Pods-Workout Core.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout Core.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout Core/Pods-Workout Core.release.xcconfig"; sourceTree = "<group>"; };
 		5D5FDF6B281BD8F3FEE5AC5C /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
 		7A09205822EB8BA900EC86A6 /* CyclingWorkout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingWorkout.swift; sourceTree = "<group>"; };
@@ -156,7 +117,7 @@
 		7A650B0E22C1300500059687 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A650B1422C1307200059687 /* Workout.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Workout.entitlements; sourceTree = "<group>"; };
 		7A650B1622C1307200059687 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
-		7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
+		7A650B1B22C132D900059687 /* MBLibrary */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MBLibrary; path = ../MBLibrary; sourceTree = "<group>"; };
 		7A650B3522C1330A00059687 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		7A650B3E22C1353E00059687 /* RunningHeartZones.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RunningHeartZones.swift; sourceTree = "<group>"; };
 		7A650B3F22C1353F00059687 /* DataPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
@@ -188,13 +149,10 @@
 		7A7171012365B355005A3314 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7A7171032365B35C005A3314 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7A7171062365B35C005A3314 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		7A7171092365B35C005A3314 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7A71710B2365B35C005A3314 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A7171152365B36E005A3314 /* WorkoutHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WorkoutHelper.entitlements; sourceTree = "<group>"; };
 		7A9BF6CB22CA233900EC1D95 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		7A9BF6D322CA317600EC1D95 /* FilterCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCells.swift; sourceTree = "<group>"; };
-		7AA121E722C1370D0063E0F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		7AA121EA22C137250063E0F3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7AA121ED22C1373B0063E0F3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7AA121EF22C1373C0063E0F3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		7AB7CD8122C4D774001A0171 /* WorkoutCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WorkoutCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -242,19 +200,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3B26BED523A4F7EB0079213E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				3B26BEDE23A4F7EB0079213E /* MBLibrary.framework */,
-				3B26BEE023A4F7EB0079213E /* MBLibrary.framework */,
-				3B26BEE223A4F7EB0079213E /* MBLibrary.framework */,
-				3B26BEE423A4F7EB0079213E /* MBHealth.framework */,
-				3B26BEE623A4F7EB0079213E /* MBHealth.framework */,
-				3B26BEE823A4F7EB0079213E /* MBLibraryTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		7A2B0E4422C268DF00F09DA1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -360,7 +305,7 @@
 		7A650AF422C1300000059687 = {
 			isa = PBXGroup;
 			children = (
-				7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */,
+				7A650B1B22C132D900059687 /* MBLibrary */,
 				7AB7CD8222C4D774001A0171 /* Workout Core */,
 				7A650AFF22C1300100059687 /* Workout */,
 				7A7170FC2365B355005A3314 /* WorkoutHelper */,
@@ -601,12 +546,6 @@
 			mainGroup = 7A650AF422C1300000059687;
 			productRefGroup = 7A650AFE22C1300100059687 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 3B26BED523A4F7EB0079213E /* Products */;
-					ProjectRef = 7A650B1B22C132D900059687 /* MBLibrary.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				7A650AFC22C1300100059687 /* Workout */,
@@ -615,51 +554,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		3B26BEDE23A4F7EB0079213E /* MBLibrary.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MBLibrary.framework;
-			remoteRef = 3B26BEDD23A4F7EB0079213E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		3B26BEE023A4F7EB0079213E /* MBLibrary.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MBLibrary.framework;
-			remoteRef = 3B26BEDF23A4F7EB0079213E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		3B26BEE223A4F7EB0079213E /* MBLibrary.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MBLibrary.framework;
-			remoteRef = 3B26BEE123A4F7EB0079213E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		3B26BEE423A4F7EB0079213E /* MBHealth.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MBHealth.framework;
-			remoteRef = 3B26BEE323A4F7EB0079213E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		3B26BEE623A4F7EB0079213E /* MBHealth.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MBHealth.framework;
-			remoteRef = 3B26BEE523A4F7EB0079213E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		3B26BEE823A4F7EB0079213E /* MBLibraryTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = MBLibraryTests.xctest;
-			remoteRef = 3B26BEE723A4F7EB0079213E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		7A650AFB22C1300100059687 /* Resources */ = {
@@ -837,8 +731,8 @@
 		7A7171082365B35C005A3314 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				7A7171092365B35C005A3314 /* Base */,
-				3B26BEEC23A4F8930079213E /* fr */,
+				3BD3437623A998CC00567BD7 /* Base */,
+				3BD3437923A998D800567BD7 /* fr */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -846,8 +740,8 @@
 		7AA121E622C1370D0063E0F3 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				7AA121E722C1370D0063E0F3 /* Base */,
-				3B26BEEB23A4F8930079213E /* fr */,
+				3BD3437423A998CC00567BD7 /* Base */,
+				3BD3437723A998D800567BD7 /* fr */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -855,8 +749,8 @@
 		7AA121E922C137250063E0F3 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				7AA121EA22C137250063E0F3 /* en */,
-				3B26BEEE23A4F8940079213E /* fr */,
+				3BD3437523A998CC00567BD7 /* Base */,
+				3BD3437823A998D800567BD7 /* fr */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -865,7 +759,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7AA121ED22C1373B0063E0F3 /* en */,
-				3B26BEEF23A4F8940079213E /* fr */,
+				3BD3437A23A998D900567BD7 /* fr */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -874,7 +768,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				7AA121EF22C1373C0063E0F3 /* en */,
-				3B26BEF023A4F8940079213E /* fr */,
+				3BD3437B23A998DA00567BD7 /* fr */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";
@@ -1018,7 +912,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Marco-Boschi.ios.$(APP_NAME_IDENTIFIER)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.maximekillin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1039,7 +933,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Marco-Boschi.ios.$(APP_NAME_IDENTIFIER)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.maximekillin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

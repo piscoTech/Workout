@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>lld</string>
 			<key>one</key>
-			<string>%lld exercice</string>
+			<string>%lld entraînement</string>
 			<key>other</key>
-			<string>%lld exercices</string>
+			<string>%lld entraînements</string>
 		</dict>
 	</dict>
 </dict>
