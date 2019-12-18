@@ -9,7 +9,7 @@
 "ACU-RP-Us6.text" = "iPhone";
 
 /* Class = "UITableViewSection"; footerTitle = "Select the source from which to load step data. If your devices have not a standard name insert a custom source."; ObjectID = "DE6-lx-y5P"; */
-"DE6-lx-y5P.footerTitle" = "Select the source from which to load step data. If your devices have not a standard name insert a custom source.";
+"DE6-lx-y5P.footerTitle" = "Sélectionnez la source à partir de laquelle charger les données de pas. Si vos appareils n'ont pas de nom, insérez une source personnalisée.";
 
 /* Class = "UILabel"; text = "Label"; ObjectID = "DRM-gr-uTS"; */
 "DRM-gr-uTS.text" = "Label";
