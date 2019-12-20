@@ -37,13 +37,10 @@
 "WRKT_FILTER_TO" = "To";
 "WRKT_FILTER_TO_NONE" = "The end of the universe";
 
-"WRKT_LIST_MORE" = "Load More";
-
 "WRKT_LIST_LOADING" = "Loading from Health app...";
 "WRKT_LIST_ERR_NO_WORKOUT" = "No workout";
 
 // MARK: - Workout View
-"WRKT_TITLE" = "Workout Details";
 
 "WRKT_TYPE" = "Type";
 "WRKT_START" = "Start";

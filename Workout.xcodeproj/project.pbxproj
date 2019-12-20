@@ -156,6 +156,9 @@
 		7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutBulkExporter.swift; sourceTree = "<group>"; };
 		7A2B0E5022C26A1800F09DA1 /* StepSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepSource.swift; sourceTree = "<group>"; };
 		7A2B0E5222C26A5E00F09DA1 /* SystemOfUnits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemOfUnits.swift; sourceTree = "<group>"; };
+		7A2C783923AD5DDB00DC90A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Base; path = Base.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		7A2C784023AD5E0100DC90A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7A2C784123AD5E3D00DC90A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7A650AFD22C1300100059687 /* Workout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Workout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A650B0022C1300100059687 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A650B0222C1300100059687 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -205,9 +208,6 @@
 		7A9BF6CB22CA233900EC1D95 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		7A9BF6D322CA317600EC1D95 /* FilterCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCells.swift; sourceTree = "<group>"; };
 		7AA121E722C1370D0063E0F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		7AA121EA22C137250063E0F3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/Main.storyboard; sourceTree = "<group>"; };
-		7AA121ED22C1373B0063E0F3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		7AA121EF22C1373C0063E0F3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		7AB7CD8122C4D774001A0171 /* WorkoutCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WorkoutCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AB7CD8322C4D774001A0171 /* Workout_Core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Workout_Core.h; sourceTree = "<group>"; };
 		7AB7CD8422C4D774001A0171 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -875,7 +875,7 @@
 		7AA121E922C137250063E0F3 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				7AA121EA22C137250063E0F3 /* en */,
+				7A2C784123AD5E3D00DC90A5 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -883,7 +883,7 @@
 		7AA121EC22C1373B0063E0F3 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				7AA121ED22C1373B0063E0F3 /* en */,
+				7A2C784023AD5E0100DC90A5 /* Base */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -891,7 +891,7 @@
 		7AA121EE22C1373C0063E0F3 /* Localizable.stringsdict */ = {
 			isa = PBXVariantGroup;
 			children = (
-				7AA121EF22C1373C0063E0F3 /* en */,
+				7A2C783923AD5DDB00DC90A5 /* Base */,
 			);
 			name = Localizable.stringsdict;
 			sourceTree = "<group>";
