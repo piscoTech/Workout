@@ -18,11 +18,11 @@ class RunningWorkout: Workout {
 		
 		if raw.workoutActivityType == .running {
 			let heartZone = RunningHeartZones(with: preferences)
-			self.addAdditionalDataProcessorsAndProviders(heartZone)
+			self.addAdditionalProcessorsAndProviders(heartZone)
 		}
 		
 		let details = MinuteByMinuteBreakdown(details: [.pace, .heart, .steps], with: preferences)
-		self.addAdditionalDataProcessorsAndProviders(details)
+		self.addAdditionalProcessorsAndProviders(details)
 		
 		if let distance = WorkoutDataQuery(typeID: .distanceWalkingRunning, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(distance)

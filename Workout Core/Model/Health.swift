@@ -15,7 +15,8 @@ public class Health {
 	public init() {}
 
 	/// List of health data to require access to.
-	private let readData: Set<HKObjectType> = [
+	private let readData: Set<HKObjectType> = {
+		var types: Set<HKObjectType> = [
 			HKObjectType.workoutType(),
 			HKObjectType.quantityType(forIdentifier: .heartRate)!,
 
@@ -27,9 +28,16 @@ public class Health {
 
 			HKObjectType.quantityType(forIdentifier: .distanceSwimming)!,
 			HKObjectType.quantityType(forIdentifier: .swimmingStrokeCount)!,
-			
+
 			HKObjectType.quantityType(forIdentifier: .distanceCycling)!
 		]
+
+		if #available(iOS 11.0, *) {
+			types.insert(HKSeriesType.workoutRoute())
+		}
+
+		return types
+	}()
 
 	public func authorizeHealthKitAccess(_ callback: @escaping () -> Void) {
 		let req = {

@@ -68,6 +68,10 @@
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
 "HEART_ZONES_ZONE_%lld" = "Zone %d";
 
+"WRKT_ROUTE_TITLE" = "Route";
+"WRKT_ROUTE_START" = "Start";
+"WRKT_ROUTE_END" = "End";
+
 // MARK: - Export
 
 "EXPORT_SELECT_ALL" = "Select All";

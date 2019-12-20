@@ -12,7 +12,9 @@ import MBLibrary
 import WorkoutCore
 
 class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
-	
+
+	private static let defaultHeight: CGFloat = 44
+
 	@IBOutlet var exportBtn: UIBarButtonItem!
 	
 	weak var listController: ListTableViewController!
@@ -32,10 +34,19 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		loading.color = .systemGray
 		loading.startAnimating()
 		navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loading)
+
+		tableView.rowHeight = UITableView.automaticDimension
+		tableView.estimatedRowHeight = Self.defaultHeight
 		
 		workout = Workout.workoutFor(raw: rawWorkout, from: healthData, and: preferences, delegate: self)
-		workout.load()
     }
+
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+
+		// load() itself prevents the loading from happening multiple times
+		workout.load()
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -161,14 +172,22 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	@available(iOS 13.0, *)
 	private static let elevationConfiguration = UIImage.SymbolConfiguration(weight: .bold)
 
+	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+		if workout.hasError || indexPath.section == 0 {
+			return Self.defaultHeight
+		} else {
+			return workout.additionalProviders[indexPath.section - 1].heightForRowAt(indexPath, in: tableView) ?? Self.defaultHeight
+		}
+	}
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if workout.hasError {
 			let res = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
 			let msg: String
 			if HKHealthStore.isHealthDataAvailable() {
-				msg = "ERR_LOADING"
+				msg = "WRKT_ERR_LOADING"
 			} else {
-				msg = "ERR_NO_HEALTH"
+				msg = "WRKT_ERR_NO_HEALTH"
 			}
 			res.textLabel?.text = NSLocalizedString(msg, comment: "Error")
 			

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15400" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="cG8-Sd-LXa">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="cG8-Sd-LXa">
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15404"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -155,7 +155,7 @@
             </objects>
             <point key="canvasLocation" x="739" y="368"/>
         </scene>
-        <!--Workout detail-->
+        <!--Workout Detail-->
         <scene sceneID="dlc-JQ-5p9">
             <objects>
                 <tableViewController id="uRu-e5-1Xw" customClass="WorkoutTableViewController" customModule="Workout" customModuleProvider="target" sceneMemberID="viewController">
@@ -165,7 +165,7 @@
                         <color key="backgroundColor" systemColor="systemGroupedBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="msg" textLabel="JJ1-ny-IjM" style="IBUITableViewCellStyleDefault" id="gbd-ck-EZq">
-                                <rect key="frame" x="0.0" y="90.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gbd-ck-EZq" id="gdu-LF-PhS">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -183,7 +183,7 @@
                                 <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="general" id="T8u-Lq-06M" customClass="WorkoutGeneralDataCell" customModule="Workout" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="134.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="99.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="T8u-Lq-06M" id="9OS-4n-Gm3">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -222,7 +222,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="basic" textLabel="Yra-1s-wze" detailTextLabel="qMa-t7-e6b" style="IBUITableViewCellStyleValue1" id="1qO-SP-NdM" customClass="WorkoutGeneralDataCell" customModule="Workout" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="178.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="143.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1qO-SP-NdM" id="1Uh-AB-XAw">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -247,7 +247,7 @@
                                 <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="detail" id="XxF-cE-zn6" customClass="WorkoutMinuteTableViewCell" customModule="WorkoutCore">
-                                <rect key="frame" x="0.0" y="222.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="187.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XxF-cE-zn6" id="DTP-CT-N40">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -269,13 +269,39 @@
                                     <outlet property="stack" destination="Tcy-Pw-goL" id="02A-97-oIm"/>
                                 </connections>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="map" id="nvg-yk-hoz" customClass="WorkoutRouteTVCell" customModule="WorkoutCore">
+                                <rect key="frame" x="0.0" y="231.5" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="nvg-yk-hoz" id="rxI-TO-4RX">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" rotateEnabled="NO" pitchEnabled="NO" showsCompass="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wPO-mv-drC">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="wPO-mv-drC" secondAttribute="height" multiplier="1:1" priority="750" id="Ukr-fA-qdP"/>
+                                            </constraints>
+                                        </mapView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="wPO-mv-drC" secondAttribute="trailing" id="A67-G4-wn2"/>
+                                        <constraint firstItem="wPO-mv-drC" firstAttribute="leading" secondItem="rxI-TO-4RX" secondAttribute="leading" id="Jdv-t6-Yma"/>
+                                        <constraint firstItem="wPO-mv-drC" firstAttribute="top" secondItem="rxI-TO-4RX" secondAttribute="top" id="UHj-KS-7tL"/>
+                                        <constraint firstAttribute="bottom" secondItem="wPO-mv-drC" secondAttribute="bottom" id="eHK-rR-Eg0"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                <connections>
+                                    <outlet property="mapView" destination="wPO-mv-drC" id="qKc-to-agX"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="uRu-e5-1Xw" id="w1E-73-rTG"/>
                             <outlet property="delegate" destination="uRu-e5-1Xw" id="KMw-5u-zNq"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Workout detail" largeTitleDisplayMode="never" id="QUK-cG-kWu">
+                    <navigationItem key="navigationItem" title="Workout Detail" largeTitleDisplayMode="never" id="QUK-cG-kWu">
                         <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="action" id="3xR-ye-8lX">
                             <connections>
                                 <action selector="export:" destination="uRu-e5-1Xw" id="5rd-2B-zKd"/>
@@ -697,7 +723,7 @@
                             <tableViewSection footerTitle="Select the source from which to load step data. If your devices have not a standard name insert a custom source." id="DE6-lx-y5P">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="Uxm-XN-Aib" style="IBUITableViewCellStyleDefault" id="Z0g-27-0KG">
-                                        <rect key="frame" x="0.0" y="53" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="18" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Z0g-27-0KG" id="78T-qT-LAX">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -715,7 +741,7 @@
                                         <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="ACU-RP-Us6" style="IBUITableViewCellStyleDefault" id="d5X-jd-vYR">
-                                        <rect key="frame" x="0.0" y="97" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="62" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="d5X-jd-vYR" id="Xbi-e6-hGx">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -733,7 +759,7 @@
                                         <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="nBo-YC-1H8" style="IBUITableViewCellStyleDefault" id="hCC-Hb-ZaU">
-                                        <rect key="frame" x="0.0" y="141" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="106" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="hCC-Hb-ZaU" id="mPr-Xf-yU1">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -751,7 +777,7 @@
                                         <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="cWG-M9-Dfw">
-                                        <rect key="frame" x="0.0" y="185" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="150" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cWG-M9-Dfw" id="ojC-dZ-Vxy">
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -815,7 +841,7 @@
                         <color key="backgroundColor" systemColor="systemGroupedBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="maxRate" id="f0H-RP-zFP" customClass="MaxHeartRateCell" customModule="Workout" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="90.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="f0H-RP-zFP" id="jgr-IP-zCT">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -863,7 +889,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="zone" id="Xgx-Jd-JxN" customClass="HeartZoneCell" customModule="Workout" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="134.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="99.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xgx-Jd-JxN" id="KCa-JK-fw0">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
@@ -999,7 +1025,7 @@
                         <color key="backgroundColor" systemColor="systemGroupedBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="unit" textLabel="1Ax-9T-4ZO" style="IBUITableViewCellStyleDefault" id="ajQ-OO-Zst">
-                                <rect key="frame" x="0.0" y="90.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ajQ-OO-Zst" id="00s-9Y-tWa">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>

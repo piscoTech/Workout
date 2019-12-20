@@ -38,7 +38,13 @@ public class Workout {
 	}
 
 	private var additionalProcessors = [AdditionalDataProcessor]()
-	public private(set) var additionalProviders = [AdditionalDataProvider]()
+	private var additionalExtractor = [AdditionalDataExtractor]()
+
+	private var allAdditionalProviders = [AdditionalDataProvider]()
+	/// Additional data providers with data to display
+	public var additionalProviders: [AdditionalDataProvider] {
+		allAdditionalProviders.filter { $0.numberOfRows > 0 }
+	}
 
 	public private(set) var isLoading = false
 	public private(set) var isLoaded = false
@@ -142,7 +148,7 @@ public class Workout {
 		if asc == nil && desc == nil {
 			if let eg = elevationChangeCache {
 				return eg
-			} else if let res = additionalProviders.compactMap({ $0 as? ElevationChangeProvider }).first?.elevationChange {
+			} else if let res = allAdditionalProviders.compactMap({ $0 as? ElevationChangeProvider }).first?.elevationChange {
 				self.elevationChangeCache = res
 				
 				return res
@@ -175,8 +181,14 @@ public class Workout {
 		default:
 			wClass = Workout.self
 		}
+		let wrkt = wClass.init(raw, from: healthData, and: preferences, delegate: delegate)
 
-		return wClass.init(raw, from: healthData, and: preferences, delegate: delegate)
+		if #available(iOS 11.0, *) {
+			let route = WorkoutRoute(with: preferences)
+			wrkt.addAdditionalExtractorsAndProviders(route)
+		}
+
+		return wrkt
 	}
 
 	required init(_ raw: HKWorkout, from healthData: Health, and _: Preferences, delegate del: WorkoutDelegate? = nil) {
@@ -262,7 +274,15 @@ public class Workout {
 		self.addQuery(q, isBase: false)
 	}
 
-	func addAdditionalDataProcessors(_ dp: AdditionalDataProcessor...) {
+	func addAdditionalExtractor(_ de: AdditionalDataExtractor...) {
+		guard !isLoading && !isLoaded else {
+			return
+		}
+
+		self.additionalExtractor += de
+	}
+
+	func addAdditionalProcessors(_ dp: AdditionalDataProcessor...) {
 		guard !isLoading && !isLoaded else {
 			return
 		}
@@ -270,21 +290,30 @@ public class Workout {
 		self.additionalProcessors += dp
 	}
 
-	func addAdditionalDataProviders(_ dp: AdditionalDataProvider...) {
+	func addAdditionalProviders(_ dp: AdditionalDataProvider...) {
 		guard !isLoading && !isLoaded else {
 			return
 		}
 
-		self.additionalProviders += dp
+		self.allAdditionalProviders += dp
 	}
 
-	func addAdditionalDataProcessorsAndProviders(_ dp: (AdditionalDataProcessor & AdditionalDataProvider)...) {
+	func addAdditionalProcessorsAndProviders(_ dp: (AdditionalDataProcessor & AdditionalDataProvider)...) {
 		guard !isLoading && !isLoaded else {
 			return
 		}
 
 		self.additionalProcessors += dp as [AdditionalDataProcessor]
-		self.additionalProviders += dp as [AdditionalDataProvider]
+		self.allAdditionalProviders += dp as [AdditionalDataProvider]
+	}
+
+	func addAdditionalExtractorsAndProviders(_ dep: (AdditionalDataExtractor & AdditionalDataProvider)...) {
+		guard !isLoading && !isLoaded else {
+			return
+		}
+
+		self.additionalExtractor += dep as [AdditionalDataExtractor]
+		self.allAdditionalProviders += dep as [AdditionalDataProvider]
 	}
 
 	/// Loads required additional data for the workout.
@@ -300,11 +329,13 @@ public class Workout {
 
 		isLoading = true
 		let req = baseReq + (quickLoad ? [] : requests)
+		let othExtractor = quickLoad ? [] : additionalExtractor
 		DispatchQueue.workout.async {
-			self.requestToDo = req.count
+			self.requestToDo = req.count + othExtractor.count
 			self.requestDone = 0
 		}
 
+		// Execute quantity sample queries
 		for r in req {
 			r.execute(on: healthStore, forStart: startDate, usingWorkoutPredicate: workoutPredicate, timePredicate: timePredicate, sourcePredicate: sourcePredicate) { _, data, err  in
 				defer {
@@ -350,6 +381,23 @@ public class Workout {
 					if r.typeID == .heartRate {
 						self.avgHeart = res.isEmpty ? nil : HKQuantity(unit: hrUnit, doubleValue: avgHeart / Double(res.count))
 					}
+				}
+			}
+		}
+
+		// Execute other queries
+		for e in othExtractor {
+			e.set(workout: self)
+			e.extract(from: healthStore) { success in
+				defer {
+					// Move to a serial queue to synchronize access to counter
+					DispatchQueue.workout.async {
+						self.requestDone += 1
+					}
+				}
+
+				if !success {
+					self.hasError = true
 				}
 			}
 		}
@@ -429,18 +477,18 @@ public class Workout {
 				return
 			}
 
-			if self.additionalProviders.isEmpty {
+			if self.allAdditionalProviders.isEmpty {
 				callback([general])
 			} else {
-				var files = [[URL]?](repeating: nil, count: self.additionalProviders.count)
+				var files = [[URL]?](repeating: nil, count: self.allAdditionalProviders.count)
 				var completed = 0
-				for (i, dp) in self.additionalProviders.enumerated() {
+				for (i, dp) in self.allAdditionalProviders.enumerated() {
 					dp.export(for: systemOfUnits) { f in
 						DispatchQueue.workout.async {
 							completed += 1
 							files[i] = f
 
-							if completed == self.additionalProviders.count {
+							if completed == self.allAdditionalProviders.count {
 								DispatchQueue.background.async {
 									if let res = files.reduce([], { (res, partial) -> [URL]? in
 										if let r = res, let p = partial {
