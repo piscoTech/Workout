@@ -68,6 +68,10 @@
 "HEART_ZONES_NEED_CONFIG" = "Réglez votre fréquence cardiaque maximale dans les paramètres pour afficher ceci.";
 "HEART_ZONES_ZONE_%lld" = "Zone %d";
 
+"WRKT_ROUTE_TITLE" = "Trajet";
+"WRKT_ROUTE_START" = "Départ";
+"WRKT_ROUTE_END" = "Arrivée";
+
 // MARK: - Export
 
 "EXPORT_SELECT_ALL" = "Sélectionner tout";
