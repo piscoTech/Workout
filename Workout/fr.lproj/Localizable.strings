@@ -10,11 +10,11 @@
 "UNITS_NAME_0" = "Métrique";
 "UNITS_NAME_1" = "Impérial";
 
-"STEP_SOURCE_ALL" = "Toutes les Sources";
+"STEP_SOURCE_ALL" = "Toutes les sources";
 
-"WRKT_FILTER_ANY_TIME" = "N'importe Quand";
+"WRKT_FILTER_ANY_TIME" = "N’importe quand";
 "WRKT_FILTER_FROM_%@" = "Depuis %@";
-"WRKT_FILTER_TO_%@" = "à %@";
+"WRKT_FILTER_TO_%@" = "À %@";
 "WRKT_FILTER_FROM_%@_TO_%@" = "Depuis %@ à %@";
 
 // MARK: - Errors
@@ -26,21 +26,21 @@
 "WRKT_LIST_TITLE" = "Entraînements";
 
 "WRKT_FILTER" = "Filtre";
-"WRKT_FILTER_ALL" = "Tous les Entraînements";
+"WRKT_FILTER_ALL" = "Tous les entraînements";
 "WRKT_FILTER_%lld_OUT_%lld" = "%lld/%lld entraînements";
 
 "WRKT_FILTER_DATE" = "Date de début";
 "WRKT_FILTER_TYPE" = "Type";
 
 "WRKT_FILTER_FROM" = "Depuis";
-"WRKT_FILTER_FROM_NONE" = "Le Big Bang";
+"WRKT_FILTER_FROM_NONE" = "La nuit des temps";
 "WRKT_FILTER_TO" = "À";
-"WRKT_FILTER_TO_NONE" = "La Fin des Temps";
+"WRKT_FILTER_TO_NONE" = "La fin des temps";
 
 "WRKT_LIST_MORE" = "Charger Plus";
 
 "WRKT_LIST_LOADING" = "Chargement depuis l'application Santé...";
-"WRKT_LIST_ERR_NO_WORKOUT" = "Aucun Entraînement";
+"WRKT_LIST_ERR_NO_WORKOUT" = "Aucun entraînement";
 
 // MARK: - Workout View
 "WRKT_TITLE" = "Détails d'Entraînement";
@@ -50,10 +50,10 @@
 "WRKT_END" = "Fin";
 "WRKT_DURATION" = "Durée";
 "WRKT_DISTANCE" = "Distance";
-"WRKT_AVG_HEART" = "Rythme Cardiaque Moyen";
-"WRKT_MAX_HEART" = "Rythme Cardiaque Maximum";
-"WRKT_AVG_PACE" = "Allure Moyenne";
-"WRKT_AVG_SPEED" = "Vitesse Moyenne";
+"WRKT_AVG_HEART" = "Rythme cardiaque moyen";
+"WRKT_MAX_HEART" = "Rythme cardiaque maximum";
+"WRKT_AVG_PACE" = "Allure moyenne";
+"WRKT_AVG_SPEED" = "Vitesse moyenne";
 "WRKT_ENERGY" = "Énergie";
 "WRKT_ELEVATION" = "Dénivelée";
 
@@ -63,28 +63,28 @@
 "MINBYMIN_TITLE" = "Détails";
 "MINBYMIN_%@_PAUSE" = "Pause de %@";
 
-"HEART_ZONES_TITLE" = "Zones Cardiaques";
-"HEART_ZONES_FOOTER" = "Il est possible que les temps dans chaque zone cardiaque ne correspondent pas à la durée totale de l'entraînement car dans certaines parties, les données cardiaques peuvent être indisponibles ou la fréquence cardiaque est en dessous du seuil de la zone 1.";
+"HEART_ZONES_TITLE" = "Zones cardiaques";
+"HEART_ZONES_FOOTER" = "Il est possible que les temps dans chaque zone cardiaque ne correspondent pas à la durée totale de l’entraînement car dans certaines parties, les données cardiaques peuvent être indisponibles ou la fréquence cardiaque est en dessous du seuil de la zone 1.";
 "HEART_ZONES_NEED_CONFIG" = "Réglez votre fréquence cardiaque maximale dans les paramètres pour afficher ceci.";
 "HEART_ZONES_ZONE_%lld" = "Zone %d";
 
 // MARK: - Export
 
-"EXPORT_SELECT_ALL" = "Sélectionner Tout";
-"EXPORT_SELECT_NONE" = "Ne Rien Sélectionner";
+"EXPORT_SELECT_ALL" = "Sélectionner tout";
+"EXPORT_SELECT_NONE" = "Ne rien sélectionner";
 
-"EXPORT_ERROR" = "Impossible d'exporter les données d'entraînement";
-"EXPORT_ERROR_PARTIAL" = "Impossible d'exporter certaines données d'entraînement";
-"EXPORT_ERROR_PARTIAL_%@" = "Les séances d'entraînement aux moments suivants n'ont pas réussi à être exportées :\n%@";
+"EXPORT_ERROR" = "Impossible d’exporter les données d’entraînement";
+"EXPORT_ERROR_PARTIAL" = "Impossible d’exporter certaines données d’entraînement";
+"EXPORT_ERROR_PARTIAL_%@" = "Les séances d’entraînement aux moments suivants n'ont pas réussi à être exportées :\n%@";
 
 
 // MARK: - Settings
 
 "HEART_ZONES_MAX_RATE" = "%@ max";
-"HEART_ZONES_EXPLANATION" = "Les zones cardiaques sont des plages de votre fréquence cardiaque en termes de pourcentage de votre fréquence cardiaque maximale. Passer un certain temps dans chaque zone vous aidera à vous entraîner d'une certaine manière. Personnalisez les zones pour mieux répondre à vos besoins.";
+"HEART_ZONES_EXPLANATION" = "Les zones cardiaques sont des plages de votre fréquence cardiaque en termes de pourcentage de votre fréquence cardiaque maximale. Passer un certain temps dans chaque zone vous aidera à vous entraîner d’une certaine manière. Personnalisez les zones pour mieux répondre à vos besoins.";
 
 "REPORT_TEXT" = "Signalez tout problème sur Twitter @piscoTech ou sur GitHub en tapant le code source.";
 
 "REMOVE_ADS" = "Supprimer la pub";
-"MANAGE_CONSENT" = "Gérer le Consentement des Annonces";
+"MANAGE_CONSENT" = "Gérer le consentement des annonces";
 "MANAGE_CONSENT_ERR" = "Impossible de mettre à jour le consentement des annonces";

@@ -15,19 +15,19 @@
 "DRM-gr-uTS.text" = "Label";
 
 /* Class = "UILabel"; text = "Authorize Health data access"; ObjectID = "DeD-yh-hfG"; */
-"DeD-yh-hfG.text" = "Autoriser l'accès aux données de santé";
+"DeD-yh-hfG.text" = "Autoriser l’accès aux données de Santé";
 
 /* Class = "UILabel"; text = "bpm"; ObjectID = "DyT-UL-y1f"; */
 "DyT-UL-y1f.text" = "bpm";
 
 /* Class = "UILabel"; text = "[Max 60bpm]"; ObjectID = "ES6-46-UVk"; */
-"ES6-46-UVk.text" = "[60 bpm Max]";
+"ES6-46-UVk.text" = "[60 bpm max]";
 
 /* Class = "UILabel"; text = "%"; ObjectID = "HYe-hx-Xiu"; */
 "HYe-hx-Xiu.text" = "%";
 
 /* Class = "UILabel"; text = "Source Code"; ObjectID = "Hhm-6m-J7Z"; */
-"Hhm-6m-J7Z.text" = "Code Source";
+"Hhm-6m-J7Z.text" = "Code source";
 
 /* Class = "UILabel"; text = "Custom"; ObjectID = "IHW-A3-oq6"; */
 "IHW-A3-oq6.text" = "Personnalisé";
@@ -51,7 +51,7 @@
 "QEN-bt-c2A.text" = "[Détail]";
 
 /* Class = "UINavigationItem"; title = "Workout detail"; ObjectID = "QUK-cG-kWu"; */
-"QUK-cG-kWu.title" = "Détails d'Entraînement";
+"QUK-cG-kWu.title" = "Détails d’entraînement";
 
 /* Class = "UIButton"; normalTitle = "Remove Ads"; ObjectID = "Qam-ee-Z2S"; */
 "Qam-ee-Z2S.normalTitle" = "Supprimer la pub";
@@ -81,7 +81,7 @@
 "Yra-1s-wze.text" = "Titre";
 
 /* Class = "UILabel"; text = "[Date – x/y workout(s)]"; ObjectID = "aIA-kd-flk"; */
-"aIA-kd-flk.text" = "[Date – x/y Entraînement(s)]";
+"aIA-kd-flk.text" = "[Date – x/y entraînement(s)]";
 
 /* Class = "UIButton"; normalTitle = "Restore"; ObjectID = "aur-kd-U1r"; */
 "aur-kd-U1r.normalTitle" = "Restaurer";
@@ -135,7 +135,7 @@
 "s6R-3Z-jd6.text" = "Détail";
 
 /* Class = "UILabel"; text = "Contact Me"; ObjectID = "wAE-M9-GC0"; */
-"wAE-M9-GC0.text" = "Me Contacter";
+"wAE-M9-GC0.text" = "Me contacter";
 
 /* Class = "UILabel"; text = "Title"; ObjectID = "wjs-I5-QDS"; */
 "wjs-I5-QDS.text" = "Titre";
@@ -144,4 +144,4 @@
 "wns-Y0-8IB.title" = "Entraînements";
 
 /* Class = "UIButton"; normalTitle = "Load More"; ObjectID = "ya0-9d-7C7"; */
-"ya0-9d-7C7.normalTitle" = "Charger Plus";
+"ya0-9d-7C7.normalTitle" = "Charger plus";
