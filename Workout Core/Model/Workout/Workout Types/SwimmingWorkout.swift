@@ -18,7 +18,7 @@ class SwimmingWorkout: Workout {
 		self.set(maxPace: HKQuantity(unit: .secondPerKilometer, doubleValue: 90 * 60))
 
 		let details = MinuteByMinuteBreakdown(details: [.pace, .heart, .strokes], with: preferences)
-		self.addAdditionalDataProcessorsAndProviders(details)
+		self.addAdditionalProcessorsAndProviders(details)
 
 		if let distance = WorkoutDataQuery(typeID: .distanceSwimming, withUnit: .meter(), andTimeType: .ranged, searchingBy: .workout(fallbackToTime: true)) {
 			self.addQuery(distance)

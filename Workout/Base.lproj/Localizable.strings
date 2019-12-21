@@ -37,13 +37,10 @@
 "WRKT_FILTER_TO" = "To";
 "WRKT_FILTER_TO_NONE" = "The end of the universe";
 
-"WRKT_LIST_MORE" = "Load More";
-
 "WRKT_LIST_LOADING" = "Loading from Health app...";
 "WRKT_LIST_ERR_NO_WORKOUT" = "No workout";
 
 // MARK: - Workout View
-"WRKT_TITLE" = "Workout Details";
 
 "WRKT_TYPE" = "Type";
 "WRKT_START" = "Start";
@@ -67,6 +64,10 @@
 "HEART_ZONES_FOOTER" = "It is possible that the times in each heart zone do not add up to the total duration of the workout as in some parts heart data is not available or the heart rate is below the threshold for Zone 1.";
 "HEART_ZONES_NEED_CONFIG" = "Set your max heart rate in settings to display this";
 "HEART_ZONES_ZONE_%lld" = "Zone %d";
+
+"WRKT_ROUTE_TITLE" = "Route";
+"WRKT_ROUTE_START" = "Start";
+"WRKT_ROUTE_END" = "End";
 
 // MARK: - Export
 
