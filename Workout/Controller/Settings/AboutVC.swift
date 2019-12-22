@@ -62,7 +62,7 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		switch section {
 		// Settings
 		case settingsSectionOffset:
-			return 3
+			return 4
 		// Source Code & Contacts
 		case settingsSectionOffset + 1:
 			return 2
@@ -90,6 +90,11 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		case (settingsSectionOffset, 2):
 			let cell = tableView.dequeueReusableCell(withIdentifier: "heartZones", for: indexPath)
 			setMaxHeartRate(in: cell)
+			return cell
+		// Route Type
+		case (settingsSectionOffset, 3):
+			let cell = tableView.dequeueReusableCell(withIdentifier: "routeType", for: indexPath)
+			setRouteType(in: cell)
 			return cell
 		// Source Code
 		case (settingsSectionOffset + 1, 0):
@@ -153,6 +158,12 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		}
 	}
 
+	func routeTypeChanged() {
+		if let cell = tableView.cellForRow(at: IndexPath(row: 3, section: settingsSectionOffset)) {
+			setRouteType(in: cell)
+		}
+	}
+
 	private func setUnits(in cell: UITableViewCell) {
 		cell.detailTextLabel?.text = preferences.systemOfUnits.displayName
 	}
@@ -170,6 +181,10 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 			s = nil
 		}
 		cell.detailTextLabel?.text = s
+	}
+
+	private func setRouteType(in cell: UITableViewCell) {
+		cell.detailTextLabel?.text = preferences.routeType.displayName
 	}
 	
 	// MARK: - Ads management
