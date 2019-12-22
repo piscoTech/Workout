@@ -148,17 +148,23 @@ public class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider,
 				return
 			}
 
-			let sep = CSVSeparator
-			var zones = "Zone\(sep)Time\n"
-			var i = 1
-			for t in zonesData {
-				zones += "\(i)\(sep)\(t.rawDuration().toCSV())\n"
-				i += 1
+			let hzFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("heartZones.csv")
+			guard let file = OutputStream(url: hzFile, append: false) else {
+				callback(nil)
+				return
 			}
 
+			let sep = CSVSeparator
 			do {
-				let hzFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("heartZones.csv")
-				try zones.write(to: hzFile, atomically: true, encoding: .utf8)
+				file.open()
+				defer{
+					file.close()
+				}
+
+				try file.write("Zone\(sep)Time\n")
+				for (i, t) in zonesData.enumerated() {
+					try file.write("\(i + 1)\(sep)\(t.rawDuration().toCSV())\n")
+				}
 
 				callback([hzFile])
 			} catch {

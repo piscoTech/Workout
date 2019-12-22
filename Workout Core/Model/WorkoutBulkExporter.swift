@@ -45,7 +45,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 
 	deinit {
 		workouts.locked = false
-		fileHandle?.closeFile()
+		fileStream?.close()
 	}
 
 	// MARK: - Selection
@@ -87,7 +87,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 
 	private let maximumConcurrentLoad = 10
 	private let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
-	private var fileHandle: FileHandle?
+	private var fileStream: OutputStream?
 
 	private var exported: Float = 0
 	private var toBeExported: Float = 0
@@ -105,16 +105,22 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 			return false
 		}
 
+		guard let fileStream = OutputStream(url: filePath, append: false) else {
+			completeExport(success: false)
+			return true
+		}
+		self.fileStream = fileStream
+		fileStream.open()
+
 		// Prepare the file with the header
 		do {
 			let sep = CSVSeparator
-			let data = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Active Energy".toCSV())\(sep)\("Total Energy".toCSV())\(sep)\("Elevation Ascended".toCSV())\(sep)\("Elevation Descended".toCSV())\n"
+			let header = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Active Energy".toCSV())\(sep)\("Total Energy".toCSV())\(sep)\("Elevation Ascended".toCSV())\(sep)\("Elevation Descended".toCSV())\n"
 
-			try data.write(to: filePath, atomically: true, encoding: .utf8)
-			fileHandle = try FileHandle(forWritingTo: filePath)
-			fileHandle?.seekToEndOfFile()
+			try fileStream.write(header)
 		} catch {
 			completeExport(success: false)
+			return true
 		}
 
 		isExporting = true
@@ -143,7 +149,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 		DispatchQueue.workout.async {
 			guard self.isExporting, !self.exportCompleted,
 				var loading = self.loading, var queue = self.queue,
-				let fh = self.fileHandle, let sys = self.systemOfUnits else {
+				let fh = self.fileStream, let sys = self.systemOfUnits else {
 				return
 			}
 			defer {
@@ -160,7 +166,12 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 				if w.hasError {
 					self.failures.append(w.startDate)
 				} else {
-					fh.write((w.exportGeneralData(for: sys) + "\n").data(using: .utf8)!)
+					do {
+						try fh.write((w.exportGeneralData(for: sys) + "\n"))
+					} catch {
+						self.completeExport(success: false)
+						return
+					}
 				}
 			}
 
@@ -193,8 +204,8 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 		isExporting = false
 		loading = nil
 		queue = nil
-		fileHandle?.closeFile()
-		fileHandle = nil
+		fileStream?.close()
+		fileStream = nil
 	}
 
 }

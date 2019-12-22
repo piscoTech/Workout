@@ -147,19 +147,22 @@ class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor,
 			let export = [.time] + self.displayDetail
 			let sep = CSVSeparator
 			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
+			guard let file = OutputStream(url: detFile, append: false) else {
+				callback(nil)
+				return
+			}
 
 			do {
-				let header = export.map { $0.getNameAndUnit(for: self.owner, andSystemOfUnits: systemOfUnits).toCSV() }.joined(separator: sep) + "\n"
-				try header.write(to: detFile, atomically: true, encoding: .utf8)
-
-				let file = try FileHandle(forWritingTo: detFile)
+				file.open()
 				defer {
-					file.closeFile()
+					file.close()
 				}
-				file.seekToEndOfFile()
+
+				let header = export.map { $0.getNameAndUnit(for: self.owner, andSystemOfUnits: systemOfUnits).toCSV() }.joined(separator: sep) + "\n"
+				try file.write(header)
 
 				for s in seg {
-					file.write(s.export(details: export, withSystemOfUnits: systemOfUnits).data(using: .utf8)!)
+					try file.write(s.export(details: export, withSystemOfUnits: systemOfUnits))
 				}
 
 				callback([detFile])

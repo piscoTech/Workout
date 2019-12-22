@@ -454,27 +454,34 @@ public class Workout {
 
 		DispatchQueue.background.async {
 			let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-
-			let genData = self.generalData(for: systemOfUnits)
-			let sep = CSVSeparator
-			var data = "Field\(sep)Value\n"
-			data += "Type\(sep)" + genData[0] + "\n"
-			data += "Start\(sep)" + genData[1] + "\n"
-			data += "End\(sep)" + genData[2] + "\n"
-			data += "Duration\(sep)" + genData[3] + "\n"
-			data += "\("Distance \(self.distanceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[4] + "\n"
-			data += "\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n"
-			data += "\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n"
-			data += "\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[7] + "\n"
-			data += "\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n"
-			data += "\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n"
-			data += "\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n"
-			data += "\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[11] + "\n"
-			data += "\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[12] + "\n"
+			guard let file = OutputStream(url: general, append: false) else {
+				callback(nil)
+				return
+			}
 
 			do {
-				try data.write(to: general, atomically: true, encoding: .utf8)
-			} catch _ {
+				file.open()
+				defer {
+					file.close()
+				}
+
+				let genData = self.generalData(for: systemOfUnits)
+				let sep = CSVSeparator
+				try file.write("Field\(sep)Value\n")
+				try file.write("Type\(sep)" + genData[0] + "\n")
+				try file.write("Start\(sep)" + genData[1] + "\n")
+				try file.write("End\(sep)" + genData[2] + "\n")
+				try file.write("Duration\(sep)" + genData[3] + "\n")
+				try file.write("\("Distance \(self.distanceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[4] + "\n")
+				try file.write("\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n")
+				try file.write("\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n")
+				try file.write("\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[7] + "\n")
+				try file.write("\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n")
+				try file.write("\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n")
+				try file.write("\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n")
+				try file.write("\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[11] + "\n")
+				try file.write("\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[12] + "\n")
+			} catch {
 				callback(nil)
 				return
 			}
