@@ -206,15 +206,15 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			case startRow:
 				title = "WRKT_START"
 				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.startDate.getFormattedDateTime()
+				cell.detail?.text = workout.startDate.formattedDateTime
 			case endRow:
 				title = "WRKT_END"
 				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.endDate.getFormattedDateTime()
+				cell.detail?.text = workout.endDate.formattedDateTime
 			case durationRow:
 				title = "WRKT_DURATION"
 				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.duration.getFormattedDuration()
+				cell.detail?.text = workout.duration.formattedDuration
 			case distanceRow:
 				title = "WRKT_DISTANCE"
 				cell.setCustomDetails(nil)
@@ -306,7 +306,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		loadingIndicator = UIAlertController.getModalLoading()
 		self.present(loadingIndicator!, animated: true)
 		
-		workout.export(for: preferences.systemOfUnits) { result in
+		workout.export(for: preferences) { result in
 			guard let files = result else {
 				let alert = UIAlertController(simpleAlert: NSLocalizedString("EXPORT_ERROR", comment: "Export error"), message: nil)
 				

@@ -96,7 +96,7 @@ class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor,
 					return cell
 				} else if let p = s.pauseTime {
 					let cell = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)
-					cell.textLabel?.text = String(format: MinuteByMinuteBreakdown.pauseStr, p.getFormattedDuration())
+					cell.textLabel?.text = String(format: Self.pauseStr, p.formattedDuration)
 					
 					return cell
 				} else {
@@ -135,7 +135,9 @@ class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor,
 		return (ascended, descended)
 	}
 
-	func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
+	func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+		let systemOfUnits = preferences.systemOfUnits
+		
 		DispatchQueue.background.async {
 			guard let seg = self.segments else {
 				callback([])

@@ -136,12 +136,12 @@ public class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider,
 
 		let cell = tableView.dequeueReusableCell(withIdentifier: "basic", for: indexPath)
 		cell.textLabel?.text = String(format: RunningHeartZones.zoneTitle, indexPath.row + 1)
-		cell.detailTextLabel?.text = data > 0 ? data.getFormattedDuration() : missingValueStr
+		cell.detailTextLabel?.text = data > 0 ? data.formattedDuration : missingValueStr
 
 		return cell
 	}
 
-	public func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
+	public func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
 		DispatchQueue.background.async {
 			guard let zonesData = self.zonesData else {
 				callback([])
@@ -152,7 +152,7 @@ public class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider,
 			var zones = "Zone\(sep)Time\n"
 			var i = 1
 			for t in zonesData {
-				zones += "\(i)\(sep)\(t.getRawDuration().toCSV())\n"
+				zones += "\(i)\(sep)\(t.rawDuration().toCSV())\n"
 				i += 1
 			}
 

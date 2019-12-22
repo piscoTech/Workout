@@ -421,9 +421,9 @@ public class Workout {
 	private func generalData(for systemOfUnits: SystemOfUnits) -> [String] {
 		[
 			name.toCSV(),
-			startDate.getUNIXDateTime().toCSV(),
-			endDate.getUNIXDateTime().toCSV(),
-			duration.getRawDuration().toCSV(),
+			startDate.unixDateTime.toCSV(),
+			endDate.unixDateTime.toCSV(),
+			duration.rawDuration().toCSV(),
 			totalDistance?.formatAsDistance(withUnit: distanceUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
@@ -444,7 +444,9 @@ public class Workout {
 		return generalData(for: systemOfUnits).joined(separator: CSVSeparator)
 	}
 
-	public func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
+	public func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+		let systemOfUnits = preferences.systemOfUnits
+
 		guard isLoaded, !hasError else {
 			callback(nil)
 			return
@@ -483,7 +485,7 @@ public class Workout {
 				var files = [[URL]?](repeating: nil, count: self.allAdditionalProviders.count)
 				var completed = 0
 				for (i, dp) in self.allAdditionalProviders.enumerated() {
-					dp.export(for: systemOfUnits) { f in
+					dp.export(for: preferences) { f in
 						DispatchQueue.workout.async {
 							completed += 1
 							files[i] = f

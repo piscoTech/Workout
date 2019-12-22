@@ -175,7 +175,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		
 		cell.textLabel?.text = w.name
 		
-		var detail = [w.startDate.getFormattedDateTime(), w.duration.getFormattedDuration() ]
+		var detail = [w.startDate.formattedDateTime, w.duration.formattedDuration]
 		if let dist = w.totalDistance?.formatAsDistance(withUnit: w.distanceUnit.unit(for: preferences.systemOfUnits)) {
 			detail.append(dist)
 		}
@@ -383,7 +383,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 					}
 
 					if !fail.isEmpty {
-						let text = String(format: NSLocalizedString("EXPORT_ERROR_PARTIAL_%@", comment: "Failed workouts"), fail.map { $0.getFormattedDateTime() }.joined(separator: "\n"))
+						let text = String(format: NSLocalizedString("EXPORT_ERROR_PARTIAL_%@", comment: "Failed workouts"), fail.map { $0.formattedDateTime }.joined(separator: "\n"))
 						let alert = UIAlertController(simpleAlert: NSLocalizedString("EXPORT_ERROR_PARTIAL", comment: "Export error"),
 													  message: text) {
 							review()

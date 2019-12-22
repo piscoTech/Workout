@@ -81,20 +81,19 @@ public class WorkoutRoute: NSObject, AdditionalDataExtractor, AdditionalDataProv
 
 					// Isolate positions on active intervals
 					for i in raw.activeSegments {
-						if let startPos = positions.lastIndex(where: { $0.timestamp <= i.start }) {
-							var track = positions.suffix(from: startPos)
-							if let afterEndPos = track.firstIndex(where: { $0.timestamp > i.end }) {
-								track = track.prefix(upTo: afterEndPos)
-							}
+						let startPos = positions.lastIndex(where: { $0.timestamp <= i.start }) ?? 0
+						var track = positions.suffix(from: startPos)
+						if let afterEndPos = track.firstIndex(where: { $0.timestamp > i.end }) {
+							track = track.prefix(upTo: afterEndPos)
+						}
 
-							if !track.isEmpty {
-								let pl = MKPolyline(coordinates: track.map { $0.coordinate }, count: track.count)
-								let bounds = pl.boundingMapRect
-								self.routeBounds = self.routeBounds?.union(bounds) ?? bounds
+						if !track.isEmpty {
+							let pl = MKPolyline(coordinates: track.map { $0.coordinate }, count: track.count)
+							let bounds = pl.boundingMapRect
+							self.routeBounds = self.routeBounds?.union(bounds) ?? bounds
 
-								self.route?.append(Array(track))
-								self.routeSegments?.append(pl)
-							}
+							self.route?.append(Array(track))
+							self.routeSegments?.append(pl)
 						}
 					}
 
@@ -165,9 +164,31 @@ public class WorkoutRoute: NSObject, AdditionalDataExtractor, AdditionalDataProv
 		return c
 	}
 
-	public func export(for systemOfUnits: SystemOfUnits, _ callback: @escaping ([URL]?) -> Void) {
-		#warning("To Be Implemented")
-		callback([])
+	public func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+		guard let route = self.route else {
+			callback([])
+			return
+		}
+
+		DispatchQueue.background.async {
+			let exporter: WorkoutRouteExporter
+			switch preferences.routeType {
+			case .csv:
+				exporter = CSVWorkoutRouteExporter()
+			case .gpx:
+				exporter = GPXWorkoutRouteExporter()
+			}
+
+
+			exporter.export(route) { file in
+				guard let f = file else {
+					callback(nil)
+					return
+				}
+
+				callback([f])
+			}
+		}
 	}
 
 	// MARK: - Map Delegate

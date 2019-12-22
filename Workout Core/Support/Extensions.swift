@@ -99,9 +99,9 @@ extension HKQuantity: Comparable {
 	public func formatAsPace(withReferenceLength lUnit: HKUnit, rawFormat: Bool = false) -> String {
 		let value = self.doubleValue(for: HKUnit.second().unitDivided(by: lUnit))
 		if rawFormat {
-			return value.getRawDuration()
+			return value.rawDuration()
 		} else {
-			return value.getFormattedDuration() + "/\(lUnit.description)"
+			return "\(value.formattedDuration)/\(lUnit.description)"
 		}
 	}
 
