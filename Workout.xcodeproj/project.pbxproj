@@ -10,6 +10,8 @@
 		6FDD7897C9603553538BAE3D /* Pods_Workout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */; };
 		7A09205922EB8BA900EC86A6 /* CyclingWorkout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A09205822EB8BA900EC86A6 /* CyclingWorkout.swift */; };
 		7A1CE14122C7649200414497 /* WorkoutBulkExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */; };
+		7A1F8CBA23AF53E1008EA2E9 /* RouteType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CB923AF53E1008EA2E9 /* RouteType.swift */; };
+		7A1F8CC223AF5610008EA2E9 /* RouteTypeTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC123AF5610008EA2E9 /* RouteTypeTVC.swift */; };
 		7A650B0122C1300100059687 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0022C1300100059687 /* AppDelegate.swift */; };
 		7A650B0322C1300100059687 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0222C1300100059687 /* SceneDelegate.swift */; };
 		7A650B0A22C1300500059687 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A650B0922C1300500059687 /* Assets.xcassets */; };
@@ -154,6 +156,8 @@
 		5D5FDF6B281BD8F3FEE5AC5C /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
 		7A09205822EB8BA900EC86A6 /* CyclingWorkout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingWorkout.swift; sourceTree = "<group>"; };
 		7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutBulkExporter.swift; sourceTree = "<group>"; };
+		7A1F8CB923AF53E1008EA2E9 /* RouteType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteType.swift; sourceTree = "<group>"; };
+		7A1F8CC123AF5610008EA2E9 /* RouteTypeTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteTypeTVC.swift; sourceTree = "<group>"; };
 		7A2B0E5022C26A1800F09DA1 /* StepSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepSource.swift; sourceTree = "<group>"; };
 		7A2B0E5222C26A5E00F09DA1 /* SystemOfUnits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemOfUnits.swift; sourceTree = "<group>"; };
 		7A2C783923AD5DDB00DC90A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Base; path = Base.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -301,6 +305,7 @@
 				7A650B4222C1353F00059687 /* UnitsTVC.swift */,
 				7A650B4522C1354000059687 /* StepSourceTVC.swift */,
 				7A650B4422C1354000059687 /* RunningHeartZonesTVC.swift */,
+				7A1F8CC123AF5610008EA2E9 /* RouteTypeTVC.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -322,6 +327,7 @@
 				7A2B0E5022C26A1800F09DA1 /* StepSource.swift */,
 				7A2B0E5222C26A5E00F09DA1 /* SystemOfUnits.swift */,
 				7A650B5722C1354400059687 /* WorkoutUnit.swift */,
+				7A1F8CB923AF53E1008EA2E9 /* RouteType.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -791,6 +797,7 @@
 				7A650B6822C1354500059687 /* ListTVC.swift in Sources */,
 				7A9BF6D422CA317600EC1D95 /* FilterCells.swift in Sources */,
 				7A650B5D22C1354500059687 /* UnitsTVC.swift in Sources */,
+				7A1F8CC223AF5610008EA2E9 /* RouteTypeTVC.swift in Sources */,
 				7A9BF6CC22CA233900EC1D95 /* Extensions.swift in Sources */,
 				7A650B6922C1354500059687 /* AboutVC.swift in Sources */,
 				7A650B5F22C1354500059687 /* RunningHeartZonesTVC.swift in Sources */,
@@ -820,6 +827,7 @@
 				7A79C8AA23AD2B74007DEC07 /* WorkoutRouteTVCell.swift in Sources */,
 				7AB7CDA522C4DB20001A0171 /* WorkoutSegment.swift in Sources */,
 				7AB7CD9722C4DB06001A0171 /* StepSource.swift in Sources */,
+				7A1F8CBA23AF53E1008EA2E9 /* RouteType.swift in Sources */,
 				7AB7CD9622C4DAFF001A0171 /* WorkoutList.swift in Sources */,
 				7AB7CD9A22C4DB0D001A0171 /* Workout.swift in Sources */,
 				7A09205922EB8BA900EC86A6 /* CyclingWorkout.swift in Sources */,

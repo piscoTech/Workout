@@ -15,6 +15,7 @@ private enum PreferenceKeys: String, KeyValueStoreKey {
 	case stepSource = "stepSource"
 	case maxHeartRate = "maxHeartRate"
 	case runningHeartZones = "runningHeartZones"
+	case exportRouteType = "exportRouteType"
 
 	case reviewRequestCounter = "reviewRequestCounter"
 
@@ -32,6 +33,7 @@ public protocol PreferencesDelegate: AnyObject {
 	@objc optional func preferredSystemOfUnitsChanged()
 	@objc optional func stepSourceChanged()
 	@objc optional func runningHeartZonesConfigChanged()
+	@objc optional func routeTypeChanged()
 
 	@objc optional func reviewCounterUpdated()
 
@@ -40,7 +42,7 @@ public protocol PreferencesDelegate: AnyObject {
 public class Preferences {
 
 	private enum Change {
-		case generic, systemOfUnits, stepSource, hzConfig, reviewCounter
+		case generic, systemOfUnits, stepSource, hzConfig, reviewCounter, routeType
 	}
 
 	public let local = KeyValueStore(userDefaults: UserDefaults.standard)
@@ -70,6 +72,8 @@ public class Preferences {
 				d.runningHeartZonesConfigChanged?()
 			case .reviewCounter:
 				d.reviewCounterUpdated?()
+			case .routeType:
+				d.routeTypeChanged?()
 			case .generic:
 				d.preferencesChanged?()
 			}
@@ -141,6 +145,17 @@ public class Preferences {
 		set {
 			local.set(newValue.rawValue, forKey: PreferenceKeys.systemOfUnits)
 			saveChanges(.systemOfUnits)
+		}
+	}
+
+	/// The format to use when exporting a workout route.
+	public var routeType: RouteType {
+		get {
+			return RouteType(rawValue: local.string(forKey: PreferenceKeys.exportRouteType) ?? "") ?? .default
+		}
+		set {
+			local.set(newValue.rawValue, forKey: PreferenceKeys.exportRouteType)
+			saveChanges(.routeType)
 		}
 	}
 
