@@ -1,0 +1,12 @@
+/* 
+  InfoPlist.strings
+  Workout
+
+  Created by Maxime Killinger on 28/12/2019.
+  Copyright © 2019 Marco Boschi. All rights reserved.
+*/
+
+NSBluetoothPeripheralUsageDescription = "Le bluetooth peut être utilisé pour intéragir avec des publicités.";
+NSCalendarsUsageDescription = "Le calendrier peut être utilisé pour intéragir avec des publicités.";
+NSHealthShareUsageDescription = "L'accès aux données de santé est utilisé pour les empaqueter dans des fichiers CSV à des fins d'exportation.";
+NSHealthUpdateUsageDescription = "L'accès aux données de santé est utilisé pour les empaqueter dans des fichiers CSV à des fins d'exportation.";
