@@ -100,7 +100,7 @@ class WorkoutSegment {
 		var res = minutes.map { d in details.map { $0.export(d, withSystemOfUnits: systemOfUnits) }.joined(separator: sep) }.joined(separator: "\n") + "\n"
 
 		if let pause = pauseTime {
-			res += "Pause\(sep)\(pause.getRawDuration().toCSV())" + [String](repeating: sep, count: details.count - 2).joined() + "\n"
+			res += "Pause\(sep)\(pause.rawDuration().toCSV())" + [String](repeating: sep, count: details.count - 2).joined() + "\n"
 		}
 
 		return res

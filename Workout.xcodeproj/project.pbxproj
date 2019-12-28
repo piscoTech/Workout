@@ -12,6 +12,9 @@
 		7A1CE14122C7649200414497 /* WorkoutBulkExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */; };
 		7A1F8CBA23AF53E1008EA2E9 /* RouteType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CB923AF53E1008EA2E9 /* RouteType.swift */; };
 		7A1F8CC223AF5610008EA2E9 /* RouteTypeTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC123AF5610008EA2E9 /* RouteTypeTVC.swift */; };
+		7A1F8CC623AFC294008EA2E9 /* WorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC523AFC294008EA2E9 /* WorkoutRouteExporter.swift */; };
+		7A1F8CC823AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC723AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift */; };
+		7A1F8CCA23AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC923AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift */; };
 		7A650B0122C1300100059687 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0022C1300100059687 /* AppDelegate.swift */; };
 		7A650B0322C1300100059687 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0222C1300100059687 /* SceneDelegate.swift */; };
 		7A650B0A22C1300500059687 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A650B0922C1300500059687 /* Assets.xcassets */; };
@@ -116,6 +119,9 @@
 		7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutBulkExporter.swift; sourceTree = "<group>"; };
 		7A1F8CB923AF53E1008EA2E9 /* RouteType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteType.swift; sourceTree = "<group>"; };
 		7A1F8CC123AF5610008EA2E9 /* RouteTypeTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteTypeTVC.swift; sourceTree = "<group>"; };
+		7A1F8CC523AFC294008EA2E9 /* WorkoutRouteExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutRouteExporter.swift; sourceTree = "<group>"; };
+		7A1F8CC723AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVWorkoutRouteExporter.swift; sourceTree = "<group>"; };
+		7A1F8CC923AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPXWorkoutRouteExporter.swift; sourceTree = "<group>"; };
 		7A2B0E5022C26A1800F09DA1 /* StepSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepSource.swift; sourceTree = "<group>"; };
 		7A2B0E5222C26A5E00F09DA1 /* SystemOfUnits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemOfUnits.swift; sourceTree = "<group>"; };
 		7A2C783923AD5DDB00DC90A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Base; path = Base.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -216,6 +222,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7A1F8CC323AFC268008EA2E9 /* MinuteByMinuteBreakdown */ = {
+			isa = PBXGroup;
+			children = (
+				7A650B3F22C1353F00059687 /* DataPoint.swift */,
+				7A650B5022C1354200059687 /* WorkoutDetail.swift */,
+				7A650B4722C1354000059687 /* WorkoutMinute.swift */,
+				7A650B4822C1354000059687 /* WorkoutSegment.swift */,
+			);
+			path = MinuteByMinuteBreakdown;
+			sourceTree = "<group>";
+		};
+		7A1F8CC423AFC27B008EA2E9 /* Route */ = {
+			isa = PBXGroup;
+			children = (
+				7A1F8CC523AFC294008EA2E9 /* WorkoutRouteExporter.swift */,
+				7A1F8CC723AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift */,
+				7A1F8CC923AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift */,
+			);
+			path = Route;
+			sourceTree = "<group>";
+		};
 		7A2B0E4422C268DF00F09DA1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -315,10 +342,8 @@
 		7A2B0E5622C26AF500F09DA1 /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				7A650B3F22C1353F00059687 /* DataPoint.swift */,
-				7A650B5022C1354200059687 /* WorkoutDetail.swift */,
-				7A650B4722C1354000059687 /* WorkoutMinute.swift */,
-				7A650B4822C1354000059687 /* WorkoutSegment.swift */,
+				7A1F8CC423AFC27B008EA2E9 /* Route */,
+				7A1F8CC323AFC268008EA2E9 /* MinuteByMinuteBreakdown */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -715,13 +740,16 @@
 				7AB7CD9E22C4DB1A001A0171 /* AdditionalDataProcessor.swift in Sources */,
 				7AB7CDAE22C4DD3D001A0171 /* WorkoutMinuteTVCell.swift in Sources */,
 				7AB7CDA822C4DB89001A0171 /* Constants.swift in Sources */,
+				7A1F8CCA23AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift in Sources */,
 				7A1CE14122C7649200414497 /* WorkoutBulkExporter.swift in Sources */,
 				7A79C8AA23AD2B74007DEC07 /* WorkoutRouteTVCell.swift in Sources */,
 				7AB7CDA522C4DB20001A0171 /* WorkoutSegment.swift in Sources */,
 				7AB7CD9722C4DB06001A0171 /* StepSource.swift in Sources */,
+				7A1F8CC823AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift in Sources */,
 				7A1F8CBA23AF53E1008EA2E9 /* RouteType.swift in Sources */,
 				7AB7CD9622C4DAFF001A0171 /* WorkoutList.swift in Sources */,
 				7AB7CD9A22C4DB0D001A0171 /* Workout.swift in Sources */,
+				7A1F8CC623AFC294008EA2E9 /* WorkoutRouteExporter.swift in Sources */,
 				7A09205922EB8BA900EC86A6 /* CyclingWorkout.swift in Sources */,
 				7AB7CDAC22C4DC38001A0171 /* Formatters.swift in Sources */,
 				7AB7CDA022C4DB1A001A0171 /* MinuteByMinuteBreakdown.swift in Sources */,

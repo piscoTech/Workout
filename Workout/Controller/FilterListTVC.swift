@@ -107,7 +107,7 @@ class FilterListTableViewController: UITableViewController {
 			case startDateRow:
 				let cell = tableView.dequeueReusableCell(withIdentifier: "dateFilter", for: indexPath) as! DateFilterCell
 				cell.title.text = fromStr
-				cell.date.text = workoutList.startDate?.getFormattedDate() ?? fromNoneStr
+				cell.date.text = workoutList.startDate?.formattedDate ?? fromNoneStr
 				cell.hidesClearButton = workoutList.startDate == nil
 				cell.clearAction = {
 					self.workoutList.startDate = nil
@@ -125,7 +125,7 @@ class FilterListTableViewController: UITableViewController {
 			case endDateRow:
 				let cell = tableView.dequeueReusableCell(withIdentifier: "dateFilter", for: indexPath) as! DateFilterCell
 				cell.title.text = toStr
-				cell.date.text = workoutList.endDate?.getFormattedDate() ?? toNoneStr
+				cell.date.text = workoutList.endDate?.formattedDate ?? toNoneStr
 				cell.hidesClearButton = workoutList.endDate == nil
 				cell.clearAction = {
 					self.workoutList.endDate = nil

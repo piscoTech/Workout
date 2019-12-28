@@ -80,7 +80,7 @@ class WorkoutDetail {
 	static let time = WorkoutDetail(name: "Time", valueFormatter: { (m, _) in
 		WorkoutDetail.timeFormatter.string(from: TimeInterval(m.minute) * 60)!
 	}, exportFormatter: { (m, _) in
-		(TimeInterval(m.minute) * 60).getRawDuration().toCSV()
+		(TimeInterval(m.minute) * 60).rawDuration().toCSV()
 	}, color: WorkoutDetail.primaryColor)
 
 	/// Provides the average pace.
@@ -96,7 +96,7 @@ class WorkoutDetail {
 		}
 
 		let unit = HKUnit.second().unitDivided(by: m.owner.paceUnit.unit(for: s))
-		return pace.doubleValue(for: unit).getRawDuration().toCSV()
+		return pace.doubleValue(for: unit).rawDuration().toCSV()
 	})
 
 	/// Provides the average speed.

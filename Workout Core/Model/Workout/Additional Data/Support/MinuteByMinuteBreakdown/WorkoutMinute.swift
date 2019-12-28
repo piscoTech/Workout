@@ -24,7 +24,7 @@ class WorkoutMinute: CustomStringConvertible {
 		return endTime - startTime
 	}
 	var description: String {
-		let dur = duration < 60 ? " \(duration.getRawDuration())" : ""
+		let dur = duration < 60 ? " \(duration.rawDuration())" : ""
 		return "\(minute)m\(dur): "
 			+ (distance?.formatAsDistance(withUnit: owner.distanceUnit.default) ?? "- m")
 			+ ", " + (heartRate?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.default) ?? "- bpm")
