@@ -134,13 +134,12 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 		form.shouldOfferPersonalizedAds = true
 		form.shouldOfferNonPersonalizedAds = true
 		form.shouldOfferAdFree = !manual && InAppPurchaseManager.canMakePayments
-		
-		var loading: UIAlertController?
+
 		func displayError() {
 			DispatchQueue.main.async {
 				let alert = UIAlertController(simpleAlert: NSLocalizedString("MANAGE_CONSENT", comment: "Manage consent"), message: NSLocalizedString("MANAGE_CONSENT_ERR", comment: "Manage consent error"))
 				
-				if let l = loading {
+				if let l = self.loading {
 					l.dismiss(animated: true) {
 						presenter.present(alert, animated: true)
 					}
@@ -192,7 +191,7 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 						}
 					}
 					
-					if let l = loading {
+					if let l = self.loading {
 						l.dismiss(animated: true) {
 							presentForm()
 						}
