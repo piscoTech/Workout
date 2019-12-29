@@ -19,12 +19,10 @@
 
 // MARK: - Errors
 
-"WRKT_ERR_LOADING" = "Impossible de charger les données d'entraînement";
+"WRKT_ERR_LOADING" = "Impossible de charger les données d’entraînement";
 "WRKT_ERR_NO_HEALTH" = "Les données de Santé ne sont pas disponibles";
 
 // MARK: - Workout List View
-"WRKT_LIST_TITLE" = "Entraînements";
-
 "WRKT_FILTER" = "Filtre";
 "WRKT_FILTER_ALL" = "Tous les entraînements";
 "WRKT_FILTER_%lld_OUT_%lld" = "%lld/%lld entraînements";
@@ -39,11 +37,10 @@
 
 "WRKT_LIST_MORE" = "Charger Plus";
 
-"WRKT_LIST_LOADING" = "Chargement depuis l'application Santé...";
+"WRKT_LIST_LOADING" = "Chargement depuis l’application Santé...";
 "WRKT_LIST_ERR_NO_WORKOUT" = "Aucun entraînement";
 
 // MARK: - Workout View
-"WRKT_TITLE" = "Détails d'Entraînement";
 
 "WRKT_TYPE" = "Type";
 "WRKT_START" = "Début";
@@ -64,7 +61,7 @@
 "MINBYMIN_%@_PAUSE" = "Pause de %@";
 
 "HEART_ZONES_TITLE" = "Zones cardiaques";
-"HEART_ZONES_FOOTER" = "Il est possible que les temps dans chaque zone cardiaque ne correspondent pas à la durée totale de l’entraînement car dans certaines parties, les données cardiaques peuvent être indisponibles ou la fréquence cardiaque est en dessous du seuil de la zone 1.";
+"HEART_ZONES_FOOTER" = "Il est possible que les temps dans chaque zone cardiaque ne correspondent pas à la durée totale de l’entraînement car dans certaines parties, les données cardiaques peuvent être indisponibles ou la fréquence cardiaque est en dessous du seuil de la Zone 1.";
 "HEART_ZONES_NEED_CONFIG" = "Réglez votre fréquence cardiaque maximale dans les paramètres pour afficher ceci.";
 "HEART_ZONES_ZONE_%lld" = "Zone %d";
 
@@ -79,8 +76,7 @@
 
 "EXPORT_ERROR" = "Impossible d’exporter les données d’entraînement";
 "EXPORT_ERROR_PARTIAL" = "Impossible d’exporter certaines données d’entraînement";
-"EXPORT_ERROR_PARTIAL_%@" = "Les séances d’entraînement aux moments suivants n'ont pas réussi à être exportées :\n%@";
-
+"EXPORT_ERROR_PARTIAL_%@" = "Les séances d’entraînement aux moments suivants n’ont pas réussi à être exportées:\n%@";
 
 // MARK: - Settings
 

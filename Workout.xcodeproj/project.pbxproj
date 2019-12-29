@@ -15,6 +15,13 @@
 		7A1F8CC623AFC294008EA2E9 /* WorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC523AFC294008EA2E9 /* WorkoutRouteExporter.swift */; };
 		7A1F8CC823AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC723AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift */; };
 		7A1F8CCA23AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC923AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift */; };
+		7A5E999D23B892F900691185 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7A5E999B23B892F800691185 /* InfoPlist.strings */; };
+		7A5E999E23B8956E00691185 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998423B88F4600691185 /* MBLibrary.framework */; };
+		7A5E999F23B8956E00691185 /* MBLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998423B88F4600691185 /* MBLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7A5E99A123B895B900691185 /* MBHealth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998A23B88F4600691185 /* MBHealth.framework */; };
+		7A5E99A223B895B900691185 /* MBHealth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998A23B88F4600691185 /* MBHealth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7A5E99A323B8965900691185 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998423B88F4600691185 /* MBLibrary.framework */; };
+		7A5E99A423B8965900691185 /* MBLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998423B88F4600691185 /* MBLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A650B0122C1300100059687 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0022C1300100059687 /* AppDelegate.swift */; };
 		7A650B0322C1300100059687 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0222C1300100059687 /* SceneDelegate.swift */; };
 		7A650B0A22C1300500059687 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A650B0922C1300500059687 /* Assets.xcassets */; };
@@ -79,6 +86,48 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7A5E998323B88F4600691185 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A584FA51D3E241C000C739B;
+			remoteInfo = "MBLibrary iOS";
+		};
+		7A5E998523B88F4600691185 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A0064CA1D3E9AF00089297D;
+			remoteInfo = "MBLibrary macOS";
+		};
+		7A5E998723B88F4600691185 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A0064FE1D3EB02B0089297D;
+			remoteInfo = "MBLibrary watchOS";
+		};
+		7A5E998923B88F4600691185 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AB95A4F223845ED0021EE86;
+			remoteInfo = "MBHealth iOS";
+		};
+		7A5E998B23B88F4600691185 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AB95A5C2238471A0021EE86;
+			remoteInfo = "MBHealth watchOS";
+		};
+		7A5E998D23B88F4600691185 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A0064DF1D3E9BFA0089297D;
+			remoteInfo = MBLibraryTests;
+		};
 		7AB7CD8622C4D774001A0171 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7A650AF522C1300000059687 /* Project object */;
@@ -89,6 +138,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		7A5E99A023B8956E00691185 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				7A5E999F23B8956E00691185 /* MBLibrary.framework in Embed Frameworks */,
+				7A5E99A223B895B900691185 /* MBHealth.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7A650B3222C132EE00059687 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -96,6 +157,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				7AB7CD8922C4D774001A0171 /* WorkoutCore.framework in Embed Frameworks */,
+				7A5E99A423B8965900691185 /* MBLibrary.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -106,9 +168,7 @@
 		15DCB1062DF12CD614F251B6 /* Pods-Workout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.release.xcconfig"; sourceTree = "<group>"; };
 		36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Workout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BD3437423A998CC00567BD7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		3BD3437523A998CC00567BD7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3BD3437623A998CC00567BD7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		3BD3437723A998D800567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		3BD3437823A998D800567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		3BD3437923A998D800567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		3BD3437A23A998D900567BD7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -127,14 +187,15 @@
 		7A2C783923AD5DDB00DC90A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Base; path = Base.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		7A2C784023AD5E0100DC90A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		7A2C784123AD5E3D00DC90A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBLibrary.xcodeproj; path = ../MBLibrary/MBLibrary.xcodeproj; sourceTree = "<group>"; };
+		7A5E999923B892E300691185 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7A5E999C23B892F800691185 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		7A650AFD22C1300100059687 /* Workout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Workout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A650B0022C1300100059687 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A650B0222C1300100059687 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7A650B0922C1300500059687 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		7A650B0E22C1300500059687 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A650B1422C1307200059687 /* Workout.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Workout.entitlements; sourceTree = "<group>"; };
 		7A650B1622C1307200059687 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
-		7A650B1B22C132D900059687 /* MBLibrary */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MBLibrary; path = ../MBLibrary; sourceTree = "<group>"; };
 		7A650B3522C1330A00059687 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		7A650B3E22C1353E00059687 /* RunningHeartZones.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RunningHeartZones.swift; sourceTree = "<group>"; };
 		7A650B3F22C1353F00059687 /* DataPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataPoint.swift; sourceTree = "<group>"; };
@@ -174,9 +235,6 @@
 		7A79C8A923AD2B74007DEC07 /* WorkoutRouteTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutRouteTVCell.swift; sourceTree = "<group>"; };
 		7A9BF6CB22CA233900EC1D95 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		7A9BF6D322CA317600EC1D95 /* FilterCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCells.swift; sourceTree = "<group>"; };
-		7AA121ED22C1373B0063E0F3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		7AA121EF22C1373C0063E0F3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
-		7AA121E722C1370D0063E0F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7AB7CD8122C4D774001A0171 /* WorkoutCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WorkoutCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AB7CD8322C4D774001A0171 /* Workout_Core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Workout_Core.h; sourceTree = "<group>"; };
 		7AB7CD8422C4D774001A0171 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -197,6 +255,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A650B1722C1307200059687 /* HealthKit.framework in Frameworks */,
+				7A5E99A323B8965900691185 /* MBLibrary.framework in Frameworks */,
 				7A650B3622C1330A00059687 /* StoreKit.framework in Frameworks */,
 				6FDD7897C9603553538BAE3D /* Pods_Workout.framework in Frameworks */,
 				7AB7CD8822C4D774001A0171 /* WorkoutCore.framework in Frameworks */,
@@ -216,6 +275,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				FEBC70160AA4711455BAEE49 /* Pods_Workout_Core.framework in Frameworks */,
+				7A5E99A123B895B900691185 /* MBHealth.framework in Frameworks */,
+				7A5E999E23B8956E00691185 /* MBLibrary.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,10 +409,23 @@
 			path = Support;
 			sourceTree = "<group>";
 		};
+		7A5E997B23B88F4500691185 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7A5E998423B88F4600691185 /* MBLibrary.framework */,
+				7A5E998623B88F4600691185 /* MBLibrary.framework */,
+				7A5E998823B88F4600691185 /* MBLibrary.framework */,
+				7A5E998A23B88F4600691185 /* MBHealth.framework */,
+				7A5E998C23B88F4600691185 /* MBHealth.framework */,
+				7A5E998E23B88F4600691185 /* MBLibraryTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		7A650AF422C1300000059687 = {
 			isa = PBXGroup;
 			children = (
-				7A650B1B22C132D900059687 /* MBLibrary */,
+				7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */,
 				7AB7CD8222C4D774001A0171 /* Workout Core */,
 				7A650AFF22C1300100059687 /* Workout */,
 				7A7170FC2365B355005A3314 /* WorkoutHelper */,
@@ -402,7 +476,8 @@
 		7A650B1822C1308200059687 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				7A650B0E22C1300500059687 /* Info.plist */,
+				7A5E999923B892E300691185 /* Info.plist */,
+				7A5E999B23B892F800691185 /* InfoPlist.strings */,
 				7A650B1422C1307200059687 /* Workout.entitlements */,
 			);
 			name = "Supporting Files";
@@ -550,6 +625,7 @@
 				7AB7CD7D22C4D774001A0171 /* Sources */,
 				7AB7CD7E22C4D774001A0171 /* Frameworks */,
 				7AB7CD7F22C4D774001A0171 /* Resources */,
+				7A5E99A023B8956E00691185 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -593,6 +669,12 @@
 			mainGroup = 7A650AF422C1300000059687;
 			productRefGroup = 7A650AFE22C1300100059687 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 7A5E997B23B88F4500691185 /* Products */;
+					ProjectRef = 7A5E997A23B88F4500691185 /* MBLibrary.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				7A650AFC22C1300100059687 /* Workout */,
@@ -602,12 +684,58 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		7A5E998423B88F4600691185 /* MBLibrary.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBLibrary.framework;
+			remoteRef = 7A5E998323B88F4600691185 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A5E998623B88F4600691185 /* MBLibrary.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBLibrary.framework;
+			remoteRef = 7A5E998523B88F4600691185 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A5E998823B88F4600691185 /* MBLibrary.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBLibrary.framework;
+			remoteRef = 7A5E998723B88F4600691185 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A5E998A23B88F4600691185 /* MBHealth.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBHealth.framework;
+			remoteRef = 7A5E998923B88F4600691185 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A5E998C23B88F4600691185 /* MBHealth.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBHealth.framework;
+			remoteRef = 7A5E998B23B88F4600691185 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A5E998E23B88F4600691185 /* MBLibraryTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = MBLibraryTests.xctest;
+			remoteRef = 7A5E998D23B88F4600691185 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		7A650AFB22C1300100059687 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				7AA121F022C1373C0063E0F3 /* Localizable.strings in Resources */,
+				7A5E999D23B892F900691185 /* InfoPlist.strings in Resources */,
 				7AA121E822C1370D0063E0F3 /* LaunchScreen.storyboard in Resources */,
 				7A650B0A22C1300500059687 /* Assets.xcassets in Resources */,
 				7AA121EB22C137260063E0F3 /* Main.storyboard in Resources */,
@@ -784,6 +912,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		7A5E999B23B892F800691185 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7A5E999C23B892F800691185 /* fr */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		7A7171082365B35C005A3314 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -797,7 +933,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				3BD3437423A998CC00567BD7 /* Base */,
-				3BD3437723A998D800567BD7 /* fr */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
