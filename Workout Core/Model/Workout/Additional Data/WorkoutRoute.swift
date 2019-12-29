@@ -170,23 +170,24 @@ public class WorkoutRoute: NSObject, AdditionalDataExtractor, AdditionalDataProv
 			return
 		}
 
+		guard let owner = self.owner else {
+			callback(nil)
+			return
+		}
+
 		DispatchQueue.background.async {
-			let exporter: WorkoutRouteExporter
+			let exporter: WorkoutRouteExporter.Type
 			switch preferences.routeType {
 			case .csv:
-				exporter = CSVWorkoutRouteExporter()
+				exporter = CSVWorkoutRouteExporter.self
 			case .gpx:
-				exporter = GPXWorkoutRouteExporter()
+				exporter = GPXWorkoutRouteExporter.self
 			}
 
-
-			exporter.export(route) { file in
-				guard let f = file else {
-					callback(nil)
-					return
-				}
-
-				callback([f])
+			if let file = exporter.init(for: owner).export(route) {
+				callback([file])
+			} else {
+				callback(nil)
 			}
 		}
 	}

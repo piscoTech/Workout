@@ -12,12 +12,15 @@ import MBLibrary
 
 class CSVWorkoutRouteExporter: WorkoutRouteExporter {
 
-	func export(_ route: [[CLLocation]], _ callback: @escaping (URL?) -> Void) {
+	required init(for _: Workout) {
+		// Not needed
+	}
+
+	func export(_ route: [[CLLocation]]) -> URL? {
 		let sep = CSVSeparator
 		let routeFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("route.csv")
 		guard let file = OutputStream(url: routeFile, append: false) else {
-			callback(nil)
-			return
+			return nil
 		}
 
 		do {
@@ -26,7 +29,7 @@ class CSVWorkoutRouteExporter: WorkoutRouteExporter {
 				file.close()
 			}
 
-			let header = ["Segment", "Latitude", "Longitude", "Altitude (m)", "Time UTC"].map { $0.toCSV() }.joined(separator: sep) + "\n"
+			let header = ["Segment", "Latitude", "Longitude", "Altitude (m)", "Time (UTC ISO)", "Time (UTC)", "Time (Local)"].map { $0.toCSV() }.joined(separator: sep) + "\n"
 			try file.write(header)
 
 			for (sId, segment) in route.enumerated() {
@@ -37,15 +40,17 @@ class CSVWorkoutRouteExporter: WorkoutRouteExporter {
 									p.coordinate.latitude.toCSV(forcingPointSeparator: true),
 									p.coordinate.longitude.toCSV(forcingPointSeparator: true),
 									p.altitude.toCSV(forcingPointSeparator: true),
-									p.timestamp.utcISOdescription.toCSV()
+									p.timestamp.utcISOdescription.toCSV(),
+									p.timestamp.utcTimestamp.toCSV(),
+									p.timestamp.unixTimestamp.toCSV()
 						].joined(separator: sep) + "\n"
 					try file.write(pointRow)
 				}
 			}
 
-			callback(routeFile)
+			return routeFile
 		} catch {
-			callback(nil)
+			return nil
 		}
 	}
 	
