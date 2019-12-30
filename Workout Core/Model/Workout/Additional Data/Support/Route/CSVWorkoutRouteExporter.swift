@@ -29,7 +29,7 @@ class CSVWorkoutRouteExporter: WorkoutRouteExporter {
 				file.close()
 			}
 
-			let header = ["Segment", "Latitude", "Longitude", "Altitude (m)", "Time (UTC ISO)", "Time (UTC)", "Time (Local)"].map { $0.toCSV() }.joined(separator: sep) + "\n"
+			let header = ["Segment", "Latitude", "Longitude", "Altitude (m)", "Time (UTC ISO)", "Time (UTC)", "Time (Local)", "UNIX Epoch Time"].map { $0.toCSV() }.joined(separator: sep) + "\n"
 			try file.write(header)
 
 			for (sId, segment) in route.enumerated() {
@@ -42,7 +42,8 @@ class CSVWorkoutRouteExporter: WorkoutRouteExporter {
 									p.altitude.toCSV(forcingPointSeparator: true),
 									p.timestamp.utcISOdescription.toCSV(),
 									p.timestamp.utcTimestamp.toCSV(),
-									p.timestamp.unixTimestamp.toCSV()
+									p.timestamp.unixTimestamp.toCSV(),
+									p.timestamp.timeIntervalSince1970.toCSV(forcingPointSeparator: true)
 						].joined(separator: sep) + "\n"
 					try file.write(pointRow)
 				}
