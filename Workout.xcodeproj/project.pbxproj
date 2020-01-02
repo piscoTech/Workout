@@ -15,11 +15,11 @@
 		7A1F8CC623AFC294008EA2E9 /* WorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC523AFC294008EA2E9 /* WorkoutRouteExporter.swift */; };
 		7A1F8CC823AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC723AFC358008EA2E9 /* CSVWorkoutRouteExporter.swift */; };
 		7A1F8CCA23AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1F8CC923AFC374008EA2E9 /* GPXWorkoutRouteExporter.swift */; };
+		7A45CBB523BEA2DB006424B4 /* MBHealth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998A23B88F4600691185 /* MBHealth.framework */; };
+		7A45CBB623BEA2DB006424B4 /* MBHealth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998A23B88F4600691185 /* MBHealth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A5E999D23B892F900691185 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7A5E999B23B892F800691185 /* InfoPlist.strings */; };
 		7A5E999E23B8956E00691185 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998423B88F4600691185 /* MBLibrary.framework */; };
-		7A5E999F23B8956E00691185 /* MBLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998423B88F4600691185 /* MBLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A5E99A123B895B900691185 /* MBHealth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998A23B88F4600691185 /* MBHealth.framework */; };
-		7A5E99A223B895B900691185 /* MBHealth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998A23B88F4600691185 /* MBHealth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A5E99A323B8965900691185 /* MBLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998423B88F4600691185 /* MBLibrary.framework */; };
 		7A5E99A423B8965900691185 /* MBLibrary.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7A5E998423B88F4600691185 /* MBLibrary.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A650B0122C1300100059687 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A650B0022C1300100059687 /* AppDelegate.swift */; };
@@ -138,18 +138,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		7A5E99A023B8956E00691185 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				7A5E999F23B8956E00691185 /* MBLibrary.framework in Embed Frameworks */,
-				7A5E99A223B895B900691185 /* MBHealth.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		7A650B3222C132EE00059687 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -157,6 +145,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				7AB7CD8922C4D774001A0171 /* WorkoutCore.framework in Embed Frameworks */,
+				7A45CBB623BEA2DB006424B4 /* MBHealth.framework in Embed Frameworks */,
 				7A5E99A423B8965900691185 /* MBLibrary.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -255,6 +244,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A650B1722C1307200059687 /* HealthKit.framework in Frameworks */,
+				7A45CBB523BEA2DB006424B4 /* MBHealth.framework in Frameworks */,
 				7A5E99A323B8965900691185 /* MBLibrary.framework in Frameworks */,
 				7A650B3622C1330A00059687 /* StoreKit.framework in Frameworks */,
 				6FDD7897C9603553538BAE3D /* Pods_Workout.framework in Frameworks */,
@@ -274,9 +264,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FEBC70160AA4711455BAEE49 /* Pods_Workout_Core.framework in Frameworks */,
 				7A5E99A123B895B900691185 /* MBHealth.framework in Frameworks */,
 				7A5E999E23B8956E00691185 /* MBLibrary.framework in Frameworks */,
+				FEBC70160AA4711455BAEE49 /* Pods_Workout_Core.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -625,7 +615,6 @@
 				7AB7CD7D22C4D774001A0171 /* Sources */,
 				7AB7CD7E22C4D774001A0171 /* Frameworks */,
 				7AB7CD7F22C4D774001A0171 /* Resources */,
-				7A5E99A023B8956E00691185 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
