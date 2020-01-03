@@ -18,6 +18,8 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	private let list = WorkoutList(healthData: healthData, preferences: preferences)
 	private var exporter: WorkoutBulkExporter?
 	
+    private let refreshC = UIRefreshControl()
+    
 	private var standardRightBtns: [UIBarButtonItem]!
 	private var standardLeftBtn: UIBarButtonItem!
 	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
@@ -52,7 +54,12 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 			// This can be done in storyboard
 			standardLeftBtn.image = UIImage(systemName: "gear")
 		}
-		
+        
+        // Configure Refresh Control
+        tableView.refreshControl = self.refreshC
+        refreshC.addTarget(self, action: #selector(refresh(_:)), for: .valueChanged)
+        
+
 		exportToggleBtn = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(toggleExportAll))
 		exportCommitBtn = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(doExport(_:)))
 		exportRightBtns = [exportCommitBtn, exportToggleBtn]
@@ -66,7 +73,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		preferences.add(delegate: self)
 		list.delegate = self
 		updateFilterLabel()
-        refresh()
+        refresh(self)
 		
 		DispatchQueue.main.async {
 			self.checkRequestReview()
@@ -86,7 +93,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 			loaded = true
 			healthData.authorizeHealthKitAccess {
 				DispatchQueue.main.async {
-					self.refresh()
+					self.refresh(self)
 				}
 			}
 		}
@@ -116,8 +123,9 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	
 	private weak var loadMoreCell: LoadMoreCell?
 	
-	@IBAction func refresh() {
+	@objc private func refresh(_ sender: Any) {
 		list.reload()
+        self.refreshC.endRefreshing()
 	}
 	
 	func preferredSystemOfUnitsChanged() {
@@ -205,6 +213,12 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
+
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == max(list.workouts?.count ?? 1, 1) - 1  && list.canDisplayMore && exporter == nil && !list.isLoading {
+            list.loadMore()
+        }
+    }
 
 	// MARK: - List Displaying
 

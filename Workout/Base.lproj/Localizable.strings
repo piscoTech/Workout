@@ -89,3 +89,7 @@
 "REMOVE_ADS" = "Remove Ads";
 "MANAGE_CONSENT" = "Manage Ads Consent";
 "MANAGE_CONSENT_ERR" = "Unable to update ads consent";
+
+// MARK: - Event Export
+
+"WRKT_EVENT_SEPARATOR" = ": ";

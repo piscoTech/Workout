@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="cG8-Sd-LXa">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="cG8-Sd-LXa">
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -101,18 +101,11 @@
                                 <segue destination="2eA-QV-v1Q" kind="presentation" identifier="info" id="fhz-TV-p7Z"/>
                             </connections>
                         </barButtonItem>
-                        <rightBarButtonItems>
-                            <barButtonItem systemItem="refresh" id="yIy-Wt-wpU">
-                                <connections>
-                                    <action selector="refresh" destination="5g0-8u-NPu" id="ivf-wd-JiW"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem systemItem="action" id="LjV-W9-sZo">
-                                <connections>
-                                    <action selector="chooseExport" destination="5g0-8u-NPu" id="EFs-dT-P42"/>
-                                </connections>
-                            </barButtonItem>
-                        </rightBarButtonItems>
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="LjV-W9-sZo">
+                            <connections>
+                                <action selector="chooseExport" destination="5g0-8u-NPu" id="EFs-dT-P42"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="enterExportModeBtn" destination="LjV-W9-sZo" id="Nwl-vT-dgn"/>
@@ -302,14 +295,22 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Workout Detail" largeTitleDisplayMode="never" id="QUK-cG-kWu">
-                        <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="action" id="3xR-ye-8lX">
-                            <connections>
-                                <action selector="export:" destination="uRu-e5-1Xw" id="5rd-2B-zKd"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem enabled="NO" systemItem="action" id="3xR-ye-8lX">
+                                <connections>
+                                    <action selector="export:" destination="uRu-e5-1Xw" id="5rd-2B-zKd"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem enabled="NO" title="Event" image="calendar.badge.plus" catalog="system" id="UuO-F2-O4h">
+                                <connections>
+                                    <action selector="ICSexport:" destination="uRu-e5-1Xw" id="eGg-1x-Zmo"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <outlet property="exportBtn" destination="3xR-ye-8lX" id="sNy-0H-R82"/>
+                        <outlet property="icsBtn" destination="UuO-F2-O4h" id="Eay-iw-fqw"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="132-WL-h3v" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -681,8 +682,36 @@
                                     <segue destination="gAN-qb-ss7" kind="show" identifier="routeType" id="ZQl-B1-5mU"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="sourceCode" textLabel="Hhm-6m-J7Z" style="IBUITableViewCellStyleDefault" id="nQh-8n-xPM">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="defaultCalendar" textLabel="xTs-gS-JIP" detailTextLabel="eGv-3o-gdP" style="IBUITableViewCellStyleValue1" id="AxD-LU-suB" userLabel="defaultCalendar">
                                 <rect key="frame" x="0.0" y="363.5" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="AxD-LU-suB" id="DBn-Kv-HCK">
+                                    <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Default Calendar" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="xTs-gS-JIP">
+                                            <rect key="frame" x="16" y="13" width="121.5" height="19.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" tag="10" contentMode="left" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eGv-3o-gdP" userLabel="Detail">
+                                            <rect key="frame" x="300.5" y="14" width="39.5" height="18"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <color key="textColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                                <connections>
+                                    <segue destination="aBp-i9-4ai" kind="show" identifier="defaultCalendar" id="OmJ-eG-GvZ"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="sourceCode" textLabel="Hhm-6m-J7Z" style="IBUITableViewCellStyleDefault" id="nQh-8n-xPM">
+                                <rect key="frame" x="0.0" y="407.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="nQh-8n-xPM" id="hJW-FG-1Uf">
                                     <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
@@ -700,7 +729,7 @@
                                 <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="contact" textLabel="wAE-M9-GC0" style="IBUITableViewCellStyleDefault" id="GbE-ev-oof">
-                                <rect key="frame" x="0.0" y="407.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="451.5" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GbE-ev-oof" id="0jM-XZ-UrR">
                                     <rect key="frame" x="0.0" y="0.0" width="348" height="44"/>
@@ -1121,10 +1150,67 @@
             </objects>
             <point key="canvasLocation" x="3860" y="233"/>
         </scene>
+        <!--Default Calendar-->
+        <scene sceneID="1Oq-mP-qkd">
+            <objects>
+                <tableViewController id="aBp-i9-4ai" customClass="SelectCalendarTableViewController" customModule="Workout" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="44" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="2jb-rq-lC5">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="basicCell" id="atB-tb-6It" customClass="CalendarTableViewCell" customModule="Workout" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="atB-tb-6It" id="z3g-Ln-3n3">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WTU-Kv-l19">
+                                            <rect key="frame" x="16" y="18" width="8" height="8"/>
+                                            <color key="backgroundColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="8" id="2Zf-Zv-rgS"/>
+                                                <constraint firstAttribute="height" constant="8" id="qMP-7L-ia5"/>
+                                            </constraints>
+                                        </view>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n0i-20-BO0">
+                                            <rect key="frame" x="40" y="13" width="319" height="18"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="n0i-20-BO0" firstAttribute="centerY" secondItem="z3g-Ln-3n3" secondAttribute="centerY" id="9TU-au-fcp"/>
+                                        <constraint firstItem="n0i-20-BO0" firstAttribute="trailing" secondItem="z3g-Ln-3n3" secondAttribute="trailingMargin" id="DO3-o6-nSK"/>
+                                        <constraint firstItem="n0i-20-BO0" firstAttribute="leading" secondItem="WTU-Kv-l19" secondAttribute="trailing" constant="16" id="OxJ-39-reN"/>
+                                        <constraint firstItem="WTU-Kv-l19" firstAttribute="centerY" secondItem="z3g-Ln-3n3" secondAttribute="centerY" id="Utc-lX-D75"/>
+                                        <constraint firstItem="WTU-Kv-l19" firstAttribute="leading" secondItem="z3g-Ln-3n3" secondAttribute="leadingMargin" id="zbb-dE-guZ"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="calendarColoredDot" destination="WTU-Kv-l19" id="KlJ-fV-Gnm"/>
+                                    <outlet property="calendarName" destination="n0i-20-BO0" id="nOo-mi-Dw3"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="aBp-i9-4ai" id="QxZ-ah-hxq"/>
+                            <outlet property="delegate" destination="aBp-i9-4ai" id="8XK-Pv-2FJ"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Default Calendar" largeTitleDisplayMode="never" id="reC-w3-zZh"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HvM-vh-xqO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3860" y="930"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Clear" width="20" height="20"/>
         <image name="Settings" width="25" height="25"/>
+        <image name="calendar.badge.plus" catalog="system" width="64" height="50"/>
     </resources>
     <color key="tintColor" red="1" green="0.17254901960784313" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

@@ -9,6 +9,7 @@
 import Foundation
 import MBLibrary
 import WorkoutCore
+import UIKit
 
 extension WorkoutList {
 
@@ -37,4 +38,25 @@ extension WorkoutList {
 		dateFilterString ?? WorkoutList.anyTimeStr
 	}
 
+}
+
+extension UIView {
+    func fadeIn(_ duration: TimeInterval = 1.0, delay: TimeInterval = 0.0, completion: @escaping ((Bool) -> Void) = {(finished: Bool) -> Void in}) {
+        UIView.animate(withDuration: duration, delay: delay, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.alpha = 1.0
+            }, completion: completion)  }
+    
+    func fadeOut(_ duration: TimeInterval = 1.0, delay: TimeInterval = 0.0, completion: @escaping (Bool) -> Void = {(finished: Bool) -> Void in}) {
+        UIView.animate(withDuration: duration, delay: delay, options: UIView.AnimationOptions.curveEaseIn, animations: {
+            self.alpha = 0.0
+            }, completion: completion)
+    }
+}
+
+extension String {
+    /// Converts HTML string to a `NSAttributedString`
+
+    var htmlAttributedString: NSAttributedString? {
+        return try? NSAttributedString(data: Data(utf8), options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+    }
 }

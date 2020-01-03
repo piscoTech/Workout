@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B598F2223BD1B7D0046A5FC /* SelectCalendarTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B598F2123BD1B7D0046A5FC /* SelectCalendarTVC.swift */; };
+		3B598F2A23BD1BA70046A5FC /* CalendarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B598F2923BD1BA70046A5FC /* CalendarTableViewCell.swift */; };
 		6FDD7897C9603553538BAE3D /* Pods_Workout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */; };
 		7A09205922EB8BA900EC86A6 /* CyclingWorkout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A09205822EB8BA900EC86A6 /* CyclingWorkout.swift */; };
 		7A1CE14122C7649200414497 /* WorkoutBulkExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1CE14022C7649200414497 /* WorkoutBulkExporter.swift */; };
@@ -155,6 +157,8 @@
 /* Begin PBXFileReference section */
 		15DCB1062DF12CD614F251B6 /* Pods-Workout.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.release.xcconfig"; sourceTree = "<group>"; };
 		36DFDE010077F29DA04CBBB5 /* Pods_Workout.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Workout.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B598F2123BD1B7D0046A5FC /* SelectCalendarTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCalendarTVC.swift; sourceTree = "<group>"; };
+		3B598F2923BD1BA70046A5FC /* CalendarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTableViewCell.swift; sourceTree = "<group>"; };
 		5CDCD9A647ADAC5D3651BE69 /* Pods-Workout Core.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout Core.release.xcconfig"; path = "Pods/Target Support Files/Pods-Workout Core/Pods-Workout Core.release.xcconfig"; sourceTree = "<group>"; };
 		5D5FDF6B281BD8F3FEE5AC5C /* Pods-Workout.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Workout.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Workout/Pods-Workout.debug.xcconfig"; sourceTree = "<group>"; };
 		7A09205822EB8BA900EC86A6 /* CyclingWorkout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingWorkout.swift; sourceTree = "<group>"; };
@@ -321,6 +325,7 @@
 				7A650B5322C1354300059687 /* LoadMoreCell.swift */,
 				7A9BF6D322CA317600EC1D95 /* FilterCells.swift */,
 				7AE6A94122E793E600D2ED88 /* WorkoutGeneralDataCell.swift */,
+				3B598F2923BD1BA70046A5FC /* CalendarTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -333,6 +338,7 @@
 				7A650B4522C1354000059687 /* StepSourceTVC.swift */,
 				7A650B4422C1354000059687 /* RunningHeartZonesTVC.swift */,
 				7A1F8CC123AF5610008EA2E9 /* RouteTypeTVC.swift */,
+				3B598F2123BD1B7D0046A5FC /* SelectCalendarTVC.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -822,10 +828,12 @@
 				7A650B6822C1354500059687 /* ListTVC.swift in Sources */,
 				7A9BF6D422CA317600EC1D95 /* FilterCells.swift in Sources */,
 				7A650B5D22C1354500059687 /* UnitsTVC.swift in Sources */,
+				3B598F2223BD1B7D0046A5FC /* SelectCalendarTVC.swift in Sources */,
 				7A1F8CC223AF5610008EA2E9 /* RouteTypeTVC.swift in Sources */,
 				7A9BF6CC22CA233900EC1D95 /* Extensions.swift in Sources */,
 				7A650B6922C1354500059687 /* AboutVC.swift in Sources */,
 				7A650B5F22C1354500059687 /* RunningHeartZonesTVC.swift in Sources */,
+				3B598F2A23BD1BA70046A5FC /* CalendarTableViewCell.swift in Sources */,
 				7A650B0322C1300100059687 /* SceneDelegate.swift in Sources */,
 				7A650B6622C1354500059687 /* FilterListTVC.swift in Sources */,
 			);
