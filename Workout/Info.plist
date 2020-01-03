@@ -18,8 +18,18 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-7085161342725707~3715618473</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Bluetooth may be used while interacting with ads.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Calendar data my be used while interacting with ads.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Access to data is used to package it in CSV files for exporting purposes.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Access to data is used to package it in CSV files for exporting purposes.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -54,15 +64,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bluetooth may be used while interacting with ads.</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Calendar data my be used while interacting with ads.</string>
-	<key>NSHealthShareUsageDescription</key>
-	<string>Access to data is used to package it in CSV files for exporting purposes.</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>Access to data is used to package it in CSV files for exporting purposes.</string>
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-7085161342725707~3715618473</string>
 </dict>
 </plist>

@@ -15,6 +15,8 @@ import StoreKit
 
 class ListTableViewController: UITableViewController, WorkoutListDelegate, WorkoutBulkExporterDelegate, PreferencesDelegate, AdsManagerDelegate, EnhancedNavigationBarDelegate {
 
+	private static let defaultHeight: CGFloat = 44
+
 	private let list = WorkoutList(healthData: healthData, preferences: preferences)
 	private var exporter: WorkoutBulkExporter?
 	
@@ -62,6 +64,9 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		navigationController?.isToolbarHidden = true
 		adsManager.delegate = self
 		adsManager.initialize()
+
+		tableView.rowHeight = UITableView.automaticDimension
+		tableView.estimatedRowHeight = Self.defaultHeight
 
 		preferences.add(delegate: self)
 		list.delegate = self
@@ -141,6 +146,14 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 			return 1
 		}
     }
+
+	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+		if indexPath.section == 0, list.workouts?.isEmpty ?? true {
+			return UITableView.automaticDimension
+		} else {
+			return Self.defaultHeight
+		}
+	}
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		if indexPath.section == 1 {

@@ -1,0 +1,82 @@
+/*
+  InfoPlist.strings
+  Workout
+
+  Created by Maxime Killinger on 14/12/2019.
+  Copyright © 2019 Marco Boschi. All rights reserved.
+*/
+
+/* Class = "UITableViewSection"; footerTitle = "Select the source from which to load step data. If your devices have not a standard name insert a custom source."; ObjectID = "DE6-lx-y5P"; */
+"DE6-lx-y5P.footerTitle" = "Sélectionnez la source à partir de laquelle charger les données de pas. Si vos appareils n’ont pas de nom, insérez une source personnalisée.";
+
+/* Class = "UILabel"; text = "Authorize Health data access"; ObjectID = "DeD-yh-hfG"; */
+"DeD-yh-hfG.text" = "Autoriser l’accès aux données de Santé";
+
+/* Class = "UILabel"; text = "bpm"; ObjectID = "DyT-UL-y1f"; */
+"DyT-UL-y1f.text" = "bpm";
+
+/* Class = "UILabel"; text = "Source Code"; ObjectID = "Hhm-6m-J7Z"; */
+"Hhm-6m-J7Z.text" = "Code source";
+
+/* Class = "UILabel"; text = "Custom"; ObjectID = "IHW-A3-oq6"; */
+"IHW-A3-oq6.text" = "Personnalisé";
+
+/* Class = "UILabel"; text = "to"; ObjectID = "Jz3-dh-rRA"; */
+"Jz3-dh-rRA.text" = "à";
+
+/* Class = "UINavigationItem"; title = "Units"; ObjectID = "O9R-3v-zu9"; */
+"O9R-3v-zu9.title" = "Unités";
+
+/* Class = "UINavigationItem"; title = "Workout detail"; ObjectID = "QUK-cG-kWu"; */
+"QUK-cG-kWu.title" = "Détails d’entraînement";
+
+/* Class = "UIButton"; normalTitle = "Remove Ads"; ObjectID = "Qam-ee-Z2S"; */
+"Qam-ee-Z2S.normalTitle" = "Supprimer la pub";
+
+/* Class = "UILabel"; text = "Step Source"; ObjectID = "RXY-ea-kL0"; */
+"RXY-ea-kL0.text" = "Source du podomètre";
+
+/* Class = "UILabel"; text = "Manage Ads Consent"; ObjectID = "UZS-mG-WS7"; */
+"UZS-mG-WS7.text" = "Gérer le consentement des annonces";
+
+/* Class = "UILabel"; text = "All"; ObjectID = "Uxm-XN-Aib"; */
+"Uxm-XN-Aib.text" = "Tout";
+
+/* Class = "UILabel"; text = "Max Heart Rate"; ObjectID = "Xkc-YX-SQk"; */
+"Xkc-YX-SQk.text" = "Fréquence cardiaque maximale";
+
+/* Class = "UIButton"; normalTitle = "Restore"; ObjectID = "aur-kd-U1r"; */
+"aur-kd-U1r.normalTitle" = "Restaurer";
+
+/* Class = "UILabel"; text = "Subtitle"; ObjectID = "bbu-3H-lJv"; */
+"bbu-3H-lJv.text" = "Sous-Titre";
+
+/* Class = "UILabel"; text = "Filter"; ObjectID = "c7b-sc-qHH"; */
+"c7b-sc-qHH.text" = "Filtre";
+
+/* Class = "UILabel"; text = "Units"; ObjectID = "drg-GC-zpj"; */
+"drg-GC-zpj.text" = "Unités";
+
+/* Class = "UILabel"; text = "Running Heart Zones"; ObjectID = "gp7-Kc-v84"; */
+"gp7-Kc-v84.text" = "Zones cardiaques";
+
+/* Class = "UINavigationItem"; title = "Running Heart Zones"; ObjectID = "jdI-fn-b3q"; */
+"jdI-fn-b3q.title" = "Zones cardiaques";
+
+/* Class = "UINavigationItem"; title = "Step Source"; ObjectID = "n64-Oo-NfG"; */
+"n64-Oo-NfG.title" = "Source du podomètre";
+
+/* Class = "UILabel"; text = "Contact Me"; ObjectID = "wAE-M9-GC0"; */
+"wAE-M9-GC0.text" = "Me contacter";
+
+/* Class = "UINavigationItem"; title = "Workouts"; ObjectID = "wns-Y0-8IB"; */
+"wns-Y0-8IB.title" = "Entraînements";
+
+/* Class = "UIButton"; normalTitle = "Load More"; ObjectID = "ya0-9d-7C7"; */
+"ya0-9d-7C7.normalTitle" = "Charger plus";
+
+/* Class = "UILabel"; text = "Route Type"; ObjectID = "bK9-dT-qgf"; */
+"bK9-dT-qgf.text" = "Type de trajet";
+
+/* Class = "UINavigationItem"; title = "Workouts"; ObjectID = "HJJ-j5-2gn"; */
+"HJJ-j5-2gn.title" = "Type de trajet";
