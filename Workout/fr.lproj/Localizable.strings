@@ -19,7 +19,7 @@
 
 // MARK: - Errors
 
-"WRKT_ERR_LOADING" = "Impossible de charger les données d’entraînement";
+"WRKT_ERR_LOADING" = "Impossible de charger les données de Santé";
 "WRKT_ERR_NO_HEALTH" = "Les données de Santé ne sont pas disponibles";
 
 // MARK: - Workout List View
