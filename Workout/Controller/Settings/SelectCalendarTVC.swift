@@ -98,7 +98,7 @@ class SelectCalendarTableViewController: UITableViewController {
             cell.calendarUniqueIdentifier = calendarIdentifier
             if preferences.defaultCalendarSelected == "" && calendarIdentifier == EKEventStore().defaultCalendarForNewEvents?.calendarIdentifier {
                 cell.accessoryType = .checkmark
-                preferences.defaultCalendarSelected = EKEventStore().defaultCalendarForNewEvents?.calendarIdentifier ?? "
+                preferences.defaultCalendarSelected = EKEventStore().defaultCalendarForNewEvents?.calendarIdentifier ?? ""
             }
             if calendarIdentifier == preferences.defaultCalendarSelected {
                 cell.accessoryType = .checkmark
