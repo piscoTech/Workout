@@ -78,7 +78,6 @@
 "EXPORT_ERROR_PARTIAL" = "Cannot export some workout data";
 "EXPORT_ERROR_PARTIAL_%@" = "The workouts at the following times failed to export:\n%@";
 
-
 // MARK: - Settings
 
 "HEART_ZONES_MAX_RATE" = "Max %@";

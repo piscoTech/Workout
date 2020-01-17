@@ -48,7 +48,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="[Message]" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kRo-Ia-wba">
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="[Message]" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kRo-Ia-wba">
                                             <rect key="frame" x="16" y="0.0" width="343" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -96,7 +96,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Workouts" largeTitleDisplayMode="always" id="wns-Y0-8IB">
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="Settings" id="rf3-yY-QN1">
+                        <barButtonItem key="leftBarButtonItem" image="Settings" id="rf3-yY-QN1">
                             <connections>
                                 <segue destination="2eA-QV-v1Q" kind="presentation" identifier="info" id="fhz-TV-p7Z"/>
                             </connections>
@@ -164,7 +164,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="[Message]" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" id="JJ1-ny-IjM">
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="[Message]" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="8" id="JJ1-ny-IjM">
                                             <rect key="frame" x="16" y="0.0" width="343" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>

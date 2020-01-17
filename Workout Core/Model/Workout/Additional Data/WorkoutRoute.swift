@@ -81,10 +81,15 @@ public class WorkoutRoute: NSObject, AdditionalDataExtractor, AdditionalDataProv
 
 					// Isolate positions on active intervals
 					for i in raw.activeSegments {
-						let startPos = positions.lastIndex(where: { $0.timestamp <= i.start }) ?? 0
+						let startPos = positions.lastIndex { $0.timestamp <= i.start } ?? 0
 						var track = positions.suffix(from: startPos)
 						if let afterEndPos = track.firstIndex(where: { $0.timestamp > i.end }) {
 							track = track.prefix(upTo: afterEndPos)
+						}
+
+						// Trim the start to exclude samples assigned to the previous segment
+						if let prev = self.route?.last?.last, let newSample = track.firstIndex(where: { $0.timestamp > prev.timestamp }) {
+							track = track.suffix(from: newSample)
 						}
 
 						if !track.isEmpty {

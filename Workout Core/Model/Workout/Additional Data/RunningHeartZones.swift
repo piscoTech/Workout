@@ -126,6 +126,14 @@ public class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider,
 		return zonesData?.count ?? 1
 	}
 
+	public func heightForRowAt(_ indexPath: IndexPath, in tableView: UITableView) -> CGFloat? {
+		if zonesData == nil {
+			return UITableView.automaticDimension
+		} else {
+			return nil
+		}
+	}
+
 	public func cellForRowAt(_ indexPath: IndexPath, for tableView: UITableView) -> UITableViewCell {
 		guard let data = zonesData?[indexPath.row] else {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "msg", for: indexPath)

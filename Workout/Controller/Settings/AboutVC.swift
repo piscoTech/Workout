@@ -39,7 +39,7 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		appInfo = NSLocalizedString("REPORT_TEXT", comment: "Report problem") + "\n\nWorkout \(Bundle.main.versionDescription)\n© 2016-2019 Marco Boschi"
+		appInfo = NSLocalizedString("REPORT_TEXT", comment: "Report problem") + "\n\nWorkout \(Bundle.main.versionDescription)\n© 2016-2020 Marco Boschi"
 		
 		preferences.add(delegate: self)
 		adsManager.removeAdsDelegate = self
