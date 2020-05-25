@@ -160,6 +160,15 @@ public class Workout {
 		}
 	}
 
+	/// The weather temperature during the workout.
+	public var weatherTemperature: HKQuantity? {
+		raw.metadata?[HKMetadataKeyWeatherTemperature] as? HKQuantity
+	}
+	/// The weather humidity during the workout.
+	public var weatherHumidity: HKQuantity? {
+		raw.metadata?[HKMetadataKeyWeatherHumidity] as? HKQuantity
+	}
+
 	private var rawStart: TimeInterval {
 		return raw.startDate.timeIntervalSince1970
 	}
@@ -432,7 +441,9 @@ public class Workout {
 			activeEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			totalEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			elevationChange.ascended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
-			elevationChange.descended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? ""
+			elevationChange.descended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			weatherTemperature?.formatAsTemperature(withUnit: WorkoutUnit.temperature.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			weatherHumidity?.formatAsPercentage(withUnit: WorkoutUnit.percentage.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? ""
 		]
 	}
 
@@ -472,15 +483,17 @@ public class Workout {
 				try file.write("Start\(sep)" + genData[1] + "\n")
 				try file.write("End\(sep)" + genData[2] + "\n")
 				try file.write("Duration\(sep)" + genData[3] + "\n")
-				try file.write("\("Distance \(self.distanceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[4] + "\n")
+				try file.write("\("Distance \(self.distanceUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[4] + "\n")
 				try file.write("\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n")
 				try file.write("\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n")
-				try file.write("\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[7] + "\n")
-				try file.write("\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n")
-				try file.write("\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n")
-				try file.write("\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n")
-				try file.write("\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[11] + "\n")
-				try file.write("\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[12] + "\n")
+				try file.write("\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[7] + "\n")
+				try file.write("\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[8] + "\n")
+				try file.write("\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[9] + "\n")
+				try file.write("\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[10] + "\n")
+				try file.write("\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[11] + "\n")
+				try file.write("\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[12] + "\n")
+				try file.write("\("Weather Temperature \(WorkoutUnit.temperature.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[13] + "\n")
+				try file.write("\("Weather Humidity \(WorkoutUnit.percentage.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[14] + "\n")
 			} catch {
 				callback(nil)
 				return
