@@ -53,6 +53,8 @@
 "WRKT_AVG_SPEED" = "Vitesse moyenne";
 "WRKT_ENERGY" = "Énergie";
 "WRKT_ELEVATION" = "Dénivelée";
+"WRKT_WEATHER_TEMPERATURE" = "Température";
+"WRKT_WEATHER_HUMIDITY" = "Humidité";
 
 "WRKT_SPLIT_CAL_%@_TOTAL_%@" = "%@ (%@ total)";
 
