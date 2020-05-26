@@ -149,7 +149,7 @@ extension HKQuantity: Comparable {
 		if rawFormat {
 			return value.toString()
 		} else {
-			return integerF.string(from: NSNumber(value: value))! + "\(unit.symbol)"
+			return integerF.string(from: NSNumber(value: value))! + " \(unit.symbol)"
 		}
 	}
 
@@ -161,7 +161,7 @@ extension HKQuantity: Comparable {
 		if rawFormat {
 			return value.toString()
 		} else {
-			return integerF.string(from: NSNumber(value: value))! + " \(unit.symbol)"
+			return integerF.string(from: NSNumber(value: value))! + "\(unit.symbol)"
 		}
 	}
 
