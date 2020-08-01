@@ -77,7 +77,7 @@ extension HKQuantity: Comparable {
 		if rawFormat {
 			return value.toString()
 		} else {
-			return distanceF.string(from: NSNumber(value: value))! + " \(unit.description)"
+			return distanceF.string(from: NSNumber(value: value))! + " \(unit.symbol)"
 		}
 	}
 	
@@ -89,7 +89,7 @@ extension HKQuantity: Comparable {
 		if rawFormat {
 			return value.toString()
 		} else {
-			return integerF.string(from: NSNumber(value: value))! + " \(unit.description)"
+			return integerF.string(from: NSNumber(value: value))! + " \(unit.symbol)"
 		}
 	}
 
@@ -101,7 +101,7 @@ extension HKQuantity: Comparable {
 		if rawFormat {
 			return value.rawDuration()
 		} else {
-			return "\(value.formattedDuration)/\(lUnit.description)"
+			return "\(value.formattedDuration)/\(lUnit.symbol)"
 		}
 	}
 
@@ -125,7 +125,7 @@ extension HKQuantity: Comparable {
 		if rawFormat {
 			return value.toString()
 		} else {
-			return speedF.string(from: NSNumber(value: value))! + " \(unit.description)"
+			return speedF.string(from: NSNumber(value: value))! + " \(unit.symbol)"
 		}
 	}
 
@@ -137,13 +137,52 @@ extension HKQuantity: Comparable {
 		if rawFormat {
 			return value.toString()
 		} else {
-			return integerF.string(from: NSNumber(value: value))! + " \(unit.description)"
+			return integerF.string(from: NSNumber(value: value))! + " \(unit.symbol)"
+		}
+	}
+
+	/// Considers the receiver a temperature and formats it accordingly.
+	/// - parameter unit: The temperature unit to use in formatting.
+	/// - returns: The formatted value.
+	public func formatAsTemperature(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return value.toString()
+		} else {
+			return integerF.string(from: NSNumber(value: value))! + " \(unit.symbol)"
+		}
+	}
+
+	/// Considers the receiver a percentage and formats it accordingly.
+	/// - parameter unit: The percentage unit to use in formatting.
+	/// - returns: The formatted value.
+	public func formatAsPercentage(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return value.toString()
+		} else {
+			return integerF.string(from: NSNumber(value: value))! + "\(unit.symbol)"
 		}
 	}
 
 }
 
 extension HKUnit {
+
+	func `is`(compatibleWith unit: HKUnit) -> Bool {
+		return HKQuantity(unit: self, doubleValue: 1).is(compatibleWith: unit)
+	}
+
+	/// A human readable symbol representing the unit.
+	public var symbol: String {
+		var symbol = self.description
+		if self.is(compatibleWith: .degreeCelsius()) && symbol.starts(with: "deg") {
+			// Simplify temperature symbols
+			symbol = "°\(symbol[3...])"
+		}
+
+		return symbol
+	}
 
 	static let meterPerSecond = HKUnit.meter().unitDivided(by: .second())
 
