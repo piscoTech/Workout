@@ -22,7 +22,7 @@ public protocol AdditionalDataProvider {
 	
 	/// Export the data in CSV file(s).
 	/// - returns: An array of `URL`s for the files that contains the data or `nil` if an error occured. If no data should be exported an empty array is returned.
-	func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void)
+	func export(for preferences: Preferences, withPrefix prefix: String, _ callback: @escaping ([URL]?) -> Void)
 	
 }
 

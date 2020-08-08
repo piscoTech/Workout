@@ -15,7 +15,11 @@ public protocol WorkoutDelegate: AnyObject {
 
 }
 
-public class Workout {
+public class Workout: Equatable {
+
+	public static func == (lhs: Workout, rhs: Workout) -> Bool {
+		return lhs.raw == rhs.raw
+	}
 
 	private let healthStore: HKHealthStore
 	public let raw: HKWorkout
@@ -455,7 +459,13 @@ public class Workout {
 		return generalData(for: systemOfUnits).joined(separator: CSVSeparator)
 	}
 
-	public func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+	public func export(for preferences: Preferences,
+					   excludingGeneralData: Bool = false,
+					   withPrefix prefix: String = "",
+					   _ callback: @escaping ([URL]?) -> Void) {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
 		let systemOfUnits = preferences.systemOfUnits
 
 		guard isLoaded, !hasError else {
@@ -464,62 +474,66 @@ public class Workout {
 		}
 
 		DispatchQueue.background.async {
-			let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-			guard let file = OutputStream(url: general, append: false) else {
-				callback(nil)
-				return
-			}
-
-			do {
-				file.open()
-				defer {
-					file.close()
+			var allFiles: [URL] = []
+			if !excludingGeneralData {
+				let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(prefix)generalData.csv")
+				allFiles.append(general)
+				guard let file = OutputStream(url: general, append: false) else {
+					callback(nil)
+					return
 				}
 
-				let genData = self.generalData(for: systemOfUnits)
-				let sep = CSVSeparator
-				try file.write("Field\(sep)Value\n")
-				try file.write("Type\(sep)" + genData[0] + "\n")
-				try file.write("Start\(sep)" + genData[1] + "\n")
-				try file.write("End\(sep)" + genData[2] + "\n")
-				try file.write("Duration\(sep)" + genData[3] + "\n")
-				try file.write("\("Distance \(self.distanceUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[4] + "\n")
-				try file.write("\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n")
-				try file.write("\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n")
-				try file.write("\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[7] + "\n")
-				try file.write("\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[8] + "\n")
-				try file.write("\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[9] + "\n")
-				try file.write("\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[10] + "\n")
-				try file.write("\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[11] + "\n")
-				try file.write("\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[12] + "\n")
-				try file.write("\("Weather Temperature \(WorkoutUnit.temperature.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[13] + "\n")
-				try file.write("\("Weather Humidity \(WorkoutUnit.percentage.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[14] + "\n")
-			} catch {
-				callback(nil)
-				return
+				do {
+					file.open()
+					defer {
+						file.close()
+					}
+
+					let genData = self.generalData(for: systemOfUnits)
+					let sep = CSVSeparator
+					try file.write("Field\(sep)Value\n")
+					try file.write("Type\(sep)" + genData[0] + "\n")
+					try file.write("Start\(sep)" + genData[1] + "\n")
+					try file.write("End\(sep)" + genData[2] + "\n")
+					try file.write("Duration\(sep)" + genData[3] + "\n")
+					try file.write("\("Distance \(self.distanceUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[4] + "\n")
+					try file.write("\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n")
+					try file.write("\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n")
+					try file.write("\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[7] + "\n")
+					try file.write("\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[8] + "\n")
+					try file.write("\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[9] + "\n")
+					try file.write("\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[10] + "\n")
+					try file.write("\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[11] + "\n")
+					try file.write("\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[12] + "\n")
+					try file.write("\("Weather Temperature \(WorkoutUnit.temperature.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[13] + "\n")
+					try file.write("\("Weather Humidity \(WorkoutUnit.percentage.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[14] + "\n")
+				} catch {
+					callback(nil)
+					return
+				}
 			}
 
 			if self.allAdditionalProviders.isEmpty {
-				callback([general])
+				callback(allFiles)
 			} else {
 				var files = [[URL]?](repeating: nil, count: self.allAdditionalProviders.count)
 				var completed = 0
 				for (i, dp) in self.allAdditionalProviders.enumerated() {
-					dp.export(for: preferences) { f in
+					dp.export(for: preferences, withPrefix: prefix) { f in
 						DispatchQueue.workout.async {
 							completed += 1
 							files[i] = f
 
 							if completed == self.allAdditionalProviders.count {
 								DispatchQueue.background.async {
-									if let res = files.reduce([], { (res, partial) -> [URL]? in
+									if let res = files.reduce(allFiles, { (res, partial) -> [URL]? in
 										if let r = res, let p = partial {
 											return r + p
 										} else {
 											return nil
 										}
 									}) {
-										callback([general] + res)
+										callback(res)
 									} else {
 										callback(nil)
 									}

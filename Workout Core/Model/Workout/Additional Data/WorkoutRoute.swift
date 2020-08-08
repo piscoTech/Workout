@@ -169,7 +169,11 @@ public class WorkoutRoute: NSObject, AdditionalDataExtractor, AdditionalDataProv
 		return c
 	}
 
-	public func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+	public func export(for preferences: Preferences, withPrefix prefix: String, _ callback: @escaping ([URL]?) -> Void) {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
+
 		guard let route = self.route else {
 			callback([])
 			return
@@ -189,7 +193,7 @@ public class WorkoutRoute: NSObject, AdditionalDataExtractor, AdditionalDataProv
 				exporter = GPXWorkoutRouteExporter.self
 			}
 
-			if let file = exporter.init(for: owner).export(route) {
+			if let file = exporter.init(for: owner).export(route, withPrefix: prefix) {
 				callback([file])
 			} else {
 				callback(nil)

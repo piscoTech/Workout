@@ -135,7 +135,10 @@ class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor,
 		return (ascended, descended)
 	}
 
-	func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+	func export(for preferences: Preferences, withPrefix prefix: String, _ callback: @escaping ([URL]?) -> Void) {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
 		let systemOfUnits = preferences.systemOfUnits
 		
 		DispatchQueue.background.async {
@@ -146,7 +149,7 @@ class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor,
 
 			let export = [.time] + self.displayDetail
 			let sep = CSVSeparator
-			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
+			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(prefix)details.csv")
 			guard let file = OutputStream(url: detFile, append: false) else {
 				callback(nil)
 				return

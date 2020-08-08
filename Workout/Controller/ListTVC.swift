@@ -347,17 +347,38 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	}
 	
 	@objc func doExport(_ sender: UIBarButtonItem) {
-		guard let exp = exporter else {
-			return
+		loadingBar?.dismiss(animated: false)
+
+		let exportType = UIAlertController(title: NSLocalizedString("EXPORT_BULK", comment: "Export"),
+										   message: NSLocalizedString("EXPORT_BULK_BODY", comment: "Simple or all?"),
+										   preferredStyle: .alert)
+		let startExport = { [weak self] (details: Bool) in
+			// Make sure not to hold a strong reference to the exporter
+			guard let self = self else {
+				return
+			}
+
+			if self.exporter?.export(withDetails: details, from: healthData, and: preferences) ?? false {
+				DispatchQueue.main.async {
+					let (bar, progress) = UIAlertController.getModalProgress()
+					self.loadingBar = bar
+					self.loadingProgress = progress
+					self.present(self.loadingBar!, animated: true)
+				}
+			}
 		}
 
-		loadingBar?.dismiss(animated: false)
-		if exp.export(from: healthData, and: preferences) {
-			let (bar, progress) = UIAlertController.getModalProgress()
-			self.loadingBar = bar
-			self.loadingProgress = progress
-			self.present(self.loadingBar!, animated: true)
-		}
+		exportType.addAction(UIAlertAction(title: NSLocalizedString("EXPORT_BULK_SIMPLE", comment: "Simple"), style: .default) { _ in
+			startExport(false)
+		})
+		exportType.addAction(UIAlertAction(title: NSLocalizedString("EXPORT_BULK_ALL", comment: "All"), style: .default) { _ in
+			startExport(true)
+		})
+		exportType.addAction(UIAlertAction(title: NSLocalizedString("EXPORT_BULK_CANCEL", comment: "Cancel"), style: .cancel) { _ in
+			exportType.dismiss(animated: true)
+		})
+
+		self.present(exportType, animated: true)
 	}
 
 	func exportProgressChanged(_ progress: Float) {
@@ -366,11 +387,11 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		}
 	}
 
-	func exportCompleted(data: URL?, individualFailures failures: [Date]?) {
+	func exportCompleted(data: [URL]?, individualFailures failures: [Date]?) {
 		DispatchQueue.main.async {
 			self.cancelExport(self)
 
-			guard let filePath = data, let fail = failures else {
+			guard let files = data, let fail = failures else {
 				let alert = UIAlertController(simpleAlert: NSLocalizedString("EXPORT_ERROR", comment: "Export error"), message: nil)
 
 				if let l = self.loadingBar {
@@ -385,7 +406,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 				return
 			}
 
-			self.documentController = UIActivityViewController(activityItems: [filePath], applicationActivities: nil)
+			self.documentController = UIActivityViewController(activityItems: files, applicationActivities: nil)
 			self.documentController.completionWithItemsHandler = { _, completed, _, _ in
 				self.documentController = nil
 
