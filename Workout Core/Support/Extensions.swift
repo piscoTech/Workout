@@ -129,6 +129,27 @@ extension HKQuantity: Comparable {
 		}
 	}
 
+	/// Considers the receiver a cadence and formats it accordingly.
+	/// - parameter unit: The cadence unit to use in formatting.
+	/// - returns: The formatted value.
+	public func formatAsCadence(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return value.toString()
+		} else {
+			let intSteps = Int(ceil(value))
+			let str = String(format: NSLocalizedString("%lld_STEPS", comment: "%d step(s)"), intSteps)
+			var unitStr = unit.symbol.description
+			unitStr = String(unitStr[unitStr.range(of: "/")!.lowerBound...])
+			if let stepNum = str.range(of: "\(intSteps)") {
+				let steps = speedF.string(from: NSNumber(value: value))!
+				return str.replacingCharacters(in: stepNum, with: steps) + unitStr
+			} else {
+				return "\(str)\(unitStr)"
+			}
+		}
+	}
+
 	/// Considers the receiver an energy and formats it accordingly.
 	/// - parameter unit: The energy unit to use in formatting.
 	/// - returns: The formatted value.

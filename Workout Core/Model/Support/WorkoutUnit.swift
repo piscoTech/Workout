@@ -74,7 +74,8 @@ public class WorkoutUnit {
 	public static let percentage = WorkoutUnit(.percent())
 
 	public static let heartRate = WorkoutUnit(HKUnit.count().unitDivided(by: HKUnit.minute()))
-	public static let steps = WorkoutUnit(HKUnit.count())
-	public static let strokes = WorkoutUnit(HKUnit.count())
+	public static let steps = WorkoutUnit(.count())
+	public static let cadence = WorkoutUnit.steps.divided(by: HKUnit.minute())
+	public static let strokes = WorkoutUnit(.count())
 
 }

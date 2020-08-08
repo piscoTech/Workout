@@ -108,6 +108,20 @@ public class Workout: Equatable {
 		return HKQuantity(unit: .meterPerSecond, doubleValue: dist.doubleValue(for: .meter()) / duration)
 	}
 
+	private var averageCadenceCache: HKQuantity??
+	/// The average cadence, i.e. step count per unit time, of the workout.
+	public var averageCadence: HKQuantity? {
+		if let avgCadence = averageCadenceCache {
+			return avgCadence
+		} else if let res = allAdditionalProviders.lazy.compactMap({ $0 as? AverageCadenceProvider }).first?.averageCadence {
+			self.averageCadenceCache = res
+
+			return res
+		} else {
+			return nil
+		}
+	}
+
 	/// Active energy burned during the workout, in kilocalories.
 	private var activeCaloriesData = 0.0
 	/// Basal energy burned during the workout, in kilocalories.
@@ -152,7 +166,7 @@ public class Workout: Equatable {
 		if asc == nil && desc == nil {
 			if let eg = elevationChangeCache {
 				return eg
-			} else if let res = allAdditionalProviders.compactMap({ $0 as? ElevationChangeProvider }).first?.elevationChange {
+			} else if let res = allAdditionalProviders.lazy.compactMap({ $0 as? ElevationChangeProvider }).first?.elevationChange {
 				self.elevationChangeCache = res
 				
 				return res
@@ -269,8 +283,8 @@ public class Workout: Equatable {
 	// MARK: - Set and load other data
 
 	/// Add a query to load data for the workout.
-	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`.
-	private func addQuery(_ q: WorkoutDataQuery, isBase: Bool) {
+	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`. Take care when passing `true` as it will increase the time taken to perform a bulk export.
+	func addQuery(_ q: WorkoutDataQuery, isBase: Bool = false) {
 		guard !isLoading && !isLoaded else {
 			return
 		}
@@ -280,11 +294,6 @@ public class Workout: Equatable {
 		} else {
 			requests.append(q)
 		}
-	}
-
-	/// Add a query to load data for the workout.
-	func addQuery(_ q: WorkoutDataQuery) {
-		self.addQuery(q, isBase: false)
 	}
 
 	func addAdditionalExtractor(_ de: AdditionalDataExtractor...) {
@@ -442,6 +451,7 @@ public class Workout: Equatable {
 			maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			pace?.formatAsPace(withReferenceLength: paceUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			speed?.formatAsSpeed(withUnit: speedUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			averageCadence?.formatAsCadence(withUnit: WorkoutUnit.cadence.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			activeEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			totalEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			elevationChange.ascended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
@@ -492,21 +502,30 @@ public class Workout: Equatable {
 					let genData = self.generalData(for: systemOfUnits)
 					let sep = CSVSeparator
 					try file.write("Field\(sep)Value\n")
-					try file.write("Type\(sep)" + genData[0] + "\n")
-					try file.write("Start\(sep)" + genData[1] + "\n")
-					try file.write("End\(sep)" + genData[2] + "\n")
-					try file.write("Duration\(sep)" + genData[3] + "\n")
-					try file.write("\("Distance \(self.distanceUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[4] + "\n")
-					try file.write("\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n")
-					try file.write("\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n")
-					try file.write("\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[7] + "\n")
-					try file.write("\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[8] + "\n")
-					try file.write("\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[9] + "\n")
-					try file.write("\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[10] + "\n")
-					try file.write("\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[11] + "\n")
-					try file.write("\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[12] + "\n")
-					try file.write("\("Weather Temperature \(WorkoutUnit.temperature.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[13] + "\n")
-					try file.write("\("Weather Humidity \(WorkoutUnit.percentage.unit(for: systemOfUnits).symbol)".toCSV())\(sep)" + genData[14] + "\n")
+
+					let fields = [
+						"Type",
+						"Start",
+						"End",
+						"Duration",
+						"\("Distance \(self.distanceUnit.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Average Heart Rate".toCSV())",
+						"\("Max Heart Rate".toCSV())",
+						"\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Average Cadence \(WorkoutUnit.cadence.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Weather Temperature \(WorkoutUnit.temperature.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Weather Humidity \(WorkoutUnit.percentage.unit(for: systemOfUnits).symbol)".toCSV())"
+					]
+					precondition(fields.count == genData.count)
+
+					for (f, v) in zip(fields, genData) {
+						try file.write("\(f)\(sep)\(v)\n")
+					}
 				} catch {
 					callback(nil)
 					return

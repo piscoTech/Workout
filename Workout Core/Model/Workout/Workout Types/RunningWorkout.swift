@@ -31,7 +31,7 @@ class RunningWorkout: Workout {
 										andTimeType: .ranged, searchingBy: .time,
 										predicate: { p in preferences.stepSourceFilter.getPredicate(for: healthData.store, p)}
 		) {
-			self.addQuery(steps)
+			self.addQuery(steps, isBase: true)
 		}
 	}
 	

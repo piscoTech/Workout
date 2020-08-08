@@ -42,3 +42,12 @@ public protocol ElevationChangeProvider: AdditionalDataProvider {
 	var elevationChange: (ascended: HKQuantity?, descended: HKQuantity?) { get }
 	
 }
+
+public protocol AverageCadenceProvider: AdditionalDataProvider {
+
+	/// The average cadence, i.e. step count per unit time, of the workout.
+	///
+	/// The receiver can recompute this value each time it's accessed, make sure to cache it appropriately.
+	var averageCadence: HKQuantity? { get }
+
+}

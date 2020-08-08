@@ -51,6 +51,7 @@
 "WRKT_MAX_HEART" = "Max Heart Rate";
 "WRKT_AVG_PACE" = "Average Pace";
 "WRKT_AVG_SPEED" = "Average Speed";
+"WRKT_AVG_CADENCE" = "Average Cadence";
 "WRKT_ENERGY" = "Energy";
 "WRKT_ELEVATION" = "Elevation Change";
 "WRKT_WEATHER_TEMPERATURE" = "Weather Temperature";

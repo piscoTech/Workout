@@ -119,7 +119,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 		// Prepare the file with the header
 		do {
 			let sep = CSVSeparator
-			let header = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Active Energy".toCSV())\(sep)\("Total Energy".toCSV())\(sep)\("Elevation Ascended".toCSV())\(sep)\("Elevation Descended".toCSV())\(sep)Weather Temperature\(sep)Weather Humidity\n"
+			let header = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Average Cadence".toCSV())\(sep)\("Active Energy".toCSV())\(sep)\("Total Energy".toCSV())\(sep)\("Elevation Ascended".toCSV())\(sep)\("Elevation Descended".toCSV())\(sep)Weather Temperature\(sep)Weather Humidity\n"
 
 			try fileStream.write(header)
 		} catch {
@@ -216,7 +216,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 			// Load other
 			if !queue.isEmpty, loading.count < self.maximumConcurrentLoad {
 				let load: [Workout] = queue.prefix(self.maximumConcurrentLoad - loading.count).map { w in
-					// Avoid loading additional (and useless) detail
+					// Avoid loading additional (and useless) detail if not needed
 					w.load(quickly: !self.withDetails)
 					return w
 				}

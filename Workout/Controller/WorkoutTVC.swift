@@ -139,12 +139,20 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		let base = [paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
 		return 1 + base
 	}
+	private var averageCadenceRow: Int? {
+		guard workout.averageCadence != nil else {
+			return nil
+		}
+
+		let base = [speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
+	}
 	private var energyRow: Int? {
 		guard workout.totalEnergy != nil else {
 			return nil
 		}
 		
-		let base = [speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		let base = [averageCadenceRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
 		return 1 + base
 	}
 	private var elevationRow: Int? {
@@ -153,7 +161,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return nil
 		}
 		
-		let base = [energyRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		let base = [energyRow, averageCadenceRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
 		return 1 + base
 	}
 	private var weatherTemperatureRow: Int? {
@@ -161,7 +169,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return nil
 		}
 
-		let base = [elevationRow, energyRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		let base = [elevationRow, energyRow, averageCadenceRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
 		return 1 + base
 	}
 	private var weatherHumidityRow: Int? {
@@ -169,7 +177,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return nil
 		}
 
-		let base = [weatherTemperatureRow, elevationRow, energyRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		let base = [weatherTemperatureRow, elevationRow, energyRow, averageCadenceRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
 		return 1 + base
 	}
 
@@ -179,7 +187,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		}
 		
 		if section == 0 {
-			return [typeRow, startRow, endRow, durationRow, distanceRow, avgHeartRow, maxHeartRow, paceRow, speedRow, energyRow, elevationRow, weatherTemperatureRow, weatherHumidityRow].lazy.compactMap { $0 }.count
+			return [typeRow, startRow, endRow, durationRow, distanceRow, avgHeartRow, maxHeartRow, paceRow, speedRow, averageCadenceRow, energyRow, elevationRow, weatherTemperatureRow, weatherHumidityRow].lazy.compactMap { $0 }.count
 		} else {
 			return workout.additionalProviders[section - 1].numberOfRows
 		}
@@ -243,6 +251,9 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			case speedRow:
 				title = "WRKT_AVG_SPEED"
 				cell.detail.text = workout.speed?.formatAsSpeed(withUnit: workout.speedUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+			case averageCadenceRow:
+				title = "WRKT_AVG_CADENCE"
+				cell.detail.text = workout.averageCadence?.formatAsCadence(withUnit: WorkoutUnit.cadence.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case energyRow:
 				title = "WRKT_ENERGY"
 				if let total = workout.totalEnergy {
