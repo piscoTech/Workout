@@ -11,8 +11,21 @@ import HealthKit
 
 extension DispatchQueue {
 
+	private static let workoutIdentifier = DispatchSpecificKey<String>()
 	/// Serial queue to synchronize access to counters and data when loading or exporting workouts.
-	static let workout = DispatchQueue(label: "Marco-Boschi.ios.Workout.loadExport")
+	static let workout: DispatchQueue = {
+		let queueName = "Marco-Boschi.ios.Workout.loadExport"
+		let q = DispatchQueue(label: queueName)
+		q.setSpecific(key: workoutIdentifier, value: queueName)
+
+		return q
+	}()
+
+	/// Whether the current queue is `DispatchQueue.workout` or not.
+	static var isOnWorkout: Bool {
+		return DispatchQueue.getSpecific(key: workoutIdentifier) == workout.label
+	}
+
 
 }
 

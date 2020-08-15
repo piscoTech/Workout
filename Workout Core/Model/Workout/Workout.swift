@@ -113,7 +113,8 @@ public class Workout: Equatable {
 	public var averageCadence: HKQuantity? {
 		if let avgCadence = averageCadenceCache {
 			return avgCadence
-		} else if let res = allAdditionalProviders.lazy.compactMap({ $0 as? AverageCadenceProvider }).first?.averageCadence {
+		} else if let provider = allAdditionalProviders.lazy.compactMap({ $0 as? AverageCadenceProvider }).first {
+			let res = provider.averageCadence
 			self.averageCadenceCache = res
 
 			return res
@@ -166,7 +167,8 @@ public class Workout: Equatable {
 		if asc == nil && desc == nil {
 			if let eg = elevationChangeCache {
 				return eg
-			} else if let res = allAdditionalProviders.lazy.compactMap({ $0 as? ElevationChangeProvider }).first?.elevationChange {
+			} else if let provider = allAdditionalProviders.lazy.compactMap({ $0 as? ElevationChangeProvider }).first {
+				let res = provider.elevationChange
 				self.elevationChangeCache = res
 				
 				return res
@@ -432,6 +434,7 @@ public class Workout: Equatable {
 		requestDone = 0
 		
 		elevationChangeCache = nil
+		averageCadenceCache = nil
 		
 		DispatchQueue.main.async {
 			self.delegate?.workoutLoaded(self)
