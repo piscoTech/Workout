@@ -10,6 +10,20 @@ import HealthKit
 
 public class Health {
 
+	static let knownDistances: [HKQuantityTypeIdentifier] = {
+		var distances = [
+			HKQuantityTypeIdentifier.distanceWalkingRunning,
+			.distanceSwimming,
+			.distanceCycling,
+			.distanceWheelchair
+		]
+		if #available(iOS 11.2, *) {
+			distances.append(.distanceDownhillSnowSports)
+		}
+
+		return distances
+	}()
+
 	let store = HKHealthStore()
 
 	public init() {}

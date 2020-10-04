@@ -78,7 +78,7 @@ class WorkoutDetail {
 
 	///Provides information about the time.
 	static let time = WorkoutDetail(name: "Time", valueFormatter: { (m, _) in
-		WorkoutDetail.timeFormatter.string(from: TimeInterval(m.minute) * 60)!
+		WorkoutDetail.timeFormatter.string(from: TimeInterval(m.number) * 60)!
 	}, exportFormatter: { (m, _) in
 		(TimeInterval(m.minute) * 60).rawDuration().toCSV()
 	}, color: WorkoutDetail.primaryColor)

@@ -9,26 +9,12 @@
 import HealthKit
 import MBLibrary
 
-///Describe workout data in time range `startTime ..< endTime`.
-class WorkoutMinute: CustomStringConvertible {
+class WorkoutPiece: CustomStringConvertible {
 
 	private(set) weak var owner: Workout!
-	let minute: UInt
+	let number: UInt
 	let startTime: TimeInterval
-	var endTime: TimeInterval {
-		didSet {
-			precondition(duration >= 0 && duration <= 60, "Invalid endTime")
-		}
-	}
-	var duration: TimeInterval {
-		return endTime - startTime
-	}
-	var description: String {
-		let dur = duration < 60 ? " \(duration.rawDuration())" : ""
-		return "\(minute)m\(dur): "
-			+ (distance?.formatAsDistance(withUnit: owner.distanceUnit.default) ?? "- m")
-			+ ", " + (heartRate?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.default) ?? "- bpm")
-	}
+	fileprivate(set) var endTime: TimeInterval
 
 	private var data = [HKQuantityTypeIdentifier: (unit: HKUnit, values: [HKQuantity])]()
 	/// The totale elevation ascended during the minute, in meters.
@@ -36,12 +22,29 @@ class WorkoutMinute: CustomStringConvertible {
 	/// The totale elevation descended during the minute, in meters.
 	private(set) var elevationDescended: Double = 0
 
+	var description: String {
+		return "\(duration.rawDuration()): "
+			+ (distance?.formatAsDistance(withUnit: owner.distanceUnit.default) ?? "- m")
+			+ ", " + (heartRate?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.default) ?? "- bpm")
+	}
+
+	init(number: UInt, start: TimeInterval, end: TimeInterval, owner: Workout) {
+		self.number = number
+		self.startTime = start
+		self.endTime = end
+		self.owner = owner
+	}
+
+	var duration: TimeInterval {
+		return endTime - startTime
+	}
+
+	// MARK: - Common Data
+
 	/// Distance covered in the minute, see `owner.distanceUnit` for the desired unit for presentation.
 	var distance: HKQuantity? {
-		let distances = [HKQuantityTypeIdentifier.distanceWalkingRunning, .distanceSwimming, .distanceCycling]
-
 		// Don't expose a 0 distance, give nil instead
-		if let dist = distances.lazy.compactMap({ self.getTotal(for: $0) }).first, dist > HKQuantity(unit: .meter(), doubleValue: 0) {
+		if let dist = Health.knownDistances.lazy.compactMap({ self.getTotal(for: $0) }).first, dist > HKQuantity(unit: .meter(), doubleValue: 0) {
 			return dist
 		} else {
 			return nil
@@ -69,16 +72,6 @@ class WorkoutMinute: CustomStringConvertible {
 		return getAverage(for: .heartRate)
 	}
 
-	/// - parameter minute: The overall number of the minute.
-	/// - parameter start: The number of the minute inside the parent segment. This is used to compute the start time of the minute inside the segment as `TimeInterval(start)*60`.
-	init(minute: UInt, start: UInt, owner: Workout) {
-		self.minute = minute
-		self.startTime = TimeInterval(start) * 60
-		self.endTime = startTime + 60
-
-		self.owner = owner
-	}
-
 	// MARK: - Setter
 
 	func set(unit: HKUnit, for type: HKQuantityTypeIdentifier) {
@@ -101,32 +94,22 @@ class WorkoutMinute: CustomStringConvertible {
 			self.data[to]!.values.append(v)
 		}
 	}
-	
+
 	private func addElevationChange(from data: DataPoint, ofType type: HKQuantityTypeIdentifier, percentage: Double = 1) {
 		precondition(percentage >= 0 && percentage <= 1, "Percentage must be in the range [0,1]")
-		
-		let distances: Set<HKQuantityTypeIdentifier>
-		do {
-			let oth: Set<HKQuantityTypeIdentifier>
-			if #available(iOS 11.2, *) {
-				oth = [.distanceDownhillSnowSports]
-			} else {
-				oth = []
-			}
-			distances = oth.union([.distanceCycling, .distanceWheelchair, .distanceWalkingRunning])
-		}
-		guard distances.contains(type) else {
+
+		guard Health.knownDistances.contains(type) else {
 			// It doesn't make sense to record elevation change for the given data type
 			return
 		}
-		
+
 		let (asc, desc) = data.elevationChange
-		for (val, saveTo) in [(asc, \WorkoutMinute.elevationAscended), (desc, \.elevationDescended)] {
+		for (val, saveTo) in [(asc, \WorkoutPiece.elevationAscended), (desc, \.elevationDescended)] {
 			guard let raw = val?.doubleValue(for: .meter()) else {
 				// No data to save
 				continue
 			}
-			
+
 			self[keyPath: saveTo] += abs(raw)
 		}
 	}
@@ -230,6 +213,27 @@ class WorkoutMinute: CustomStringConvertible {
 		}
 
 		return HKQuantity(unit: unit, doubleValue: total)
+	}
+
+}
+
+///Describe workout data in time range `startTime ..< endTime`.
+class WorkoutMinute: WorkoutPiece {
+
+	override var endTime: TimeInterval {
+		get {
+			super.endTime
+		}
+		set {
+			super.endTime = newValue
+		}
+	}
+
+	/// - parameter minute: The overall number of the minute.
+	/// - parameter start: The number of the minute inside the parent segment. This is used to compute the start time of the minute inside the segment as `TimeInterval(start)*60`.
+	init(minute: UInt, start: UInt, owner: Workout) {
+		let startTime = TimeInterval(start) * 60
+		super.init(number: minute, start: startTime, end: startTime + 60, owner: owner)
 	}
 
 }
