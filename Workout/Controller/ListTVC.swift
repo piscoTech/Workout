@@ -20,7 +20,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	private let list = WorkoutList(healthData: healthData, preferences: preferences)
 	private var exporter: WorkoutBulkExporter?
 	
-	private var standardRightBtns: [UIBarButtonItem]!
+	private var standardRightBtn: UIBarButtonItem!
 	private var standardLeftBtn: UIBarButtonItem!
 	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
 	
@@ -37,6 +37,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	@IBOutlet private weak var filterLbl: UILabel!
 	
 	private var loaded = false
+	private var refresher = UIRefreshControl()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,7 +49,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		navigationItem.titleView = titleView
 		navBar?.enhancedDelegate = self
 		
-		standardRightBtns = navigationItem.rightBarButtonItems
+		standardRightBtn = navigationItem.rightBarButtonItem
 		standardLeftBtn = navigationItem.leftBarButtonItem
 		if #available(iOS 13, *) {
 			// This can be done in storyboard
@@ -59,6 +60,10 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		exportCommitBtn = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(doExport(_:)))
 		exportRightBtns = [exportCommitBtn, exportToggleBtn]
 		exportLeftBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelExport(_:)))
+
+		// Refresh Control
+		tableView.refreshControl = self.refresher
+		refresher.addTarget(self, action: #selector(refresh(_:)), for: .valueChanged)
 		
 		// Ads
 		navigationController?.isToolbarHidden = true
@@ -71,7 +76,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		preferences.add(delegate: self)
 		list.delegate = self
 		updateFilterLabel()
-        refresh()
+        refresh(self)
 		
 		DispatchQueue.main.async {
 			self.checkRequestReview()
@@ -91,7 +96,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 			loaded = true
 			healthData.authorizeHealthKitAccess {
 				DispatchQueue.main.async {
-					self.refresh()
+					self.refresh(self)
 				}
 			}
 		}
@@ -121,8 +126,9 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	
 	private weak var loadMoreCell: LoadMoreCell?
 	
-	@IBAction func refresh() {
+	@objc private func refresh(_ sender: Any) {
 		list.reload()
+		refresher.endRefreshing()
 	}
 	
 	func preferredSystemOfUnitsChanged() {
@@ -219,6 +225,13 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
 
+	override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+		// A second section is shown only iff additional workout can be loaded (or are being loaded)
+		if tableView.numberOfSections == 2, !list.isLoading, indexPath.section == 0 && indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
+			list.loadMore()
+		}
+	}
+
 	// MARK: - List Displaying
 
 	private let allFiltersStr = NSLocalizedString("WRKT_FILTER_ALL", comment: "All")
@@ -312,7 +325,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		listChanged()
 
 		navigationItem.leftBarButtonItem = standardLeftBtn
-		navigationItem.rightBarButtonItems = standardRightBtns
+		navigationItem.rightBarButtonItem = standardRightBtn
 	}
 	
 	private func updateExportToggleAll() {
