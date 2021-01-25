@@ -79,7 +79,7 @@
 "EXPORT_ERROR_PARTIAL" = "Impossible d’exporter certaines données d’entraînement";
 "EXPORT_ERROR_PARTIAL_%@" = "Les séances d’entraînement aux moments suivants n’ont pas réussi à être exportées:\n%@";
 
-"EXPORT_BULK" = "Exporter lzq Exercices";
+"EXPORT_BULK" = "Exporter les entraînements";
 "EXPORT_BULK_BODY" = "Vous pouvez exporter uniquement les données générales pour chaque entraînement sélectionné, càd. la première section des détails ou la totalité des détails. Si vous choisissez ce dernier, le temps d'exportation peut être considérablement augmenté, assurez-vous de ne sélectionner que les entraînements pertinents ou utilisez le bon filtre pour les réduire.";
 "EXPORT_BULK_SIMPLE" = "Seulement les Données Générales";
 "EXPORT_BULK_ALL" = "Tous les Détails";
