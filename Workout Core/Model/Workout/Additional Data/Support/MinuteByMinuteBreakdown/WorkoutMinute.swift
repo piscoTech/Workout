@@ -193,24 +193,39 @@ class WorkoutMinute: CustomStringConvertible {
 
 	// MARK: - Getter
 
-	private func getRawTotal(for type: HKQuantityTypeIdentifier) -> Double? {
-		guard let (unit, raw) = data[type] else {
-			return nil
+	private func getRawTotal(for type: HKQuantityTypeIdentifier) -> (unit: HKUnit, sum: Double, count: Int)? {
+		let fetcher = { () -> (HKUnit, Double, Int)? in
+			guard let (unit, raw) = self.data[type] else {
+				return nil
+			}
+
+			return (unit, raw.reduce(0) { $0 + $1.doubleValue(for: unit) }, raw.count)
 		}
 
-		return raw.reduce(0) { $0 + $1.doubleValue(for: unit) }
+		if DispatchQueue.isOnWorkout {
+			return fetcher()
+		} else {
+			var result: (HKUnit, Double, Int)?
+			DispatchQueue.workout.sync {
+				result = fetcher()
+			}
+
+			return result
+		}
 	}
 
+	/// Fetch the average for the given data type.
 	func getAverage(for type: HKQuantityTypeIdentifier) -> HKQuantity? {
-		guard let (unit, raw) = data[type], let total = getRawTotal(for: type) else {
+		guard let (unit, total, count) = getRawTotal(for: type) else {
 			return nil
 		}
 
-		return raw.count > 0 ? HKQuantity(unit: unit, doubleValue: total / Double(raw.count)) : nil
+		return count > 0 ? HKQuantity(unit: unit, doubleValue: total / Double(count)) : nil
 	}
 
+	/// Fetch the total for the given data type.
 	func getTotal(for type: HKQuantityTypeIdentifier) -> HKQuantity? {
-		guard let (unit, _) = data[type], let total = getRawTotal(for: type) else {
+		guard let (unit, total, _) = getRawTotal(for: type) else {
 			return nil
 		}
 

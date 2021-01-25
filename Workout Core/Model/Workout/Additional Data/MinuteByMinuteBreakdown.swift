@@ -11,7 +11,7 @@ import HealthKit
 import MBLibrary
 import MBHealth
 
-class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor, PreferencesDelegate {
+class MinuteByMinuteBreakdown: AdditionalDataProcessor, PreferencesDelegate, ElevationChangeProvider, AverageCadenceProvider {
 
 	private weak var preferences: Preferences?
 	private var systemOfUnits: SystemOfUnits
@@ -111,13 +111,13 @@ class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor,
 	}
 	
 	var elevationChange: (ascended: HKQuantity?, descended: HKQuantity?) {
-		let (asc, desc) = segments?.reduce((0.0, 0.0), { (partial, s) in
+		let (asc, desc) = segments?.reduce((0.0, 0.0)) { (partial, s) in
 			let (a, d) = s.minutes.reduce((0.0, 0.0)) {
 				($0.0 + $1.elevationAscended, $0.1 + $1.elevationDescended)
 			}
 				
 			return (partial.0 + a, partial.1 + d)
-		}) ?? (0, 0)
+		} ?? (0, 0)
 			
 		let ascended, descended: HKQuantity?
 		if asc > 0 {
@@ -135,7 +135,24 @@ class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor,
 		return (ascended, descended)
 	}
 
-	func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+	var averageCadence: HKQuantity? {
+		let stepUnit = WorkoutUnit.steps.default
+		let steps = segments?.reduce(Double(0.0)) { (partial, s) in
+			let sgmSteps = s.minutes.reduce(0.0) { $0 + ($1.getTotal(for: .stepCount)?.doubleValue(for: stepUnit) ?? 0) }
+			return partial + sgmSteps
+		} ?? 0
+
+		guard steps > 0 else {
+			return nil
+		}
+
+		return HKQuantity(unit: stepUnit.unitDivided(by: .second()), doubleValue: steps / owner.duration)
+	}
+
+	func export(for preferences: Preferences, withPrefix prefix: String, _ callback: @escaping ([URL]?) -> Void) {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
 		let systemOfUnits = preferences.systemOfUnits
 		
 		DispatchQueue.background.async {
@@ -146,7 +163,7 @@ class MinuteByMinuteBreakdown: ElevationChangeProvider, AdditionalDataProcessor,
 
 			let export = [.time] + self.displayDetail
 			let sep = CSVSeparator
-			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("details.csv")
+			let detFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(prefix)details.csv")
 			guard let file = OutputStream(url: detFile, append: false) else {
 				callback(nil)
 				return

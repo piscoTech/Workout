@@ -10,6 +10,7 @@ import Foundation
 import MBLibrary
 import GoogleMobileAds
 import PersonalizedAdConsent
+import AppTrackingTransparency
 
 public protocol RemoveAdsDelegate: AnyObject {
 	
@@ -43,6 +44,9 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 	private static let defaultAdRetryDelay: TimeInterval = 5.0
 	private static let maxAdRetryDelay: TimeInterval = 5 * 60.0
 	private var adRetryDelay: TimeInterval = 5.0
+	/// Whether the user allowed tracking and use of the IDFA.
+	private var limitTracking = false
+	/// Whether the user as opted in for personalized ads.
 	private var allowsPersonalizedAds = true
 	
 	private let iapManager: InAppPurchaseManager
@@ -69,6 +73,7 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 	}
 	
 	public private(set) var adView: GADBannerView?
+	private var adEngineStrted = false
 	
 	private override init() {
 		fatalError("Use the public initializer")
@@ -90,28 +95,40 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 		guard areAdsEnabled else {
 			return
 		}
-		
-		PACConsentInformation.sharedInstance.requestConsentInfoUpdate(forPublisherIdentifiers: [Self.adsPublisherID]) { err in
-			if err != nil {
-				DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initialize)
-				self.adRetryDelay = min(Self.maxAdRetryDelay, self.adRetryDelay * 2)
-			} else {
-				self.adRetryDelay = Self.defaultAdRetryDelay
-				if PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown {
-					let consent = PACConsentInformation.sharedInstance.consentStatus
-					if consent == .unknown {
-						DispatchQueue.main.async {
-							self.collectAdsConsent(manual: false)
+
+		let euConsent = {
+			PACConsentInformation.sharedInstance.requestConsentInfoUpdate(forPublisherIdentifiers: [Self.adsPublisherID]) { err in
+				if err != nil {
+					DispatchQueue.main.asyncAfter(delay: self.adRetryDelay, closure: self.initialize)
+					self.adRetryDelay = min(Self.maxAdRetryDelay, self.adRetryDelay * 2)
+				} else {
+					self.adRetryDelay = Self.defaultAdRetryDelay
+					if PACConsentInformation.sharedInstance.isRequestLocationInEEAOrUnknown {
+						let consent = PACConsentInformation.sharedInstance.consentStatus
+						if consent == .unknown {
+							DispatchQueue.main.async {
+								self.collectAdsConsent(manual: false)
+							}
+						} else {
+							self.allowsPersonalizedAds = consent == .personalized
+							self.loadAds()
 						}
 					} else {
-						self.allowsPersonalizedAds = consent == .personalized
+						self.allowsPersonalizedAds = true
 						self.loadAds()
 					}
-				} else {
-					self.allowsPersonalizedAds = true
-					self.loadAds()
 				}
 			}
+		}
+
+		if #available(iOS 14, *) {
+			ATTrackingManager.requestTrackingAuthorization { auth in
+				self.limitTracking = auth != .authorized
+
+				DispatchQueue.main.async(execute: euConsent)
+			}
+		} else {
+			euConsent()
 		}
 	}
 	
@@ -134,13 +151,12 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 		form.shouldOfferPersonalizedAds = true
 		form.shouldOfferNonPersonalizedAds = true
 		form.shouldOfferAdFree = !manual && InAppPurchaseManager.canMakePayments
-		
-		var loading: UIAlertController?
+
 		func displayError() {
 			DispatchQueue.main.async {
 				let alert = UIAlertController(simpleAlert: NSLocalizedString("MANAGE_CONSENT", comment: "Manage consent"), message: NSLocalizedString("MANAGE_CONSENT_ERR", comment: "Manage consent error"))
 				
-				if let l = loading {
+				if let l = self.loading {
 					l.dismiss(animated: true) {
 						presenter.present(alert, animated: true)
 					}
@@ -192,7 +208,7 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 						}
 					}
 					
-					if let l = loading {
+					if let l = self.loading {
 						l.dismiss(animated: true) {
 							presentForm()
 						}
@@ -208,7 +224,7 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 	
 	private func getAdRequest() -> GADRequest {
 		let req = GADRequest()
-		if !allowsPersonalizedAds {
+		if limitTracking || !allowsPersonalizedAds {
 			let extras = GADExtras()
 			extras.additionalParameters = ["npa": "1"]
 			req.register(extras)
@@ -223,7 +239,7 @@ public class AdsManager: NSObject, GADBannerViewDelegate {
 			adView.rootViewController = delegate?.defaultPresenter
 			adView.delegate = self
 			adView.adUnitID = Self.adsUnitID
-			
+
 			self.adView = adView
 		}
 		adView?.load(getAdRequest())

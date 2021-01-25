@@ -15,7 +15,11 @@ public protocol WorkoutDelegate: AnyObject {
 
 }
 
-public class Workout {
+public class Workout: Equatable {
+
+	public static func == (lhs: Workout, rhs: Workout) -> Bool {
+		return lhs.raw == rhs.raw
+	}
 
 	private let healthStore: HKHealthStore
 	public let raw: HKWorkout
@@ -104,6 +108,21 @@ public class Workout {
 		return HKQuantity(unit: .meterPerSecond, doubleValue: dist.doubleValue(for: .meter()) / duration)
 	}
 
+	private var averageCadenceCache: HKQuantity??
+	/// The average cadence, i.e. step count per unit time, of the workout.
+	public var averageCadence: HKQuantity? {
+		if let avgCadence = averageCadenceCache {
+			return avgCadence
+		} else if let provider = allAdditionalProviders.lazy.compactMap({ $0 as? AverageCadenceProvider }).first {
+			let res = provider.averageCadence
+			self.averageCadenceCache = res
+
+			return res
+		} else {
+			return nil
+		}
+	}
+
 	/// Active energy burned during the workout, in kilocalories.
 	private var activeCaloriesData = 0.0
 	/// Basal energy burned during the workout, in kilocalories.
@@ -148,7 +167,8 @@ public class Workout {
 		if asc == nil && desc == nil {
 			if let eg = elevationChangeCache {
 				return eg
-			} else if let res = allAdditionalProviders.compactMap({ $0 as? ElevationChangeProvider }).first?.elevationChange {
+			} else if let provider = allAdditionalProviders.lazy.compactMap({ $0 as? ElevationChangeProvider }).first {
+				let res = provider.elevationChange
 				self.elevationChangeCache = res
 				
 				return res
@@ -158,6 +178,15 @@ public class Workout {
 		} else {
 			return (asc, desc)
 		}
+	}
+
+	/// The weather temperature during the workout.
+	public var weatherTemperature: HKQuantity? {
+		raw.metadata?[HKMetadataKeyWeatherTemperature] as? HKQuantity
+	}
+	/// The weather humidity during the workout.
+	public var weatherHumidity: HKQuantity? {
+		raw.metadata?[HKMetadataKeyWeatherHumidity] as? HKQuantity
 	}
 
 	private var rawStart: TimeInterval {
@@ -256,8 +285,8 @@ public class Workout {
 	// MARK: - Set and load other data
 
 	/// Add a query to load data for the workout.
-	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`.
-	private func addQuery(_ q: WorkoutDataQuery, isBase: Bool) {
+	/// - parameter isBase: Whether to execute the resulting query even if doing a quick load. This needs to be set to `true` when the data is part of `exportGeneralData()`. Take care when passing `true` as it will increase the time taken to perform a bulk export.
+	func addQuery(_ q: WorkoutDataQuery, isBase: Bool = false) {
 		guard !isLoading && !isLoaded else {
 			return
 		}
@@ -267,11 +296,6 @@ public class Workout {
 		} else {
 			requests.append(q)
 		}
-	}
-
-	/// Add a query to load data for the workout.
-	func addQuery(_ q: WorkoutDataQuery) {
-		self.addQuery(q, isBase: false)
 	}
 
 	func addAdditionalExtractor(_ de: AdditionalDataExtractor...) {
@@ -410,6 +434,7 @@ public class Workout {
 		requestDone = 0
 		
 		elevationChangeCache = nil
+		averageCadenceCache = nil
 		
 		DispatchQueue.main.async {
 			self.delegate?.workoutLoaded(self)
@@ -429,10 +454,13 @@ public class Workout {
 			maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			pace?.formatAsPace(withReferenceLength: paceUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			speed?.formatAsSpeed(withUnit: speedUnit.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			averageCadence?.formatAsCadence(withUnit: WorkoutUnit.cadence.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			activeEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			totalEnergy?.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
 			elevationChange.ascended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
-			elevationChange.descended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? ""
+			elevationChange.descended?.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			weatherTemperature?.formatAsTemperature(withUnit: WorkoutUnit.temperature.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? "",
+			weatherHumidity?.formatAsPercentage(withUnit: WorkoutUnit.percentage.unit(for: systemOfUnits), rawFormat: true).toCSV() ?? ""
 		]
 	}
 
@@ -444,7 +472,13 @@ public class Workout {
 		return generalData(for: systemOfUnits).joined(separator: CSVSeparator)
 	}
 
-	public func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+	public func export(for preferences: Preferences,
+					   excludingGeneralData: Bool = false,
+					   withPrefix prefix: String = "",
+					   _ callback: @escaping ([URL]?) -> Void) {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
 		let systemOfUnits = preferences.systemOfUnits
 
 		guard isLoaded, !hasError else {
@@ -453,60 +487,75 @@ public class Workout {
 		}
 
 		DispatchQueue.background.async {
-			let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("generalData.csv")
-			guard let file = OutputStream(url: general, append: false) else {
-				callback(nil)
-				return
-			}
-
-			do {
-				file.open()
-				defer {
-					file.close()
+			var allFiles: [URL] = []
+			if !excludingGeneralData {
+				let general = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(prefix)generalData.csv")
+				allFiles.append(general)
+				guard let file = OutputStream(url: general, append: false) else {
+					callback(nil)
+					return
 				}
 
-				let genData = self.generalData(for: systemOfUnits)
-				let sep = CSVSeparator
-				try file.write("Field\(sep)Value\n")
-				try file.write("Type\(sep)" + genData[0] + "\n")
-				try file.write("Start\(sep)" + genData[1] + "\n")
-				try file.write("End\(sep)" + genData[2] + "\n")
-				try file.write("Duration\(sep)" + genData[3] + "\n")
-				try file.write("\("Distance \(self.distanceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[4] + "\n")
-				try file.write("\("Average Heart Rate".toCSV())\(sep)" + genData[5] + "\n")
-				try file.write("\("Max Heart Rate".toCSV())\(sep)" + genData[6] + "\n")
-				try file.write("\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[7] + "\n")
-				try file.write("\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[8] + "\n")
-				try file.write("\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[9] + "\n")
-				try file.write("\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[10] + "\n")
-				try file.write("\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[11] + "\n")
-				try file.write("\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).description)".toCSV())\(sep)" + genData[12] + "\n")
-			} catch {
-				callback(nil)
-				return
+				do {
+					file.open()
+					defer {
+						file.close()
+					}
+
+					let genData = self.generalData(for: systemOfUnits)
+					let sep = CSVSeparator
+					try file.write("Field\(sep)Value\n")
+
+					let fields = [
+						"Type",
+						"Start",
+						"End",
+						"Duration",
+						"\("Distance \(self.distanceUnit.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Average Heart Rate".toCSV())",
+						"\("Max Heart Rate".toCSV())",
+						"\("Average Pace time/\(self.paceUnit.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Average Speed \(self.speedUnit.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Average Cadence \(WorkoutUnit.cadence.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Active Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Total Energy \(WorkoutUnit.calories.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Elevation Ascended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Elevation Descended \(WorkoutUnit.elevation.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Weather Temperature \(WorkoutUnit.temperature.unit(for: systemOfUnits).symbol)".toCSV())",
+						"\("Weather Humidity \(WorkoutUnit.percentage.unit(for: systemOfUnits).symbol)".toCSV())"
+					]
+					precondition(fields.count == genData.count)
+
+					for (f, v) in zip(fields, genData) {
+						try file.write("\(f)\(sep)\(v)\n")
+					}
+				} catch {
+					callback(nil)
+					return
+				}
 			}
 
 			if self.allAdditionalProviders.isEmpty {
-				callback([general])
+				callback(allFiles)
 			} else {
 				var files = [[URL]?](repeating: nil, count: self.allAdditionalProviders.count)
 				var completed = 0
 				for (i, dp) in self.allAdditionalProviders.enumerated() {
-					dp.export(for: preferences) { f in
+					dp.export(for: preferences, withPrefix: prefix) { f in
 						DispatchQueue.workout.async {
 							completed += 1
 							files[i] = f
 
 							if completed == self.allAdditionalProviders.count {
 								DispatchQueue.background.async {
-									if let res = files.reduce([], { (res, partial) -> [URL]? in
+									if let res = files.reduce(allFiles, { (res, partial) -> [URL]? in
 										if let r = res, let p = partial {
 											return r + p
 										} else {
 											return nil
 										}
 									}) {
-										callback([general] + res)
+										callback(res)
 									} else {
 										callback(nil)
 									}

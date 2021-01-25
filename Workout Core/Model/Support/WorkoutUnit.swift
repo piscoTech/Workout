@@ -33,7 +33,7 @@ public class WorkoutUnit {
 	}
 
 	func `is`(compatibleWith unit: HKUnit) -> Bool {
-		return HKQuantity(unit: self.default, doubleValue: 1).is(compatibleWith: unit)
+		return self.default.is(compatibleWith: unit)
 	}
 
 	func `is`(compatibleWith unit: WorkoutUnit) -> Bool {
@@ -65,15 +65,17 @@ public class WorkoutUnit {
 	public static let meter = WorkoutUnit(.meter())
 	public static let meterAndYard = WorkoutUnit(units: [.metric: .meter(), .imperial: .yard()])
 	public static let kilometerAndMile = WorkoutUnit(units: [.metric: .meterUnit(with: .kilo), .imperial: .mile()])
-	public static let elevation = WorkoutUnit(units: [.metric : .meter(), .imperial: .foot()])
+	public static let elevation = WorkoutUnit(units: [.metric: .meter(), .imperial: .foot()])
 
 	public static let kilometerAndMilePerHour = kilometerAndMile.divided(by: HKUnit.hour())
 
 	public static let calories = WorkoutUnit(.kilocalorie())
+	public static let temperature = WorkoutUnit(units: [.metric: .degreeCelsius(), .imperial: .degreeFahrenheit()])
+	public static let percentage = WorkoutUnit(.percent())
 
 	public static let heartRate = WorkoutUnit(HKUnit.count().unitDivided(by: HKUnit.minute()))
-
-	public static let steps = WorkoutUnit(HKUnit.count())
-	public static let strokes = WorkoutUnit(HKUnit.count())
+	public static let steps = WorkoutUnit(.count())
+	public static let cadence = WorkoutUnit.steps.divided(by: HKUnit.minute())
+	public static let strokes = WorkoutUnit(.count())
 
 }

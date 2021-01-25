@@ -139,12 +139,20 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		let base = [paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
 		return 1 + base
 	}
+	private var averageCadenceRow: Int? {
+		guard workout.averageCadence != nil else {
+			return nil
+		}
+
+		let base = [speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
+	}
 	private var energyRow: Int? {
 		guard workout.totalEnergy != nil else {
 			return nil
 		}
 		
-		let base = [speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		let base = [averageCadenceRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
 		return 1 + base
 	}
 	private var elevationRow: Int? {
@@ -153,7 +161,23 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			return nil
 		}
 		
-		let base = [energyRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		let base = [energyRow, averageCadenceRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
+	}
+	private var weatherTemperatureRow: Int? {
+		guard workout.weatherTemperature != nil else {
+			return nil
+		}
+
+		let base = [elevationRow, energyRow, averageCadenceRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+		return 1 + base
+	}
+	private var weatherHumidityRow: Int? {
+		guard workout.weatherHumidity != nil else {
+			return nil
+		}
+
+		let base = [weatherTemperatureRow, elevationRow, energyRow, averageCadenceRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
 		return 1 + base
 	}
 
@@ -163,7 +187,7 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		}
 		
 		if section == 0 {
-			return [typeRow, startRow, endRow, durationRow, distanceRow, avgHeartRow, maxHeartRow, paceRow, speedRow, energyRow, elevationRow].lazy.compactMap { $0 }.count
+			return [typeRow, startRow, endRow, durationRow, distanceRow, avgHeartRow, maxHeartRow, paceRow, speedRow, averageCadenceRow, energyRow, elevationRow, weatherTemperatureRow, weatherHumidityRow].lazy.compactMap { $0 }.count
 		} else {
 			return workout.additionalProviders[section - 1].numberOfRows
 		}
@@ -196,58 +220,52 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 		
 		if indexPath.section == 0 {
 			let cell = tableView.dequeueReusableCell(withIdentifier: "general", for: indexPath) as! WorkoutGeneralDataCell
+			cell.setCustomDetails(nil)
 			
 			let title: String
 			switch indexPath.row {
 			case typeRow:
 				title = "WRKT_TYPE"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.name
+				cell.detail.text = workout.name
 			case startRow:
 				title = "WRKT_START"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.startDate.formattedDateTime
+				cell.detail.text = workout.startDate.formattedDateTime
 			case endRow:
 				title = "WRKT_END"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.endDate.formattedDateTime
+				cell.detail.text = workout.endDate.formattedDateTime
 			case durationRow:
 				title = "WRKT_DURATION"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.duration.formattedDuration
+				cell.detail.text = workout.duration.formattedDuration
 			case distanceRow:
 				title = "WRKT_DISTANCE"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.totalDistance?.formatAsDistance(withUnit: workout.distanceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.detail.text = workout.totalDistance?.formatAsDistance(withUnit: workout.distanceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case avgHeartRow:
 				title = "WRKT_AVG_HEART"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.detail.text = workout.avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case maxHeartRow:
 				title = "WRKT_MAX_HEART"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.detail.text = workout.maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case paceRow:
 				title = "WRKT_AVG_PACE"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.pace?.formatAsPace(withReferenceLength: workout.paceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.detail.text = workout.pace?.formatAsPace(withReferenceLength: workout.paceUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case speedRow:
 				title = "WRKT_AVG_SPEED"
-				cell.setCustomDetails(nil)
-				cell.detail?.text = workout.speed?.formatAsSpeed(withUnit: workout.speedUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+				cell.detail.text = workout.speed?.formatAsSpeed(withUnit: workout.speedUnit.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+			case averageCadenceRow:
+				title = "WRKT_AVG_CADENCE"
+				cell.detail.text = workout.averageCadence?.formatAsCadence(withUnit: WorkoutUnit.cadence.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			case energyRow:
 				title = "WRKT_ENERGY"
-				cell.setCustomDetails(nil)
 				if let total = workout.totalEnergy {
 					if let active = workout.activeEnergy {
-						cell.detail?.text = String(format: NSLocalizedString("WRKT_SPLIT_CAL_%@_TOTAL_%@", comment: "Active/Total"),
+						cell.detail.text = String(format: NSLocalizedString("WRKT_SPLIT_CAL_%@_TOTAL_%@", comment: "Active/Total"),
 												   active.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits)),
 												   total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits)))
 					} else {
-						cell.detail?.text = total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits))
+						cell.detail.text = total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: preferences.systemOfUnits))
 					}
 				} else {
-					cell.detail?.text = missingValueStr
+					cell.detail.text = missingValueStr
 				}
 			case elevationRow:
 				title = "WRKT_ELEVATION"
@@ -285,6 +303,12 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 					
 					elView.addArrangedSubview(el)
 				}
+			case weatherTemperatureRow:
+				title = "WRKT_WEATHER_TEMPERATURE"
+				cell.detail.text = workout.weatherTemperature?.formatAsTemperature(withUnit: WorkoutUnit.temperature.unit(for: preferences.systemOfUnits)) ?? missingValueStr
+			case weatherHumidityRow:
+				title = "WRKT_WEATHER_HUMIDITY"
+				cell.detail.text = workout.weatherHumidity?.formatAsPercentage(withUnit: WorkoutUnit.percentage.unit(for: preferences.systemOfUnits)) ?? missingValueStr
 			default:
 				return cell
 			}

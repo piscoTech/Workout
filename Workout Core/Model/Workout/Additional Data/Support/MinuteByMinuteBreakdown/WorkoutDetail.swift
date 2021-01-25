@@ -100,7 +100,7 @@ class WorkoutDetail {
 	})
 
 	/// Provides the average speed.
-	static let speed = WorkoutDetail(name: "Speed", unitFormatter: { $0.speedUnit.unit(for: $1).description }, valueFormatter: { (m, s) in
+	static let speed = WorkoutDetail(name: "Speed", unitFormatter: { $0.speedUnit.unit(for: $1).symbol }, valueFormatter: { (m, s) in
 		guard let speed = m.speed else {
 			return nil
 		}

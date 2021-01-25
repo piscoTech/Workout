@@ -81,10 +81,15 @@ public class WorkoutRoute: NSObject, AdditionalDataExtractor, AdditionalDataProv
 
 					// Isolate positions on active intervals
 					for i in raw.activeSegments {
-						let startPos = positions.lastIndex(where: { $0.timestamp <= i.start }) ?? 0
+						let startPos = positions.lastIndex { $0.timestamp <= i.start } ?? 0
 						var track = positions.suffix(from: startPos)
 						if let afterEndPos = track.firstIndex(where: { $0.timestamp > i.end }) {
 							track = track.prefix(upTo: afterEndPos)
+						}
+
+						// Trim the start to exclude samples assigned to the previous segment
+						if let prev = self.route?.last?.last, let newSample = track.firstIndex(where: { $0.timestamp > prev.timestamp }) {
+							track = track.suffix(from: newSample)
 						}
 
 						if !track.isEmpty {
@@ -164,29 +169,34 @@ public class WorkoutRoute: NSObject, AdditionalDataExtractor, AdditionalDataProv
 		return c
 	}
 
-	public func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+	public func export(for preferences: Preferences, withPrefix prefix: String, _ callback: @escaping ([URL]?) -> Void) {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
+
 		guard let route = self.route else {
 			callback([])
 			return
 		}
 
+		guard let owner = self.owner else {
+			callback(nil)
+			return
+		}
+
 		DispatchQueue.background.async {
-			let exporter: WorkoutRouteExporter
+			let exporter: WorkoutRouteExporter.Type
 			switch preferences.routeType {
 			case .csv:
-				exporter = CSVWorkoutRouteExporter()
+				exporter = CSVWorkoutRouteExporter.self
 			case .gpx:
-				exporter = GPXWorkoutRouteExporter()
+				exporter = GPXWorkoutRouteExporter.self
 			}
 
-
-			exporter.export(route) { file in
-				guard let f = file else {
-					callback(nil)
-					return
-				}
-
-				callback([f])
+			if let file = exporter.init(for: owner).export(route, withPrefix: prefix) {
+				callback([file])
+			} else {
+				callback(nil)
 			}
 		}
 	}

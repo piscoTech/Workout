@@ -54,6 +54,8 @@
 "WRKT_AVG_CADENCE" = "Cadence moyenne";
 "WRKT_ENERGY" = "Énergie";
 "WRKT_ELEVATION" = "Dénivelée";
+"WRKT_WEATHER_TEMPERATURE" = "Température";
+"WRKT_WEATHER_HUMIDITY" = "Humidité";
 
 "WRKT_SPLIT_CAL_%@_TOTAL_%@" = "%@ (%@ total)";
 
@@ -82,7 +84,7 @@
 "EXPORT_BULK" = "Exporter les entraînements";
 "EXPORT_BULK_BODY" = "Vous pouvez exporter uniquement les données générales pour chaque entraînement sélectionné, càd. la première section des détails ou la totalité des détails. Si vous choisissez ce dernier, le temps d'exportation peut être considérablement augmenté, assurez-vous de ne sélectionner que les entraînements pertinents ou utilisez le bon filtre pour les réduire.";
 "EXPORT_BULK_SIMPLE" = "Seulement les données générales";
-"EXPORT_BULK_ALL" = "Tous les Détails";
+"EXPORT_BULK_ALL" = "Tous les détails";
 "EXPORT_BULK_CANCEL" = "Annuler";
 
 // MARK: - Settings
