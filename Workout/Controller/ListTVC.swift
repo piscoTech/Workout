@@ -20,7 +20,9 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	private let list = WorkoutList(healthData: healthData, preferences: preferences)
 	private var exporter: WorkoutBulkExporter?
 	
-	private var standardRightBtn: UIBarButtonItem!
+    private let refreshC = UIRefreshControl()
+    
+	private var standardRightBtns: [UIBarButtonItem]!
 	private var standardLeftBtn: UIBarButtonItem!
 	@IBOutlet private weak var enterExportModeBtn: UIBarButtonItem!
 	
@@ -49,13 +51,18 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		navigationItem.titleView = titleView
 		navBar?.enhancedDelegate = self
 		
-		standardRightBtn = navigationItem.rightBarButtonItem
+		standardRightBtns = navigationItem.rightBarButtonItems
 		standardLeftBtn = navigationItem.leftBarButtonItem
 		if #available(iOS 13, *) {
 			// This can be done in storyboard
 			standardLeftBtn.image = UIImage(systemName: "gear")
 		}
-		
+        
+        // Configure Refresh Control
+        tableView.refreshControl = self.refreshC
+        refreshC.addTarget(self, action: #selector(refresh(_:)), for: .valueChanged)
+        
+
 		exportToggleBtn = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(toggleExportAll))
 		exportCommitBtn = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(doExport(_:)))
 		exportRightBtns = [exportCommitBtn, exportToggleBtn]
@@ -128,7 +135,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 	
 	@objc private func refresh(_ sender: Any) {
 		list.reload()
-		refresher.endRefreshing()
+        self.refreshC.endRefreshing()
 	}
 	
 	func preferredSystemOfUnitsChanged() {
@@ -225,12 +232,11 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
 
-	override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-		// A second section is shown only iff additional workout can be loaded (or are being loaded)
-		if tableView.numberOfSections == 2, !list.isLoading, indexPath.section == 0 && indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
-			list.loadMore()
-		}
-	}
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == max(list.workouts?.count ?? 1, 1) - 1  && list.canDisplayMore && exporter == nil && !list.isLoading {
+            list.loadMore()
+        }
+    }
 
 	// MARK: - List Displaying
 
@@ -325,7 +331,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		listChanged()
 
 		navigationItem.leftBarButtonItem = standardLeftBtn
-		navigationItem.rightBarButtonItem = standardRightBtn
+		navigationItem.rightBarButtonItems = standardRightBtns
 	}
 	
 	private func updateExportToggleAll() {

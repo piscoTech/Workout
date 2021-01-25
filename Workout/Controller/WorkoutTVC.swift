@@ -16,7 +16,8 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	private static let defaultHeight: CGFloat = 44
 
 	@IBOutlet var exportBtn: UIBarButtonItem!
-	
+    @IBOutlet var icsBtn: UIBarButtonItem!
+
 	weak var listController: ListTableViewController!
 	var rawWorkout: HKWorkout!
 	private var workout: Workout!
@@ -56,7 +57,8 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 	func workoutLoaded(_ workout: Workout) {
 		DispatchQueue.main.async {
 			self.exportBtn.isEnabled = !self.workout.hasError
-			self.navigationItem.setRightBarButton(self.exportBtn, animated: true)
+            self.icsBtn.isEnabled = self.exportBtn.isEnabled
+			self.navigationItem.rightBarButtonItems = [self.exportBtn, self.icsBtn]
 
 			let old = self.tableView.numberOfSections
 			let new = self.numberOfSections(in: self.tableView)
@@ -372,5 +374,41 @@ class WorkoutTableViewController: UITableViewController, WorkoutDelegate {
 			}
 		}
 	}
+
+    // MARK: - ICS Export
+        
+    @IBAction func ICSexport(_ sender: UIBarButtonItem) {
+        loadingIndicator?.dismiss(animated: false)
+        loadingIndicator = UIAlertController.getModalLoading()
+        self.present(loadingIndicator!, animated: true)
+        
+        workout.ICSexport(for: preferences.systemOfUnits) { result in
+            guard let calendar = result else {
+                let alert = UIAlertController(simpleAlert: NSLocalizedString("EXPORT_ERROR", comment: "Export error"), message: nil)
+                
+                DispatchQueue.main.async {
+                    if let l = self.loadingIndicator {
+                        l.dismiss(animated: true) {
+                            self.loadingIndicator = nil
+                            self.present(alert, animated: true)
+                        }
+                    } else {
+                        self.present(alert, animated: true)
+                    }
+                }
+                
+                return
+            }
+                        
+            DispatchQueue.main.async {
+                if let l = self.loadingIndicator {
+                    l.dismiss(animated: true) {
+                        self.loadingIndicator = nil
+                    }
+                    UIApplication.shared.open(calendar)
+                }
+            }
+        }
+    }
 
 }

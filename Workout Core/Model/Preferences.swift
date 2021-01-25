@@ -16,6 +16,7 @@ private enum PreferenceKeys: String, KeyValueStoreKey {
 	case maxHeartRate = "maxHeartRate"
 	case runningHeartZones = "runningHeartZones"
 	case exportRouteType = "exportRouteType"
+    case defaultCalendar = "defaultCalendar"
 
 	case reviewRequestCounter = "reviewRequestCounter"
 
@@ -34,6 +35,7 @@ public protocol PreferencesDelegate: AnyObject {
 	@objc optional func stepSourceChanged()
 	@objc optional func runningHeartZonesConfigChanged()
 	@objc optional func routeTypeChanged()
+    @objc optional func defaultCalendarChanged()
 
 	@objc optional func reviewCounterUpdated()
 
@@ -42,7 +44,7 @@ public protocol PreferencesDelegate: AnyObject {
 public class Preferences {
 
 	private enum Change {
-		case generic, systemOfUnits, stepSource, hzConfig, reviewCounter, routeType
+		case generic, systemOfUnits, stepSource, hzConfig, reviewCounter, routeType, defaultCalendar
 	}
 
 	public let local = KeyValueStore(userDefaults: UserDefaults.standard)
@@ -74,6 +76,8 @@ public class Preferences {
 				d.reviewCounterUpdated?()
 			case .routeType:
 				d.routeTypeChanged?()
+            case .defaultCalendar:
+                d.defaultCalendarChanged?()
 			case .generic:
 				d.preferencesChanged?()
 			}
@@ -159,4 +163,18 @@ public class Preferences {
 		}
 	}
 
+    public var defaultCalendarSelected: String {
+        get {
+            return local.string(forKey: PreferenceKeys.defaultCalendar) ?? ""
+        }
+        set {
+            if newValue == "" {
+                local.removeObject(forKey: PreferenceKeys.defaultCalendar)
+            } else {
+                local.set(newValue, forKey: PreferenceKeys.defaultCalendar)
+            }
+            saveChanges(.defaultCalendar)
+        }
+    }
+    
 }

@@ -10,6 +10,7 @@ import HealthKit
 import UIKit
 import MBLibrary
 import WorkoutCore
+import EventKit
 
 class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAdsDelegate {
 	
@@ -62,7 +63,7 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		switch section {
 		// Settings
 		case settingsSectionOffset:
-			return 4
+			return 5
 		// Source Code & Contacts
 		case settingsSectionOffset + 1:
 			return 2
@@ -96,6 +97,11 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 			let cell = tableView.dequeueReusableCell(withIdentifier: "routeType", for: indexPath)
 			setRouteType(in: cell)
 			return cell
+        // Default Calendar
+        case (settingsSectionOffset, 4):
+            let cell = tableView.dequeueReusableCell(withIdentifier: "defaultCalendar", for: indexPath)
+            setDefaultCalendar(in: cell)
+            return cell
 		// Source Code
 		case (settingsSectionOffset + 1, 0):
 			return tableView.dequeueReusableCell(withIdentifier: "sourceCode", for: indexPath)
@@ -164,6 +170,12 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		}
 	}
 
+    func defaultCalendarChanged() {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 4, section: settingsSectionOffset)) {
+            setDefaultCalendar(in: cell)
+        }
+    }
+
 	private func setUnits(in cell: UITableViewCell) {
 		cell.detailTextLabel?.text = preferences.systemOfUnits.displayName
 	}
@@ -187,6 +199,13 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		cell.detailTextLabel?.text = preferences.routeType.displayName
 	}
 	
+    private func setDefaultCalendar(in cell: UITableViewCell) {
+        if preferences.defaultCalendarSelected == "" && EKEventStore().defaultCalendarForNewEvents != nil {
+            preferences.defaultCalendarSelected = EKEventStore().defaultCalendarForNewEvents?.calendarIdentifier ?? ""
+        }
+        cell.detailTextLabel?.text = EKEventStore().calendar(withIdentifier: preferences.defaultCalendarSelected)?.title
+    }
+
 	// MARK: - Ads management
 	
 	@IBAction func removeAds() {

@@ -8,6 +8,7 @@
 
 import HealthKit
 import MBLibrary
+import EventKit
 
 public protocol WorkoutDelegate: AnyObject {
 
@@ -568,4 +569,169 @@ public class Workout: Equatable {
 		}
 	}
 	
+    private let typeRow = 0
+    private let startRow = 1
+    private let endRow = 2
+    private let durationRow = 3
+    private var distanceRow: Int? {
+        guard self.totalDistance != nil else {
+            return nil
+        }
+        
+        return 1 + durationRow
+    }
+    private var avgHeartRow: Int? {
+        guard self.avgHeart != nil else {
+            return nil
+        }
+        
+        return 1 + (distanceRow ?? durationRow)
+    }
+    private var maxHeartRow: Int? {
+        guard self.maxHeart != nil else {
+            return nil
+        }
+        
+        let base = [avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+        return 1 + base
+    }
+    private var paceRow: Int? {
+        guard self.pace != nil else {
+            return nil
+        }
+        
+        let base = [maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+        return 1 + base
+    }
+    private var speedRow: Int? {
+        guard self.speed != nil else {
+            return nil
+        }
+        
+        let base = [paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+        return 1 + base
+    }
+    private var energyRow: Int? {
+        guard self.totalEnergy != nil else {
+            return nil
+        }
+        
+        let base = [speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+        return 1 + base
+    }
+    private var elevationRow: Int? {
+        let (asc, desc) = self.elevationChange
+        guard asc != nil || desc != nil else {
+            return nil
+        }
+        
+        let base = [energyRow, speedRow, paceRow, maxHeartRow, avgHeartRow, distanceRow].lazy.compactMap { $0 }.first ?? durationRow
+        return 1 + base
+    }
+    
+    public func ICSexport(for systemOfUnits: SystemOfUnits, _ callback: @escaping (URL?) -> Void) {
+        guard isLoaded, !hasError,
+            EKEventStore.authorizationStatus(for: EKEntityType.event) != EKAuthorizationStatus.denied,
+            EKEventStore.authorizationStatus(for: EKEntityType.event) != EKAuthorizationStatus.restricted
+        else {
+            callback(nil)
+            return
+        }
+
+        DispatchQueue.background.async {
+            let eventStore = EKEventStore()
+            
+            var description = ""
+            let nbLines = [self.typeRow, self.startRow, self.endRow, self.durationRow, self.distanceRow, self.avgHeartRow, self.maxHeartRow, self.paceRow, self.speedRow, self.energyRow, self.elevationRow].lazy.compactMap { $0 }.count
+            for n in 0...nbLines {
+                switch n {
+                case self.typeRow:
+                        description += NSLocalizedString("WRKT_TYPE", comment: "Type")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += self.name + "\n"
+                    case self.startRow:
+                        description += NSLocalizedString("WRKT_START", comment: "Start")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += self.startDate.formattedDateTime + "\n"
+                    case self.endRow:
+                        description += NSLocalizedString("WRKT_END", comment: "End")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += self.endDate.formattedDateTime + "\n"
+                    case self.durationRow:
+                        description += NSLocalizedString("WRKT_DURATION", comment: "Duration")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += self.duration.formattedDuration + "\n"
+                    case self.distanceRow:
+                        description += NSLocalizedString("WRKT_DISTANCE", comment: "Distance")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += (self.totalDistance?.formatAsDistance(withUnit: self.distanceUnit.unit(for: systemOfUnits)) ?? missingValueStr) + "\n"
+                    case self.avgHeartRow:
+                        description += NSLocalizedString("WRKT_AVG_HEART", comment: "Average Heart Rate")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += (self.avgHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: systemOfUnits)) ?? missingValueStr) + "\n"
+                    case self.maxHeartRow:
+                        description += NSLocalizedString("WRKT_MAX_HEART", comment: "Max Heart Rate")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += (self.maxHeart?.formatAsHeartRate(withUnit: WorkoutUnit.heartRate.unit(for: systemOfUnits)) ?? missingValueStr) + "\n"
+                    case self.paceRow:
+                        description += NSLocalizedString("WRKT_AVG_PACE", comment: "Average Pace")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += (self.pace?.formatAsPace(withReferenceLength: self.paceUnit.unit(for: systemOfUnits)) ?? missingValueStr) + "\n"
+                    case self.speedRow:
+                        description += NSLocalizedString("WRKT_AVG_SPEED", comment: "Average Speed")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        description += (self.speed?.formatAsSpeed(withUnit: self.speedUnit.unit(for: systemOfUnits)) ?? missingValueStr) + "\n"
+                    case self.energyRow:
+                        description += NSLocalizedString("WRKT_ENERGY", comment: "Energy")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        if let total = self.totalEnergy {
+                            if let active = self.activeEnergy {
+                                description += String(format: NSLocalizedString("WRKT_SPLIT_CAL_%@_TOTAL_%@", comment: "Active/Total"),
+                                                           active.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits)),
+                                                           total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits)))  + "\n"
+                            } else {
+                                description += total.formatAsEnergy(withUnit: WorkoutUnit.calories.unit(for: systemOfUnits)) + "\n"
+                            }
+                        } else {
+                            description += missingValueStr + "\n"
+                        }
+                    case self.elevationRow:
+                        description += NSLocalizedString("WRKT_ELEVATION", comment: "Elevation Change")
+                        description += NSLocalizedString("WRKT_EVENT_SEPARATOR", comment: "Separator")
+                        
+                        let (asc, desc) = self.elevationChange
+                        for (v, dir) in [(asc, "↗ "), (desc, "↘ ")] {
+                            guard let v = v else {
+                                continue
+                            }
+                                                        
+                            description += dir + v.formatAsElevationChange(withUnit: WorkoutUnit.elevation.unit(for: systemOfUnits)) + "\n"
+                        }
+                default:
+                    break
+                }
+            }
+            description.removeLast()
+            
+            eventStore.requestAccess(to: .event, completion: { (granted, error) in
+                if (granted) && (error == nil) {
+                    let event = EKEvent(eventStore: eventStore)
+                    
+                    event.title = "\(self.name) - \(self.duration.formattedDuration)"
+                    event.startDate = self.startDate
+                    event.endDate = self.endDate
+                    event.notes = description
+                    event.calendar = eventStore.calendar(withIdentifier: Preferences().defaultCalendarSelected) ?? eventStore.defaultCalendarForNewEvents
+                    do {
+                        try eventStore.save(event, span: .thisEvent)
+                    } catch let e as NSError {
+                        print(e)
+                        callback(nil)
+                        return
+                    }
+                }
+            })
+            callback(URL(string: "calshow:\(self.startDate.timeIntervalSinceReferenceDate)")!)
+        }
+    }
 }
