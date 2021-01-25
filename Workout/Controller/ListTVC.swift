@@ -51,7 +51,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		navigationItem.titleView = titleView
 		navBar?.enhancedDelegate = self
 		
-		standardRightBtn = navigationItem.rightBarButtonItem
+		standardRightBtns = navigationItem.rightBarButtonItems
 		standardLeftBtn = navigationItem.leftBarButtonItem
 		if #available(iOS 13, *) {
 			// This can be done in storyboard
@@ -331,7 +331,7 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		listChanged()
 
 		navigationItem.leftBarButtonItem = standardLeftBtn
-		navigationItem.rightBarButtonItem = standardRightBtn
+		navigationItem.rightBarButtonItems = standardRightBtns
 	}
 	
 	private func updateExportToggleAll() {
