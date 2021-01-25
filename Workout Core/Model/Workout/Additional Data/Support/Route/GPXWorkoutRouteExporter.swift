@@ -17,8 +17,12 @@ class GPXWorkoutRouteExporter: WorkoutRouteExporter {
 		self.owner = owner
 	}
 	
-	func export(_ route: [[CLLocation]]) -> URL? {
-		let routeFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("route.gpx")
+	func export(_ route: [[CLLocation]], withPrefix prefix: String) -> URL? {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
+		
+		let routeFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(prefix)route.gpx")
 		guard let file = OutputStream(url: routeFile, append: false) else {
 			return nil
 		}

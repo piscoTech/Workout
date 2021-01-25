@@ -11,8 +11,21 @@ import HealthKit
 
 extension DispatchQueue {
 
+	private static let workoutIdentifier = DispatchSpecificKey<String>()
 	/// Serial queue to synchronize access to counters and data when loading or exporting workouts.
-	static let workout = DispatchQueue(label: "Marco-Boschi.ios.Workout.loadExport")
+	static let workout: DispatchQueue = {
+		let queueName = "Marco-Boschi.ios.Workout.loadExport"
+		let q = DispatchQueue(label: queueName)
+		q.setSpecific(key: workoutIdentifier, value: queueName)
+
+		return q
+	}()
+
+	/// Whether the current queue is `DispatchQueue.workout` or not.
+	static var isOnWorkout: Bool {
+		return DispatchQueue.getSpecific(key: workoutIdentifier) == workout.label
+	}
+
 
 }
 
@@ -126,6 +139,27 @@ extension HKQuantity: Comparable {
 			return value.toString()
 		} else {
 			return speedF.string(from: NSNumber(value: value))! + " \(unit.symbol)"
+		}
+	}
+
+	/// Considers the receiver a cadence and formats it accordingly.
+	/// - parameter unit: The cadence unit to use in formatting.
+	/// - returns: The formatted value.
+	public func formatAsCadence(withUnit unit: HKUnit, rawFormat: Bool = false) -> String {
+		let value = self.doubleValue(for: unit)
+		if rawFormat {
+			return value.toString()
+		} else {
+			let intSteps = Int(ceil(value))
+			let str = String(format: NSLocalizedString("%lld_STEPS", comment: "%d step(s)"), intSteps)
+			var unitStr = unit.symbol.description
+			unitStr = String(unitStr[unitStr.range(of: "/")!.lowerBound...])
+			if let stepNum = str.range(of: "\(intSteps)") {
+				let steps = speedF.string(from: NSNumber(value: value))!
+				return str.replacingCharacters(in: stepNum, with: steps) + unitStr
+			} else {
+				return "\(str)\(unitStr)"
+			}
 		}
 	}
 

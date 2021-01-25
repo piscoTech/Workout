@@ -51,6 +51,7 @@
 "WRKT_MAX_HEART" = "Max Heart Rate";
 "WRKT_AVG_PACE" = "Average Pace";
 "WRKT_AVG_SPEED" = "Average Speed";
+"WRKT_AVG_CADENCE" = "Average Cadence";
 "WRKT_ENERGY" = "Energy";
 "WRKT_ELEVATION" = "Elevation Change";
 "WRKT_WEATHER_TEMPERATURE" = "Weather Temperature";
@@ -79,6 +80,12 @@
 "EXPORT_ERROR" = "Cannot export workout data";
 "EXPORT_ERROR_PARTIAL" = "Cannot export some workout data";
 "EXPORT_ERROR_PARTIAL_%@" = "The workouts at the following times failed to export:\n%@";
+
+"EXPORT_BULK" = "Export Workouts";
+"EXPORT_BULK_BODY" = "You can export just general data for each selected workout, i.e. the first section of the details, or all details. If you choose the latter, export time can greatly increase, make sure you select only relevant workouts or use the right filter to reduce them.";
+"EXPORT_BULK_SIMPLE" = "Only General Data";
+"EXPORT_BULK_ALL" = "All Details";
+"EXPORT_BULK_CANCEL" = "Cancel";
 
 // MARK: - Settings
 

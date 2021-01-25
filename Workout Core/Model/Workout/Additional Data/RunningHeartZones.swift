@@ -149,14 +149,18 @@ public class RunningHeartZones: AdditionalDataProcessor, AdditionalDataProvider,
 		return cell
 	}
 
-	public func export(for preferences: Preferences, _ callback: @escaping ([URL]?) -> Void) {
+	public func export(for preferences: Preferences, withPrefix prefix: String, _ callback: @escaping ([URL]?) -> Void) {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
+		
 		DispatchQueue.background.async {
 			guard let zonesData = self.zonesData else {
 				callback([])
 				return
 			}
 
-			let hzFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("heartZones.csv")
+			let hzFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(prefix)heartZones.csv")
 			guard let file = OutputStream(url: hzFile, append: false) else {
 				callback(nil)
 				return

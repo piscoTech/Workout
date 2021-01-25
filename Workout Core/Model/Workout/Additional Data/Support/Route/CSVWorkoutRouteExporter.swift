@@ -16,9 +16,13 @@ class CSVWorkoutRouteExporter: WorkoutRouteExporter {
 		// Not needed
 	}
 
-	func export(_ route: [[CLLocation]]) -> URL? {
+	func export(_ route: [[CLLocation]], withPrefix prefix: String) -> URL? {
+		guard prefix.range(of: "/") == nil else {
+			fatalError("Prefix must not contain '/'")
+		}
+
 		let sep = CSVSeparator
-		let routeFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("route.csv")
+		let routeFile = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(prefix)route.csv")
 		guard let file = OutputStream(url: routeFile, append: false) else {
 			return nil
 		}

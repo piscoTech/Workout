@@ -20,9 +20,9 @@ public protocol WorkoutBulkExporterDelegate: AnyObject {
 	func exportProgressChanged(_ progress: Float)
 
 	/// Tells the delegate that the export process has completed.
-	/// - parameter data: The `URL` of the file containit the exported data or `nil` if the process failed.
+	/// - parameter data: The `URL`s of the files containit the exported data or `nil` if the process failed.
 	/// - parameter failures: The list of start time of the workouts that failed to export or `nil` if the process failed.
-	func exportCompleted(data: URL?, individualFailures failures: [Date]?)
+	func exportCompleted(data: [URL]?, individualFailures failures: [Date]?)
 
 }
 
@@ -82,11 +82,13 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 
 	// MARK: - Exporting
 
+	public private(set) var withDetails = false
 	public private(set) var isExporting = false
 	public private(set) var exportCompleted = false
 
 	private let maximumConcurrentLoad = 10
 	private let filePath = URL(fileURLWithPath: NSString(string: NSTemporaryDirectory()).appendingPathComponent("allWorkouts.csv"))
+	private var otherFiles: [URL] = []
 	private var fileStream: OutputStream?
 
 	private var exported: Float = 0
@@ -96,10 +98,12 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 	private var loading: [Workout]?
 	/// The queue of workouts waiting to be loaded.
 	private var queue: [Workout]?
+	/// The list of workouts waiting for files to be written.
+	private var pendingWrite: [Workout]?
 
-	private var systemOfUnits: SystemOfUnits?
+	private var preferences: Preferences?
 
-	public func export(from healthData: Health, and preferences: Preferences) -> Bool {
+	public func export(withDetails details: Bool, from healthData: Health, and preferences: Preferences) -> Bool {
 		// Ensure that there's at least a workout to export
 		guard canExport else {
 			return false
@@ -115,7 +119,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 		// Prepare the file with the header
 		do {
 			let sep = CSVSeparator
-			let header = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Active Energy".toCSV())\(sep)\("Total Energy".toCSV())\(sep)\("Elevation Ascended".toCSV())\(sep)\("Elevation Descended".toCSV())\(sep)Weather Temperature\(sep)Weather Humidity\n"
+			let header = "Type\(sep)Start\(sep)End\(sep)Duration\(sep)Distance\(sep)\("Average Heart Rate".toCSV())\(sep)\("Max Heart Rate".toCSV())\(sep)\("Average Pace".toCSV())\(sep)\("Average Speed".toCSV())\(sep)\("Average Cadence".toCSV())\(sep)\("Active Energy".toCSV())\(sep)\("Total Energy".toCSV())\(sep)\("Elevation Ascended".toCSV())\(sep)\("Elevation Descended".toCSV())\(sep)Weather Temperature\(sep)Weather Humidity\n"
 
 			try fileStream.write(header)
 		} catch {
@@ -124,7 +128,8 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 		}
 
 		isExporting = true
-		systemOfUnits = preferences.systemOfUnits
+		self.preferences = preferences
+		self.withDetails = details
 		let wrkts = Array(zip(workouts.workouts ?? [], selection).lazy
 			.filter { $0.1 }
 			.map { Workout.workoutFor(raw: $0.0.raw, from: healthData, and: preferences, delegate: self) }
@@ -133,13 +138,16 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 
 		// Load first batch
 		loading = wrkts.prefix(maximumConcurrentLoad).map { w in
-			// Avoid loading additional (and useless) detail
-			w.load(quickly: true)
+			// Avoid loading additional (and useless) detail if not needed
+			w.load(quickly: !self.withDetails)
 			return w
 		}
 
 		// Queue the rest
 		queue = wrkts.count > maximumConcurrentLoad ? Array(wrkts[maximumConcurrentLoad...]) : []
+
+		// Initialize other data
+		pendingWrite = []
 
 		return true
 	}
@@ -148,13 +156,14 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 		// Move to a serial queue to synchronize access to counter
 		DispatchQueue.workout.async {
 			guard self.isExporting, !self.exportCompleted,
-				var loading = self.loading, var queue = self.queue,
-				let fh = self.fileStream, let sys = self.systemOfUnits else {
+				var loading = self.loading, var queue = self.queue, var pendingWrite = self.pendingWrite,
+				let fh = self.fileStream, let pref = self.preferences else {
 				return
 			}
 			defer {
 				self.loading = loading
 				self.queue = queue
+				self.pendingWrite = pendingWrite
 			}
 
 			// Consume loaded workouts
@@ -167,7 +176,34 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 					self.failures.append(w.startDate)
 				} else {
 					do {
-						try fh.write((w.exportGeneralData(for: sys) + "\n"))
+						try fh.write((w.exportGeneralData(for: pref.systemOfUnits) + "\n"))
+
+						if self.withDetails {
+							pendingWrite.append(w)
+
+							var prefix = w.startDate.unixTimestamp.replacingOccurrences(of: " ", with: "_").replacingOccurrences(of: ":", with: "-")
+							if let r = prefix.range(of: ".") {
+								prefix = String(prefix[..<prefix.index(before: r.upperBound)])
+							}
+							prefix = "\(w.name.replacingOccurrences(of: " ", with: ""))_\(prefix)_"
+							w.export(for: pref, excludingGeneralData: true, withPrefix: prefix) { (files) in
+								DispatchQueue.workout.async {
+									if let files = files {
+										self.otherFiles += files
+									} else {
+										self.failures.append(w.startDate)
+									}
+
+									self.pendingWrite?.removeElement(w)
+									// Check for completion
+									if self.queue?.isEmpty ?? false,
+										self.loading?.isEmpty ?? false,
+										self.pendingWrite?.isEmpty ?? false {
+										self.completeExport(success: true)
+									}
+								}
+							}
+						}
 					} catch {
 						self.completeExport(success: false)
 						return
@@ -180,8 +216,8 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 			// Load other
 			if !queue.isEmpty, loading.count < self.maximumConcurrentLoad {
 				let load: [Workout] = queue.prefix(self.maximumConcurrentLoad - loading.count).map { w in
-					// Avoid loading additional (and useless) detail
-					w.load(quickly: true)
+					// Avoid loading additional (and useless) detail if not needed
+					w.load(quickly: !self.withDetails)
 					return w
 				}
 				loading += load
@@ -189,7 +225,7 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 			}
 
 			// Check for completion
-			if queue.isEmpty && loading.isEmpty {
+			if queue.isEmpty && loading.isEmpty && pendingWrite.isEmpty {
 				self.completeExport(success: true)
 			}
 		}
@@ -197,7 +233,8 @@ public class WorkoutBulkExporter: WorkoutDelegate {
 
 	private func completeExport(success: Bool) {
 		if !self.exportCompleted {
-			delegate?.exportCompleted(data: success ? filePath : nil, individualFailures: success ? failures : nil)
+			delegate?.exportCompleted(data: success ? [filePath] + self.otherFiles : nil,
+									  individualFailures: success ? failures : nil)
 		}
 
 		exportCompleted = true
