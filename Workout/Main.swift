@@ -12,5 +12,3 @@ import WorkoutCore
 
 let preferences = Preferences()
 let healthData = Health()
-
-let adsManager = AdsManager(preferences: preferences)

@@ -11,29 +11,12 @@ import UIKit
 import MBLibrary
 import WorkoutCore
 
-class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAdsDelegate {
+class AboutViewController: UITableViewController, PreferencesDelegate {
 	
 	private var appInfo: String!
 	private let maxHeart = NSLocalizedString("HEART_ZONES_MAX_RATE", comment: "Max x bpm")
 	
-	private var numberOfRowsInAdsSection: Int {
-		var count = 0
-		if adsManager.areAdsEnabled {
-			if InAppPurchaseManager.canMakePayments {
-				count += 1 // Remove Ads & Restore
-			}
-			
-			if adsManager.userCanRequestNonPersonalizedAds {
-				count += 1 // Manage Consent
-			}
-		}
-		
-		return count
-	}
-	
-	private var settingsSectionOffset: Int {
-		return numberOfRowsInAdsSection > 0 ? 1 : 0
-	}
+	private let settingsSectionOffset = 0
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -41,8 +24,6 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		appInfo = NSLocalizedString("REPORT_TEXT", comment: "Report problem") + "\n\nWorkout \(Bundle.main.versionDescription)\n© 2016-2020 Marco Boschi"
 		
 		preferences.add(delegate: self)
-		adsManager.removeAdsDelegate = self
-		adsManager.presenter = self
 	}
 	
 	override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
@@ -66,9 +47,6 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		// Source Code & Contacts
 		case settingsSectionOffset + 1:
 			return 2
-		// Remove Ads
-		case 0:
-			return numberOfRowsInAdsSection
 		default:
 			return 0
 		}
@@ -102,16 +80,6 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		// Contacts
 		case (settingsSectionOffset + 1, 1):
 			return tableView.dequeueReusableCell(withIdentifier: "contact", for: indexPath)
-		// Remove Ads
-		case (0, 0):
-			if InAppPurchaseManager.canMakePayments {
-				return tableView.dequeueReusableCell(withIdentifier: "removeAds", for: indexPath)
-			} else {
-				fallthrough
-			}
-		// Manage consent
-		case (0, 1):
-			return tableView.dequeueReusableCell(withIdentifier: "manageConsent", for: indexPath)
 		
 		default:
 			return UITableViewCell()
@@ -126,10 +94,6 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 		case (settingsSectionOffset + 1, 0):
 			let url = URL(string: "https://github.com/piscoTech/Workout")!
 			UIApplication.shared.open(url)
-		case (0, 1):
-			adsManager.collectAdsConsent()
-		case (0, 0) where !InAppPurchaseManager.canMakePayments:
-			adsManager.collectAdsConsent()
 		
 		default:
 			break
@@ -185,27 +149,6 @@ class AboutViewController: UITableViewController, PreferencesDelegate, RemoveAds
 
 	private func setRouteType(in cell: UITableViewCell) {
 		cell.detailTextLabel?.text = preferences.routeType.displayName
-	}
-	
-	// MARK: - Ads management
-	
-	@IBAction func removeAds() {
-		adsManager.removeAds()
-	}
-	
-	@IBAction func restorePurchase() {
-		adsManager.restorePurchase()
-	}
-	
-	func hideAds() {
-		let old = tableView.numberOfSections
-		let new = self.numberOfSections(in: tableView)
-		guard !adsManager.areAdsEnabled, old > new else {
-			// Rows already hidden or should not be hidden
-			return
-		}
-		
-		tableView.deleteSections(IndexSet(0 ..< old - new), with: .automatic)
 	}
 	
 	// MARK: - Navigation

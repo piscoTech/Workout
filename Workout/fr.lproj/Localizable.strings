@@ -93,7 +93,3 @@
 "HEART_ZONES_EXPLANATION" = "Les zones cardiaques sont des plages de votre fréquence cardiaque en termes de pourcentage de votre fréquence cardiaque maximale. Passer un certain temps dans chaque zone vous aidera à vous entraîner d’une certaine manière. Personnalisez les zones pour mieux répondre à vos besoins.";
 
 "REPORT_TEXT" = "Signalez tout problème sur Twitter @piscoTech ou sur GitHub en tapant le code source.";
-
-"REMOVE_ADS" = "Supprimer la pub";
-"MANAGE_CONSENT" = "Gérer le consentement des annonces";
-"MANAGE_CONSENT_ERR" = "Impossible de mettre à jour le consentement des annonces";
