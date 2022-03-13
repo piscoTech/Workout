@@ -93,7 +93,3 @@
 "HEART_ZONES_EXPLANATION" = "Heart zones are ranges of your heart rate in terms of percentage of your max heart rate. Spending certain amouts of time in each zone will help you train in a certain way, customize the zones to better suit your needs.";
 
 "REPORT_TEXT" = "Report any problem also on Twitter @piscoTech or at GitHub tapping Source Code.";
-
-"REMOVE_ADS" = "Remove Ads";
-"MANAGE_CONSENT" = "Manage Ads Consent";
-"MANAGE_CONSENT_ERR" = "Unable to update ads consent";

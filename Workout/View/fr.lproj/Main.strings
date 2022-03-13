@@ -30,14 +30,8 @@
 /* Class = "UINavigationItem"; title = "Workout detail"; ObjectID = "QUK-cG-kWu"; */
 "QUK-cG-kWu.title" = "Détails d’entraînement";
 
-/* Class = "UIButton"; normalTitle = "Remove Ads"; ObjectID = "Qam-ee-Z2S"; */
-"Qam-ee-Z2S.normalTitle" = "Supprimer la pub";
-
 /* Class = "UILabel"; text = "Step Source"; ObjectID = "RXY-ea-kL0"; */
 "RXY-ea-kL0.text" = "Source du podomètre";
-
-/* Class = "UILabel"; text = "Manage Ads Consent"; ObjectID = "UZS-mG-WS7"; */
-"UZS-mG-WS7.text" = "Gérer le consentement des annonces";
 
 /* Class = "UILabel"; text = "All"; ObjectID = "Uxm-XN-Aib"; */
 "Uxm-XN-Aib.text" = "Tout";

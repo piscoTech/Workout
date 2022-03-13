@@ -10,10 +10,9 @@ import UIKit
 import HealthKit
 import MBLibrary
 import WorkoutCore
-import GoogleMobileAds
 import StoreKit
 
-class ListTableViewController: UITableViewController, WorkoutListDelegate, WorkoutBulkExporterDelegate, PreferencesDelegate, AdsManagerDelegate, EnhancedNavigationBarDelegate {
+class ListTableViewController: UITableViewController, WorkoutListDelegate, WorkoutBulkExporterDelegate, PreferencesDelegate, EnhancedNavigationBarDelegate {
 
 	private static let defaultHeight: CGFloat = 44
 
@@ -64,11 +63,6 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 		// Refresh Control
 		tableView.refreshControl = self.refresher
 		refresher.addTarget(self, action: #selector(refresh(_:)), for: .valueChanged)
-		
-		// Ads
-		navigationController?.isToolbarHidden = true
-		adsManager.delegate = self
-		adsManager.initialize()
 
 		tableView.rowHeight = UITableView.automaticDimension
 		tableView.estimatedRowHeight = Self.defaultHeight
@@ -453,49 +447,6 @@ class ListTableViewController: UITableViewController, WorkoutListDelegate, Worko
 			}
 
 			self.documentController.popoverPresentationController?.barButtonItem = self.exportCommitBtn
-		}
-	}
-	
-	// MARK: - Ads
-
-	var defaultPresenter: UIViewController {
-		self
-	}
-
-	func displayAds() {
-		DispatchQueue.main.async {
-			guard let nav = self.navigationController else {
-				return
-			}
-			
-			guard let adView = adsManager.adView else {
-				self.hideAds()
-				return
-			}
-			
-			if adView.superview == nil {
-				nav.toolbar.addSubview(adView)
-				nav.toolbar.bringSubviewToFront(adView)
-				var constraint = NSLayoutConstraint(item: adView, attribute: .centerX, relatedBy: .equal, toItem: nav.toolbar, attribute: .centerX, multiplier: 1, constant: 0)
-				constraint.isActive = true
-				constraint = NSLayoutConstraint(item: adView, attribute: .top, relatedBy: .equal, toItem: nav.toolbar, attribute: .top, multiplier: 1, constant: 0)
-				constraint.isActive = true
-			}
-			
-			nav.setToolbarHidden(false, animated: true)
-		}
-	}
-	
-	func hideAds() {
-		DispatchQueue.main.async {
-			guard let nav = self.navigationController else {
-				return
-			}
-			
-			nav.setToolbarHidden(true, animated: true)
-			DispatchQueue.main.asyncAfter(delay: 2) {
-				adsManager.adView?.removeFromSuperview()
-			}
 		}
 	}
 

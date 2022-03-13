@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>GADDelayAppMeasurementInit</key>
-	<true/>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This identifier will be used to deliver personalized ads to you. You can purchase the ads free version from settings at any time.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -22,14 +18,8 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-7085161342725707~3715618473</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bluetooth may be used while interacting with ads.</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>Calendar data my be used while interacting with ads.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Access to data is used to package it in CSV files for exporting purposes.</string>
 	<key>NSHealthUpdateUsageDescription</key>
