@@ -51,7 +51,7 @@
 "WRKT_MAX_HEART" = "Rythme cardiaque maximum";
 "WRKT_AVG_PACE" = "Allure moyenne";
 "WRKT_AVG_SPEED" = "Vitesse moyenne";
-"WRKT_AVG_CADENCE" = "Average Cadence";
+"WRKT_AVG_CADENCE" = "Cadence moyenne";
 "WRKT_ENERGY" = "Énergie";
 "WRKT_ELEVATION" = "Dénivelée";
 "WRKT_WEATHER_TEMPERATURE" = "Température";
@@ -81,11 +81,11 @@
 "EXPORT_ERROR_PARTIAL" = "Impossible d’exporter certaines données d’entraînement";
 "EXPORT_ERROR_PARTIAL_%@" = "Les séances d’entraînement aux moments suivants n’ont pas réussi à être exportées:\n%@";
 
-"EXPORT_BULK" = "Export Workouts";
-"EXPORT_BULK_BODY" = "You can export just general data for each selected workout, i.e. the first section of the details, or all details. If you choose the latter, export time can greatly increase, make sure you select only relevant workouts or use the right filter to reduce them.";
-"EXPORT_BULK_SIMPLE" = "Only General Data";
-"EXPORT_BULK_ALL" = "All Details";
-"EXPORT_BULK_CANCEL" = "Cancel";
+"EXPORT_BULK" = "Exporter les entraînements";
+"EXPORT_BULK_BODY" = "Vous pouvez exporter uniquement les données générales pour chaque entraînement sélectionné, càd. la première section des détails ou la totalité des détails. Si vous choisissez ce dernier, le temps d'exportation peut être considérablement augmenté, assurez-vous de ne sélectionner que les entraînements pertinents ou utilisez le bon filtre pour les réduire.";
+"EXPORT_BULK_SIMPLE" = "Seulement les données générales";
+"EXPORT_BULK_ALL" = "Tous les détails";
+"EXPORT_BULK_CANCEL" = "Annuler";
 
 // MARK: - Settings
 
